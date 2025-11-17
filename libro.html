@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Libro + Diccionario</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 1rem;
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    #contenedor {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    #libro {
+      line-height: 1.6;
+      text-align: justify;
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 8px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    #definicion {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 8px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .palabra {
+      cursor: pointer;
+    }
+
+    .palabra:hover {
+      text-decoration: underline;
+    }
+
+    h1 {
+      grid-column: 1 / -1;
+      margin-top: 0;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .sin-def {
+      color: #999;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div id="contenedor">
+    <h1>Libro del Infinito</h1>
+
+    <!-- Aquí pegarás tu libro completo -->
+    <pre id="texto-libro" style="display:none;">
+Aquí va tu libro completo.
+Por ejemplo:
+
+29101 El infinito mira al uno.
+29102 El uno sueña con llegar a ser infinito.
+29103 Nada teme más el infinito que olvidar al uno.
+    </pre>
+
+    <!-- Zona visible del libro con palabras clicables -->
+    <div id="libro"></div>
+
+    <!-- Zona donde se mostrará la definición unitaria -->
+    <div id="definicion">
+      <h2>Definición</h2>
+      <p>Haz clic en una palabra del libro para ver su definición unitaria.</p>
+    </div>
+  </div>
+
+  <script>
+    // 🔹 Diccionario unitaro mínimo (luego lo ampliamos)
+    const diccionario = {
+      "infinito": {
+        unitaria: "Aquello que no se agota aunque lo cuentes, lo dividas o lo recorras.",
+      },
+      "uno": {
+        unitaria: "La unidad mínima desde la que empieza a contarse todo.",
+      },
+      "nada": {
+        unitaria: "El fondo silencioso sobre el que el ser se recorta.",
+      },
+      "libro": {
+        unitaria: "Lugar donde las palabras se ordenan para recordar lo que no queremos perder.",
+      },
+    };
+
+    // 🔤 Normalizar palabra: quitar signos, minúsculas, quitar tildes
+    function normalizarPalabra(raw) {
+      return raw
+        .toLowerCase()
+        .replace(/[.,;:¡!¿?\(\)\[\]"«»]/g, "")
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function mostrarDefinicion(rawWord) {
+      const clave = normalizarPalabra(rawWord);
+      const panel = document.getElementById("definicion");
+      const entrada = diccionario[clave];
+
+      if (!entrada) {
+        panel.innerHTML = `
+          <h2>${rawWord}</h2>
+          <p class="sin-def">Esta palabra aún no tiene definición unitaria.</p>
+        `;
+        return;
+      }
+
+      panel.innerHTML = `
+        <h2>${rawWord}</h2>
+        <p>${entrada.unitaria}</p>
+      `;
+    }
+
+    function prepararLibro() {
+      const fuente = document.getElementById("texto-libro").innerText;
+      const contenedorLibro = document.getElementById("libro");
+
+      const tokens = fuente.split(/(\s+)/);
+      contenedorLibro.innerHTML = "";
+
+      tokens.forEach(token => {
+        if (/^\s+$/.test(token)) {
+          contenedorLibro.appendChild(document.createTextNode(token));
+        } else {
+          const span = document.createElement("span");
+          span.textContent = token;
+          span.className = "palabra";
+          span.addEventListener("click", () => mostrarDefinicion(token));
+          contenedorLibro.appendChild(span);
+        }
+      });
+    }
+
+    prepararLibro();
+  </script>
+</body>
+</html>
