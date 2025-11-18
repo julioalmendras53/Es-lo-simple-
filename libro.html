@@ -424,7 +424,7 @@ function elegirIndiceDefinicion(definiciones, contexto) {
 
 // Mostrar definición usando el contexto del libro
 function mostrarDefinicion(rawWord, tokenIndex) {
-  const clave = normalizarPalabra(rawWord);
+ const clave = obtenerClaveVerbal(rawWord);
   const panel = document.getElementById("definicion");
   const entrada = diccionario[clave];
 
