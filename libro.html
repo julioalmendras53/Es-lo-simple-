@@ -352,69 +352,152 @@
      
     };
 
+    
     // 🔤 Normalizar palabra: quitar signos, minúsculas, quitar tildes
-    function normalizarPalabra(raw) {
-      return raw
-        .toLowerCase()
-        .replace(/[.,;:¡!¿?\(\)\[\]"«»]/g, "")
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+function normalizarPalabra(raw) {
+  return raw
+    .toLowerCase()
+    .replace(/[.,;:¡!¿?\(\)\[\]"«»]/g, "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// Guardaremos aquí las palabras (sin espacios) del libro en orden
+let tokensLibro = [];
+
+// Obtener un contexto alrededor del índice del token (ventana de ±15 palabras)
+function obtenerContexto(idx) {
+  const ventana = 15;
+  const inicio = Math.max(0, idx - ventana);
+  const fin = Math.min(tokensLibro.length, idx + ventana + 1);
+  return tokensLibro.slice(inicio, fin).join(" ");
+}
+
+// Limpiar texto para comparar: minúsculas, sin tildes, solo letras/números
+function limpiarTexto(texto) {
+  return texto
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9ñáéíóúü\s]/gi, " ");
+}
+
+// Convertir texto en lista de palabras “clave”
+function palabrasClave(texto) {
+  return limpiarTexto(texto)
+    .split(/\s+/)
+    .filter(w => w.length > 3); // evitamos palabras muy cortas
+}
+
+// Elegir el índice de la definición que mejor coincide con el contexto
+function elegirIndiceDefinicion(definiciones, contexto) {
+  const ctxWords = palabrasClave(contexto);
+  if (!ctxWords.length) return 0;
+
+  const setCtx = new Set(ctxWords);
+  let mejor = 0;
+  let mejorScore = -1;
+
+  definiciones.forEach((def, idx) => {
+    const palabrasDef = palabrasClave(def);
+    let score = 0;
+    palabrasDef.forEach(p => {
+      if (setCtx.has(p)) score++;
+    });
+    if (score > mejorScore) {
+      mejorScore = score;
+      mejor = idx;
     }
+  });
 
-    function mostrarDefinicion(rawWord) {
-      const clave = normalizarPalabra(rawWord);
-      const panel = document.getElementById("definicion");
+  return mejor;
+}
 
-      const entrada =
-        diccionario[clave] ||
-        diccionario[rawWord.toLowerCase()] ||
-        diccionario[rawWord];
+// Mostrar definición usando el contexto del libro
+function mostrarDefinicion(rawWord, tokenIndex) {
+  const clave = normalizarPalabra(rawWord);
+  const panel = document.getElementById("definicion");
+  const entrada = diccionario[clave];
 
-      if (!entrada) {
-        panel.innerHTML = `
-          <h2>${rawWord}</h2>
-          <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario web.</p>
-        `;
-        return;
-      }
+  if (!entrada) {
+    panel.innerHTML = `
+      <h2>${rawWord}</h2>
+      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
+    `;
+    return;
+  }
 
-      let html = `<h2>${rawWord}</h2>`;
+  // Reunimos todas las definiciones en una sola lista
+  let definiciones = [];
+  if (entrada.definicion) {
+    definiciones.push(entrada.definicion);
+  }
+  if (Array.isArray(entrada.definiciones)) {
+    definiciones = definiciones.concat(entrada.definiciones);
+  }
 
-      if (entrada.definicion) {
-        html += `<p>${entrada.definicion}</p>`;
-      }
+  if (definiciones.length === 0) {
+    panel.innerHTML = `
+      <h2>${rawWord}</h2>
+      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
+    `;
+    return;
+  }
 
-      if (Array.isArray(entrada.definiciones)) {
-        html += "<ol>";
-        entrada.definiciones.forEach(def => {
-          html += `<li>${def}</li>`;
-        });
-        html += "</ol>";
-      }
+  // Obtenemos contexto alrededor de la palabra clicada
+  const contexto = obtenerContexto(tokenIndex);
 
-      panel.innerHTML = html;
+  // Elegimos la definición que mejor encaja con el contexto
+  const indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
+
+  // Construimos el HTML: todas las definiciones, solo una en azul
+  const htmlDefs = definiciones
+    .map((texto, i) => {
+      const style = i === indiceElegido ? ' style="color: blue;"' : '';
+      return `<p${style}>${texto}</p>`;
+    })
+    .join("");
+
+  // Si quieres, más adelante volvemos a añadir imagen/video aquí
+  panel.innerHTML = `
+    <h2>${rawWord}</h2>
+    ${htmlDefs}
+  `;
+}
+
+// Preparar el libro: convertir texto en spans clicables y rellenar tokensLibro
+function prepararLibro() {
+  const fuente = document.getElementById("texto-libro").innerText;
+  const contenedorLibro = document.getElementById("libro");
+
+  const tokens = fuente.split(/(\s+)/);
+  tokensLibro = []; // reiniciamos
+
+  contenedorLibro.innerHTML = "";
+  let indiceToken = 0;
+
+  tokens.forEach(token => {
+    if (/^\s+$/.test(token)) {
+      // Es solo espacio: lo añadimos tal cual
+      contenedorLibro.appendChild(document.createTextNode(token));
+    } else {
+      // Palabra/token real: span clicable
+      const span = document.createElement("span");
+      span.textContent = token;
+      span.className = "palabra";
+
+      const idx = indiceToken;
+      span.addEventListener("click", () => mostrarDefinicion(token, idx));
+
+      tokensLibro.push(token);
+      indiceToken++;
+
+      contenedorLibro.appendChild(span);
     }
+  });
+}
 
-    function prepararLibro() {
-      const fuente = document.getElementById("texto-libro").innerText;
-      const contenedorLibro = document.getElementById("libro");
+// Inicializamos
+prepararLibro();
 
-      const tokens = fuente.split(/(\s+)/);
-      contenedorLibro.innerHTML = "";
-
-      tokens.forEach(token => {
-        if (/^\s+$/.test(token)) {
-          contenedorLibro.appendChild(document.createTextNode(token));
-        } else {
-          const span = document.createElement("span");
-          span.textContent = token;
-          span.className = "palabra";
-          span.addEventListener("click", () => mostrarDefinicion(token));
-          contenedorLibro.appendChild(span);
-        }
-      });
-    }
-
-    prepararLibro();
-  </script>
+      
 </body>
 </html>
