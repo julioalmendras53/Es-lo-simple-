@@ -615,7 +615,7 @@ function expandirConSinonimos(palabra) {
   const lista = [base];
   if (sinonimos[base]) {
     lista.push(...sinonimos[base]);
-  } return lista;
+  } return lista; }
   function elegirIndiceDefinicion(definiciones, contexto) {
   const ctxWords = palabrasClave(contexto);
   if (!ctxWords.length) return 0;
