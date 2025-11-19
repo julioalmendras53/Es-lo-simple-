@@ -634,9 +634,60 @@ function resaltarCoincidencias(rawWord) {
 }
 // Mostrar definición usando el contexto del libro
 function mostrarDefinicion(rawWord, tokenIndex) {
- const clave = obtenerClaveVerbal(rawWord);
+  // 1) Calculamos la clave real que usará el diccionario
+  const clave = obtenerClaveVerbal(rawWord);
   const panel = document.getElementById("definicion");
   const entrada = diccionario[clave];
+
+  // 2) Resaltado visual en el texto del libro
+  limpiarResaltado();           // quitamos resaltados anteriores
+  resaltarCoincidencias(rawWord); // marcamos todas las apariciones de esta palabra
+
+  // 3) Si no hay entrada en el diccionario, mensaje simple
+  if (!entrada) {
+    panel.innerHTML = `
+      <h2>${rawWord}</h2>
+      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
+    `;
+    return;
+  }
+
+  // 4) Reunimos todas las definiciones en una sola lista
+  let definiciones = [];
+  if (entrada.definicion) {
+    definiciones.push(entrada.definicion);
+  }
+  if (Array.isArray(entrada.definiciones)) {
+    definiciones = definiciones.concat(entrada.definiciones);
+  }
+
+  if (definiciones.length === 0) {
+    panel.innerHTML = `
+      <h2>${rawWord}</h2>
+      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
+    `;
+    return;
+  }
+
+  // 5) Obtenemos el contexto alrededor de la palabra clicada
+  const contexto = obtenerContexto(tokenIndex);
+
+  // 6) Elegimos la definición que mejor encaja con el contexto
+  const indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
+
+  // 7) Construimos el HTML: todas las definiciones, solo una en azul
+  const htmlDefs = definiciones
+    .map((texto, i) => {
+      const style = i === indiceElegido ? ' style="color: blue;"' : '';
+      return `<p${style}>${texto}</p>`;
+    })
+    .join("");
+
+  panel.innerHTML = `
+    <h2>${rawWord}</h2>
+    ${htmlDefs}
+  `;
+}
 
 if (!entrada) {
   panel.innerHTML = `
