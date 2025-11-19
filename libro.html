@@ -539,8 +539,8 @@ function obtenerClaveVerbal(rawWord) {
 function normalizarPalabra(raw) {
   return raw
     .toLowerCase()
-    .replace(/[.,;:¡!¿?\(\)\[\]"«»]/g, "")
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
+    .replace(/[^a-z0-9ñ]/g, "");                      // quita todo lo que no sea letra o número
 }
 
 // Guardaremos aquí las palabras (sin espacios) del libro en orden
