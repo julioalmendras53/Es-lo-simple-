@@ -246,7 +246,7 @@ function getDictionaryKeyFromWord(rawWord) {
   }
 
   // 1) Normalizamos como ya haces tú (minúsculas, sin tilde, sin signos raros)
-  let w = normalizeText(original);
+  let w = normalizarPalabra(original);
 
   // 2) Quitamos pronombres enclíticos (decirmelo -> decir)
   w = stripClitics(w);
