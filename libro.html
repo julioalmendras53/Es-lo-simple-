@@ -599,13 +599,16 @@ function mostrarDefinicion(rawWord, tokenIndex) {
   const panel = document.getElementById("definicion");
   const entrada = diccionario[clave];
 
-  if (!entrada) {
-    panel.innerHTML = `
-      <h2>${rawWord}</h2>
-      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
-    `;
-    return;
-  }
+if (!entrada) {
+  panel.innerHTML = `
+    <h2>${rawWord}</h2>
+    <p class="sin-def">
+      Esta palabra aún no tiene definición en tu diccionario.
+      (clave interna: ${clave})
+    </p>
+  `;
+  return;
+}
 
   // Reunimos todas las definiciones en una sola lista
   let definiciones = [];
