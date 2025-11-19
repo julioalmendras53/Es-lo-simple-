@@ -627,42 +627,40 @@ function expandirConSinonimos(palabra) {
   if (sinonimos[base]) {
     lista.push(...sinonimos[base]);
   } return lista; }
-  function elegirIndiceDefinicion(definiciones, contexto) {
-  const ctxWords = palabrasClave(contexto);
-  if (!ctxWords.length) return 0;
 
+    // -----------------------------------------------------------
+// ELEGIR DEFINICIÓN + EXPLICACIÓN DEL PORQUÉ
+// -----------------------------------------------------------
+function elegirDefinicionConExplicacion(definiciones, contexto) {
+  const ctxWords = palabrasClave(contexto);
   const setCtx = new Set(ctxWords);
 
-  // Palabras demasiado generales que no ayudan a decidir
-  const stopWords = new Set([
-    "ser", "estar", "tener", "haber", "hacer", "poder",
-    "cosa", "algo", "alguien", "uno", "una"
-  ]);
-
-  let mejor = 0;
+  let mejorIndice = 0;
   let mejorScore = -1;
+  let mejorExplicacion = { exactas: [], sinonimos: [] };
 
   definiciones.forEach((def, idx) => {
     const palabrasDef = palabrasClave(def);
     let score = 0;
+    let exactas = [];
+    let sinos = [];
 
     palabrasDef.forEach(p => {
       const base = p.toLowerCase();
 
-      // descartamos palabras muy generales
-      if (stopWords.has(base)) return;
-
-      // 1) Coincidencia exacta fuerte: 3 puntos
+      // --- Coincidencia exacta ---
       if (setCtx.has(base)) {
         score += 3;
+        exactas.push(base);
         return;
       }
 
-      // 2) Coincidencia por sinónimos: 2 puntos
+      // --- Coincidencia por sinónimos ---
       const variantes = expandirConSinonimos(base);
       for (const v of variantes) {
         if (setCtx.has(v)) {
-          score += 2;
+          score += 1;
+          sinos.push({ palabraDef: base, coincidencia: v });
           break;
         }
       }
@@ -670,12 +668,16 @@ function expandirConSinonimos(palabra) {
 
     if (score > mejorScore) {
       mejorScore = score;
-      mejor = idx;
+      mejorIndice = idx;
+      mejorExplicacion = { exactas, sinonimos: sinos };
     }
   });
 
-  return mejor;
-  }
+  return {
+    indice: mejorIndice,
+    explicacion: mejorExplicacion
+  };
+    }
 
   // Quita el resaltado azul de todas las palabras
   function limpiarResaltado() {
