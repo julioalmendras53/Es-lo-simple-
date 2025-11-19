@@ -238,7 +238,10 @@ function guessInfinitive(w) {
 
 // A partir de la palabra del libro, obtenemos la clave real del diccionario
 function obtenerClaveVerbal(rawWord) {
-  const original = rawWord.trim();
+  const original = rawWord.trim();// Protección: "dios" NO es un verbo
+if (original.toLowerCase().startsWith("dios")) {
+  return "dios";
+}
 
   // Caso especial: "creó" con tilde -> CREAR (porque tú lo quieres así)
   if (original === "creó" || original === "Creó") {
