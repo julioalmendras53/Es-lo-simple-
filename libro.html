@@ -613,7 +613,25 @@ function elegirIndiceDefinicion(definiciones, contexto) {
 
   return mejor;
 }
+// Quita el resaltado azul de todas las palabras
+function limpiarResaltado() {
+  document.querySelectorAll(".palabra.resaltada").forEach(span => {
+    span.classList.remove("resaltada");
+  });
+}
 
+// Resalta en azul todas las apariciones de la palabra clicada
+function resaltarCoincidencias(rawWord) {
+  const clave = normalizarPalabra(rawWord); // misma normalización que para el diccionario
+
+  document.querySelectorAll(".palabra").forEach(span => {
+    const textoSpan = span.textContent || "";
+    const claveSpan = normalizarPalabra(textoSpan);
+    if (claveSpan === clave) {
+      span.classList.add("resaltada");
+    }
+  });
+}
 // Mostrar definición usando el contexto del libro
 function mostrarDefinicion(rawWord, tokenIndex) {
  const clave = obtenerClaveVerbal(rawWord);
