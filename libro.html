@@ -690,7 +690,16 @@ function prepararLibro() {
       span.className = "palabra";
 
       const idx = indiceToken;
-      span.addEventListener("click", () => mostrarDefinicion(token, idx));
+      span.addEventListener("click", () => {
+        // 1) Clave de búsqueda para resaltar (sin mayúsculas, sin tildes, sin signos)
+        const claveBuscada = normalizarPalabra(token);
+
+        // 2) Resaltamos todas las ocurrencias iguales
+        resaltarPalabras(claveBuscada);
+
+        // 3) Mostramos la definición (como antes)
+        mostrarDefinicion(token, idx);
+      });
 
       tokensLibro.push(token);
       indiceToken++;
