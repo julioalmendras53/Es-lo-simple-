@@ -621,6 +621,13 @@ function expandirConSinonimos(palabra) {
   if (!ctxWords.length) return 0;
 
   const setCtx = new Set(ctxWords);
+
+  // Palabras demasiado generales que no ayudan a decidir
+  const stopWords = new Set([
+    "ser", "estar", "tener", "haber", "hacer", "poder",
+    "cosa", "algo", "alguien", "uno", "una"
+  ]);
+
   let mejor = 0;
   let mejorScore = -1;
 
@@ -631,17 +638,20 @@ function expandirConSinonimos(palabra) {
     palabrasDef.forEach(p => {
       const base = p.toLowerCase();
 
-      // 1) Coincidencia exacta: vale 3 puntos
+      // descartamos palabras muy generales
+      if (stopWords.has(base)) return;
+
+      // 1) Coincidencia exacta fuerte: 3 puntos
       if (setCtx.has(base)) {
         score += 3;
         return;
       }
 
-      // 2) Coincidencia por sinónimos: vale 1 punto
+      // 2) Coincidencia por sinónimos: 2 puntos
       const variantes = expandirConSinonimos(base);
       for (const v of variantes) {
         if (setCtx.has(v)) {
-          score += 1;
+          score += 2;
           break;
         }
       }
