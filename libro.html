@@ -764,7 +764,9 @@ if (clave === "poder") {
   }
 } else {
   // Caso general (no es "poder")
-  indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
+  const resultado = elegirDefinicionConExplicacion(definiciones, contexto);
+const indiceElegido = resultado.indice;
+const explicacion = resultado.explicacion;
         }
 
     // 7) Construimos el HTML: todas las definiciones, solo una en azul
