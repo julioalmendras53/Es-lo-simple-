@@ -195,7 +195,7 @@ function guessInfinitive(w) {
   // 2) Infinitivo pronominal: vestirse -> vestir
   if (w.endsWith("se")) {
     const base = w.slice(0, -2);
-    if (dictionary[base]) return base;
+    if (diccionario[base]) return base;
   }
 
   // 3) Pretérito 3ª persona de -ar: hablo / hablo (creo/creo) -> hablar / crear
@@ -203,28 +203,28 @@ function guessInfinitive(w) {
   if (w.endsWith("o")) {
     const stem = w.slice(0, -1);
     const candAr = stem + "ar";
-    if (dictionary[candAr]) return candAr;
+    if (diccionario[candAr]) return candAr;
   }
 
   // 4) Formas en -aba/-aban etc. (muy bruto, sirve para algunos -ar)
   if (w.endsWith("aba") || w.endsWith("abas") || w.endsWith("aban")) {
     const stem = w.replace(/aba(s|n)?$/, "");
     const candAr = stem + "ar";
-    if (dictionary[candAr]) return candAr;
+    if (diccionario[candAr]) return candAr;
   }
 
   // 5) Gerundios: creando -> crear, comiendo -> comer, viviendo -> vivir
   if (w.endsWith("ando")) {
     const stem = w.slice(0, -4);
     const cand = stem + "ar";
-    if (dictionary[cand]) return cand;
+    if (diccionario[cand]) return cand;
   }
   if (w.endsWith("iendo")) {
     const stem = w.slice(0, -5);
     const candEr = stem + "er";
     const candIr = stem + "ir";
-    if (dictionary[candEr]) return candEr;
-    if (dictionary[candIr]) return candIr;
+    if (diccionario[candEr]) return candEr;
+    if (diccionario[candIr]) return candIr;
   }
 
   // 6) Si ya termina en -ar / -er / -ir, lo tomamos como infinitivo
@@ -242,7 +242,7 @@ function getDictionaryKeyFromWord(rawWord) {
 
   // Caso especial: "creó" con tilde -> CREAR (porque tú lo quieres así)
   if (original === "creó" || original === "Creó") {
-    if (dictionary["crear"]) return "crear";
+    if (diccionario["crear"]) return "crear";
   }
 
   // 1) Normalizamos como ya haces tú (minúsculas, sin tilde, sin signos raros)
