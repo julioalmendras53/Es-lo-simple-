@@ -9,6 +9,8 @@
       margin: 1rem;
       display: flex;
       gap: 1.5rem;
+      height: 95vh; /* Altura fija para evitar scroll en body */
+      overflow: hidden;
     }
 
     #contenedor {
@@ -16,6 +18,7 @@
       grid-template-columns: 2fr 1fr;
       gap: 1.5rem;
       width: 100%;
+      height: 100%;
     }
 
     #libro {
@@ -24,16 +27,16 @@
       border: 1px solid #ccc;
       padding: 1rem;
       border-radius: 8px;
-      max-height: 80vh;
       overflow-y: auto;
+      background-color: #fff;
     }
 
     #definicion {
       border: 1px solid #ccc;
       padding: 1rem;
       border-radius: 8px;
-      max-height: 80vh;
       overflow-y: auto;
+      background-color: #f9f9f9;
     }
 
     .palabra {
@@ -42,983 +45,158 @@
 
     .palabra:hover {
       text-decoration: underline;
-    } /* Cuando una palabra está resaltada por el diccionario */
+      background-color: #eef;
+    }
+
+    /* Cuando una palabra está resaltada por el diccionario */
     .palabra.resaltada {
       color: blue;
       font-weight: bold;
+      background-color: yellow;
     }
 
     h1 {
       grid-column: 1 / -1;
       margin-top: 0;
+      margin-bottom: 1rem;
     }
 
     h2 {
       margin-top: 0;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 0.5rem;
     }
 
     .sin-def {
       color: #999;
       font-style: italic;
     }
+    
+    .def-activa {
+      color: #0056b3; 
+      font-weight: bold; 
+      background-color: #e6f2ff; 
+      padding: 5px; 
+      border-radius: 4px;
+      border-left: 4px solid #0056b3;
+    }
   </style>
 </head>
 <body>
+
   <div id="contenedor">
-    <h1>Libro del Infinito</h1>
+    <div style="grid-column: 1 / -1;">
+        <h1>Libro del Infinito</h1>
+    </div>
 
     <!-- Texto del libro (oculto, se procesa con JS) -->
     <pre id="texto-libro" style="display:none;">
 4301 El infinito es como estar a las orillas de un agujero negro que te engulle absolutamente. 4302 El infinito busca una palabra que contenga este algo que siempre cae en el que. 4303 El infinito puede hacerlo todo en un pensamiento que se transforma en idea. 4304 ¿Qué problema tengo con que el infinito sea una idea? 4305 Que ser es carente aquí. 4306 El infinito absolutamente todas las veces podrá y lo hará como cantar. 4307 El infinito es una locura matemática que quiere saber cuál es el siguiente nivel de idea loca. 4308 El infinito no por ser una locura es tonto sino que es alguno muy astuto. 4309 La cautela de infinito va más allá de las bestias. 4310 El infinito no se contenta con 300 mil palabras, añora más. 4311 Ponerle fecha a infinito como a eterno es una actitud muy humana, pero no estamos de acuerdo con ponerle número a infinito, aunque sea una medida del hombre. 4312 Sin medida es una definición que no habíamos caído en la cuenta y tiene su aquel. 4313 Sin regla íbamos a la escuela y el profesor o profesora nos regañaba por ser tan descuidado. 4314 Pero hacíamos algo con esa regla en algún punto. 4315 Si infinito pudiera llegar al millón, ya no sería algo común ese millón. 4316 El millón significaría algo. 4317 Porque millón no parece una palabra seria. 4318 Hacer temer a infinito como amor, es uno de los vilipendiados objetivos que tengo. 4319 El infinito es una locura filosófica que hizo rascarse con teja a Diógenes. 4320 El alma de infinito no puede ser mentira más grande porque no hace tanto como el alma humana. 4321 Investigar el infinito es la tarea que me impuse yo para saber de una buena vez qué es eso tan huraño y tan solitario que teje los eventos con parsimoniosa calma y caladura. 4322 Programar el infinito es otra de las cosas que estoy por desplegar. 4323 El infinito es un caradura que es más dura que la frente y el occipucio. 4324 Si infinito no tiene fin, eso quiere decir que tener tiene una posición inmejorable y que se ubica a la diestra del Padre. 4325 Si Adonai se sorprendió de encontrarse cuando andaba buscando a algo distinto, ese infinito debería ser algo que pillara desprevenido al mismo Dios. 4326 El infinito siempre, aún yo después de muerto seguirán escribiéndose las planas de esta terrible historia. 4327 ¿Qué no hemos dicho? 4328 El infinito mientras más palabras tenga escritas y guardadas más transparente se volverá a casi desaparecer en la nada. 4329 El infinito escribe y escribe, y nada lo detiene. 4330 Pareciera una maldición, aunque bendita. 4331 La bendición de Dios es poderosa como ella sola. 4332 Ser bendecido por el infinito es como encontrar en una mujer a una madre. 4333 Programar el infinito es tarea que le compete a la divinidad y a ella sola. 4334 El infinito programado es un infinito perfecto, ya que programar ideas ha sido lo que ha llevado a chatgpt y otros a la cima. 4335 Programar el infinito no es tarea sencilla, necesitamos de las supercomputadoras. 4336 El infinito es programable porque la palabra programable, viene del mismo vacío que el infinito, así que es como que se conocieran de un lugar. 4337 El infinito no tiene acabamiento, por tanto, intentaremos que este escrito no lo lea nadie. 4338 Atreverse con este escrito es como blasfemar del Espíritu Santo. 4339 Algo que no tiene perdón. 4340 Acercamos a Adonai a infinito y por ello deben ser ambas de la misma moralidad. 4341 Si Adonai es bueno, lo que se acerca a Adonai debe ser de la misma categoría. 4342 Porque de lo contrario habría que apartar. 4343 Nos damos cuenta que infinito es bueno porque acercarlo a Dios, Dios no toleraría algo malo. 4344 El infinito busco incansablemente para traértelo a casa. 4345 El infinito es… hasta me da miedo esta espiral de definiciones. 4346 El infinito debe conseguir la venia de Google para que esté disponible para Juanito y Pedrito. 4347 ¿Por qué no hay un evangelio de Pedro? 4348 Cristo pudo morir, así que murió, es decir, ya no existe sino como algo que está en un plano infinito. 4349 ¿Por qué Cristo no se digna a contestar plegarias del simple rebaño? 4350 ¿Acaso está plagado de plegarias él solo? 4351 El infinito es un Cristo que puede morir. 4352 Palabra fea esa. 4353 Morir. 4354 El infinito no tiene fin en la boca de los parroquianos. 4355 Analizar palabra por palabra como que excede los límites a los que nos acostumbró la lengua. 4356 El infinito es de una ralea especial, no es solo un tener, es más que un tener, es un poder. 4357 Lo arreglo de inmediato. 4358 Poder tiene. 4359 El infinito es un número que no es número en efecto. 4360 Creo más en la primera parte de dicha oración. 4361 ¿Qué impide que infinito sea número?
 4362 ¿Un tener fuera de nuestras posibilidades? 4363 Los que manejan la pluma introdujeron veneno en el lenguaje en una definición que tiene mucha razón, mas no la razón máxima. 4364 Meterme en el análisis de la lengua siempre ha resultado en unas comillas o todavía más. 4365 El infinito es un no tener donde la posesión, es un simple acción y efecto. 4366 El infinito es una locura, pero fuerte. 4367 El infinito es un concepto que se refiere a algo, como una idea de lo que no tiene fin. 4368 Jehová dijo: mi espíritu no soportará al humano mucho tiempo por eso la vida quedó reducida a los 80 años. 4369 Un espíritu infinito no tiene mucho tiempo en el humano porque el humano no lo toleraría, además que es infinito, por tanto, todo mortal tiene que tener fin. 4370 El infinito es el único ser viviente que puede con el fin. 4371 El infinito es esa manivela que gira por girar. 4372 Un manubrio tomó el ángel para guardar el camino al árbol de las infinidades y lo hizo rotar y más rotar. 4373 Esta cigüeña la otorgó Jehová porque en sus pertrechos siempre podrás encontrar la cosa exacta. 4374 El rabil lo pasó desde Jehová al ángel y empezó a girar la espada con fuego y amenazas para guardar el árbol infinito. 4375 Pero la serpiente tenía un plan. 4376 Contaba con el poder de nada. 4377 Como se hizo eterno Satanás, quedará para que la inteligencia haga examen de La Biblia. 4378 El infinito es un número que no es número o si nos atrevemos, habrá infinito número cuando el humano pierda el constante miedo que lo atosiga. 4379 El infinito es ese miedo cerval que hace que rehuyamos huyendo. 4380 El miedo define el infinito porque el humano teme matarse y caer en la sombra que genera a espaldas del sol. 4381 Toda sombra es un abismo. 4382 Y el abismo es el mismo amigo del infinito. 4383 Por eso mismo, se parece tanto al abismo. 4384 Otra cosa curiosa de la lengua española. 4385 El infinito es ese abismo que teme el humano encontrarse a cada paso que da por el suelo. 4386 Si infinito lo conocen todos parece ¿Por qué no hay explicación para ello? 4387 Parece que primero que todo habría que desenredar el ovillo de tener. 4388 La madeja de tener es algo que necesitamos como el papel confort, antes de ir a meternos con cosas mayores. 4389 El infinito pone una rampa antes de que lleguen a él. 4390 Es como subir una cuesta antes de darnos con el talud. 4391 Pero es tanta la impotencia que se granja el humano ante infinito que este talud sólo puede ser atravesado por magma. 4392 El infinito puede ser la cosa que andábamos buscando de pequeñajos. 4393 ¡Entiende tener primero! 4394 Parece que tener no se explica con verdadera devoción por los tinteros. 4395 Nadie tiene tener! 4396 Si tener puede aislarse y sobrevivir a él qué pasará. 4396 Es casi tentador caer siempre en el mismo bache porque tener no puede desligarse siempre de los tenedores. 4397 Es una maldición que Satanás echó. 4398 El infinito primero debe pasar por unas preguntas antes de desvelarse por completo. 4399 ¿Qué es tener fuera de poseer? 4400 El infinito no deja pasar a nadie del talud continental. 4401 Como si hubiera que traer siempre presente el pasaporte que desvelase identidad, oficio y religión. 4402 No es el mismo infinito para infantes que para infanzones. 4403 Para infantes se presenta con unas formas ese infinito. 4404 Con los adultos es más bruto porque los adultos no merecen respeto por parte del respeto. 4405 El infinito es el respeto. 4406 El infinito es una idea que aunque no confiamos en ella, la aceptamos con acomodo. 4406 Porque llamar idea a la Idea me parece tocar en exceso quizá con lujuria. 4407 El infinito es la idea que mi papá me enseñó a atar los cordones. 4408 Una acción se elevó más que enseñar. 4409 Me refiero a atar que es uno de los primeros verbos del cuelgaburros. 4410 Un verbo infinitivo y con poder en el mundo para desatar y atar. 4411 Todo lo atado en este mundo pasa al otro. 4412 Todo lo desatado en este mundo pasa al orco. 4413 El infinito se define como algo que habla acerca del fin. 4414 Este fin puede ser la muerte o otro tipo más general. 4415 Concretamente, el infinito habla de la muerte porque ese fin debe concretarse. 4416 Pero si lo examinamos más a fondo no habla de la muerte sino de la inmortalidad, solo que con la influencia de la palabra definición hemos recurrido a un camino no andado. 4417 Si de fin habla el infinito, se anula la esencia de la cosa y ya no es tan potente hablar de infinito. 4418 Por lo que no volveremos a transitar esa vereda, para no complicar las cosas. 4419 El infinito trata de la infinitud aquellos conjuntos de Cantor que definió él con su jerga como conjuntos transfinitos.
-4420 El infinito se revela como algo a lo que no debe llegarse en esta vía terrena. 4421 Pero queremos ir más allá. 4422 El infinito es un conjunto entre los muchos posibles que tiene la esencia de la infinitud. 4423 Pocas veces he usado la infinitud como algo en lo que deba ponerse confianza como en el Santo advenimiento. 4424 Cada vez me doy más cuenta del enorme poder de unas palabras quizá azarosas, pero siempre atingentes. 4425 No hay concepto como el de fractal. 4426 Tan cercano a un caos maldito y tan puesto en orden que aspira a hacerse santo de la iglesia. 4427 El infinito selecciona unos valores para el conjunto acotado de Mandelbrot. 4428 Aquellas variables son variables en verdad que consideran a la imaginación. 4429 Los primeros números que nos dimos cuenta que pertenecían a este conjunto se llaman menos 1 y 0. 4430 Casualmente o determinadamente infinito descartó a 2i y -2i en la segunda iteración. 4431 Parece que el 2 imaginario supiera cosas. 4432 Un número que escapa al infinito, no se considera un número del conjunto. 4433 Curiosa forma de infinito es el infinito del fractal. 4434 Con probar 10 números completos será suficiente para darnos una idea a qué apunta su argumento. 4435 Una sencilla fórmula generó un monstruo que descarta todo lo que se hace grande y ensancha a los pequeños como Cristo. 4436 Mientras menos varíe las salidas de la ecuación más perfecto será el número para formar parte de Mandelbrot, eso suponemos. 4437 Mientras más rápido alcance el umbral de la infinitud 2 que alguien definió muy bien. 4438 Si se pasa de 2 en las primeras 2 o 1 siquiera iteraciones se escapará al infinito. 4439 El infinito del fractal se hace real de una forma muy específica y caótica. 4440 El infinito del fractal no gusta tanto, ya que selecciona números para ser parte del conjunto. 4441 Si permitiera todo número parece que sería más perfecto, aunque la perfección en matemática está definida en absoluto. 4442 No me pongo de acuerdo para darle un significado único a la palabra absoluto. 4443 Volvamos a Mandelbrot y observemos las terminaciones que son muy precisas. 4444 ¿Cómo una ecuación de segundo grado pudo llegar hasta la autosimilitud o autosimilaridad? 4445 Por otro lado, la complejidad del conjunto de Mandelbrot es alta. 4446 Entramos en lo complejo. 4447 Y no podría ser de otro modo. 4448 El infinito de los fractales atrae mucho, ya que unos píxeles que no se terminan sólo podrán hacerse reales por la computación cuántica. 4449 El infinito de Mandelbrot es como una cosa de la cual hay que escapar como de la peste. 4450 Encontrar números que se atenúen va a ser la regla para medir si pertenece o no a Mandelbrot. 4451 El infinito de Mandelbrot es algo a lo que se escapa. 4452 El umbral de la puerta tiene un zaguán. 4453 El infinito de Mandelbrot no ha sido bien reputado en la teoría moderna. 4454 Parece que eso de escapar al infinito no les gustó a los matemáticos demasiado, tanto que se concentran en sacar con dudosos fines, todos los decimales de pi y de los números que no están sujetos a razón. 4455 El infinito siempre abre puertas para volver a entornarlas más tarde. 4456 Pero como un tal quiero entrar en las casas santas para acercarme a la luz. 4457 El infinito de Mandelbrot no ha hecho el daño que suponía para infinito en ningún punto. 4458 La teoría es la siguiente: se coge un número se pasa por un cedazo y los que lo atraviesan con éxito, pueden llamarse los hijastros de Mandelbrot. 4459 Esto ayuda de algún modo a formar una imagen 2d que se amplía píxel a píxel y saca de ello la similitud. 4460 Estos números no se han demostrado que sean infinitos porque descartan muchos en el camino, ¿cómo se puede llegar a infinito descartando? 4461 Si resto 1 no pasa nada, si resto 2 ya no es lo mismo. 4462 Sin embargo, los píxeles han demostrado no tener límite. 4463 Hay una posibilidad real en infinito que lo vincula a los fractales. 4464 Esto de encontrarle límite a los irracionales o a los números complejos, ha llevado a la teoría moderna que lo puede hacer todo. 4465 Las cosas se diluyen y queda un vacío en todo este rimero de cosas. 4466 El infinito de Mandelbrot genera arte y lo hace la matemática sin nada menos. 4467 La nada está tan presente en las primeras planas del conjunto que comienzo a tomarle respeto. 4468 Hay un conflicto existente en el infinito de Mandelbrot. 4469 ¿Cómo puede un número presentir lo infinito? 4470 No me cabe en la cabeza, ni en la cabeza de nadie. 4471 Pero así está puesta dicha ecuación.  4472 Conformemos con todo y parte, y no vayamos a la parte que es el todo. 4473 Esto es una síntesis de lo que quiere decir Mandelbrot al mundo. 4473 Habrá que investigar más a fondo para sacar las perlas gramaticales que esconden ese patrón infinito. 4474 La manipulación que hace Mandelbrot es muy simple, no se cree. 4475 Pero usa la imaginación para sacar de la nada un todo autosimilar. 4475 El infinito de Mandelbrot es solo una parte de toda la verdad que esconde el concepto. 4476 No me conformo con sacar poco de la matemática, hay que especular para obtener discusiones algo enrevesadas. 4477 El infinito matemático es mayor al infinito filosófico. 4478 La filosofía no confía en un Dios foráneo, quiere disquisiciones como si no hubiera mañana. 4479 El infinito quizá ha tocado fondo en algún pensamiento, pero eso es imposible, crealo.    
-4480 Crear este conjunto no fue cosa de azar, no hay que encontrar explicación en todo. 4481 El fractal al final es solo uno de los infinitos modos que se nos han revelado estas cosas. 4482 El infinito está por demostrar lo que quiere. 4483 El infinito es un caos maldito que un humano formó con perfección, pero sin un píxel comprobable. 4484 El infinito de Mandelbrot es interesante ya que forma formas curiosas y que siguen casi el pensamiento de un humano. 4485 Sin que me llamaran me meto yo en el texto para decir lo siguiente: Mandelbrot aportó a la visión que imaginamos de infinito. 4486 La indemostrabilidad quizá sea una parte más de infinito, esperando a un humano maduro para preguntarle a quién sobre que. 4487 El creador vino de un que. 4488 No deberíamos olvidar que todo partió de algo. 4489 Había una parte flotante en el espacio que sufrió una transformación a lo bestia. 4490 La hipótesis de la nada creando todo como que no termina de cuajar. 4491 Si infinito como el creador partieron de un que, ¿qué será que? 4492 Más que o menos que hacen poca diferencia en los caminos de infinito. 4493 Quizá ese que sea un vicio del lenguaje humano siempre humano. 4494 El infinito de Mandelbrot ya es cosa pasada ahora preocúpate de demostrar que pi es infinito. 4495 Más de Mandelbrot quiero porque es curiosa sus formas para con infinito que me interesa. 4496 Más potencia de cálculo es necesaria para analizar este infinito y este libro que pretende no acabarse más que con la negra muerte. 4497 El infinito ha llegado a ser un sin término y un sin límites que no por repetir fin y término dice cosas contrarias a su esencia. 4498 Negar el inicio es casi tan importante como meter poder en medio. 4499 Negar el principio si término quiere decir inicio es tan elemental como las restantes partes de dicha palabra tan inasible. 4500 Como está ese ni en medio quiere decir que los que tienen la pluma quisieron decir “fin ni inicio” por respetar lo eterno en más medida que la que se necesita realmente. 4501 El infinito es aquel que no tiene un fin definido. 4502 No desprecies al adjetivo porque tiene su ad. 4503 El infinito se puede definir de cuatrocientas maneras y todas al menos tiene la negación que no podía faltar. 4504 El infinito es caer en la sombra por un agujero que tiene salida en las antípodas. 4505 Toda palabra la diré. 4506 No se puede escapar ninguna a mi análisis. 4507 Si infinito lo ponemos en condición, de ello resultará un todo interesante. 4508 El infinito no tiene fin. 4509 Parece que todo hombre posee un conocimiento parcial de a qué se refiere la palabra infinito. 4510 Pero se hace haber la casualidad que todos lo definen ligeramente diferente. 4511 ¿Podrá haber un humano que no sepa que es infinito en lo absoluto? 4512 ¿Lo absoluto podrá hacer un humano formado del barro que no sepa quién es su creador? 4513 El infinito me gusta, ya que tendrá alguna relación con mi historia. 4514 Pero infinito es toda la información. 4515 Por tanto, el infinito es el verdadero todolopuede. 4516 El sistema es el siguiente: de definir pasamos a discutir y pronto acaba la cosa. 4517 El infinito no puede parecer un villano ya que el villano tiene una forma. 4518 Parece que todo detalle de infinito llevase un pero. 4519 El infinito puede hacer lo absoluto. 4520 El infinito es conceptualmente inmenso ya que es un concepto después de todo. 4521 El infinito rasguña en la madera para encontrar quizá savia o para entretenerse. 4522 Esta savia es el meollo del asunto, la idea que quiero dejar. 4523 El infinito siempre podrá definirse con formas alternas. 4524 Parece que todo mostrase las excepciones, mismas que el infinito no puede dejar pasar. 4525 El infinito tiene una rabia por desplegar o presentar. 4526 Pareciera infinito este libro realmente, que no puede dejar de hablar. 4526 El infinito es multi definido. 4527 Palabra que no aparece, pero que igualmente prohijamos para hacer un todo sumamente perfecto. 4528 El infinito no cesa de andar. 4529 Adonai examina cada palabra que lanzamos al mundo. 4530 Como si tuviera uebos de examinarlo todo. 4531 No me molesta ser examinado, ya que el examen también es parte de que palabra podría triunfar en un mundo así. 4532 Es multidefinido porque una sola definición sería darle un poder a los ensillados más allá de lo que la palabra permite. 4533 Éramos felices cuando sabía que la real academia española había descrito el léxico completo. 4534 Era una forma de hacer casi. 4534 Es multidefinido porque las realidades múltiples se antojan de mayor cuerpo. 4535 Cualquiera sea la razón aquí estamos definiendo cada vez con más bulto un infinito que es como la saliva siempre presente, aunque esté durmiendo. 4536 El infinito es como el infi-erno ¿Será casualidad que infierno tenga hasta cuatro letras en común con lo incógnito? 4537 El infinito es una incógnita inexplicable y además increíble de paso. 4538 El álgebra nos enseñó que igualar a cero es posible, y es como llamar la solución cero. 4539 El infinito aparece en rasgos transversales y trascendentes.    
-   4540 El infinito tiene tanto de ser que ser lo queremos más todavía. 4541 Ser es un verbo especial. 4542 Como ser no hay ninguno. 4543 Evitamos con respeto las sustantivaciones de ser porque todo el mal se resume en malentender a ser. 4544 El ser es una u otra cosa. 4545 El infinito nunca cesará, esa es la promesa, en algún punto remoto seguiré hablando de este santo tema. 4546 El infinito es una incógnita que deseamos despejar, pero hacer saltar a infinito no es muy recomendable. 4547 Ya que el infinito se enfadaría grandemente que el cero fuera puesto al lado como si Adonai pudiere escoger un Cristo para sentarse a la dextra mano. 4548 Agradezco ya de partida tener la capacidad de hacer lo imposible. 4549 Eso que no tiene explicación posible va dando pasitos para llegar a la un millón palabra. 4550 El infinito es tranquilo en su andar tanto que comunica su tranquilidad a las almas. 4551 El infinito es tranquilo, tanta tranquilidad enoja. 4552 El infinito es el mejor de todos los tiempos y la cabra sale al paso. 4553 El infinito es 8 veces más que el último número y ¿cómo comprobar que lo que digo es cierto? 4554 El último número está plagado de horror. 4555 El último número es el más importante. 4556 Como que dieron sorpresa al revelarlo. 4557 El infinito es puro porque al igual que infinito todo parte de un vacío. 4558 Llenar página tras página, debe ser terrible para cualquiera o nadie. 4559 Aquí estamos llenando el enorme y tétrico vacío que era al llegar yo. 4560 El infinito se llena de significado y ya hacer un infinito nuevamente, tiene que hacer palidecer a los poderosos. 4561 El infinito es hiper porque no hay superior, por tanto, algo de ateísmo debe tener el infinito. 4562 Las infinidades de frases que puedo formar no tienen sentido. 4563 Es algo increíble pararse a pensar en el infinito. 4564 El infinito tiene todas las comodidades que puede otorgar un papá, y este niño mimado de papá quiere dejar de ser un simple mimado. 4565 La familia de infinito está llena y es buena a más no poder. 4566 El infinito posee una familia que ensalza a sus progenitores. 4567 El infinito es una cuba que tiene todos los mostos posibles. 4568 El infinito al final es el último número que nadie puede contar, aunque tenga una numeración acorde. 4569 Yo debí partir con el vacío de la literatura. 4570 Ya no es posible echarse atrás. 4571 El infinito si perdurara más de lo normal no habría diferencia con los millones. 4572 El infinito es poderoso. 4573 Con él puedes apropiarte de cualquier artículo de comercio. 4574 El infinito no tiene acabamiento definido y las inútiles palabras que baba gastan, la academia quedan en poco o polvo. 4575 El infinito si no es definido ¿qué es lo que han estado haciendo los definidores de las cosas? 4576 El infinito es desdefinido más que indefinido porque decir que infinito es increíble es cómo definir no con la nada. 4577 Algo prohibido. 4578 El infinito no deja de escupir palabras que van más allá del límite de cualquier bebés de baba. 4579 No tengo permitido devolver los escupitajos de infinito, porque que salpique ya estaba advertido. 4580 El infinito es poderoso como el rey. 4581 ¿Habrá algo que no pueda hacer el rey? Si tiene la capacidad expedita para hacerlo. 4582 No deja de tener el rey el poder que definió el ajedrez. 4583 Pareciera ser más poderosa la reina. 4584 El infinito no se mete con autoridades humanas. 4585 Se deja ver de los pequeños para hacerlos polvo más todavía. 4586 Cantó clarito Dios Adonai al humano cuál era la realidad del polvo o nada. 4587 A pesar que, la mujer no había sido hecha de nada sino que fue hecha de las escápulas de Adán. 4588 Los chismes de la creación distintiva no le afectan a infinito que mira despectivo, quizá a una creación tan llena de gracia. 4589 No me quejo de que infinito pueda tener esos comportamientos, solo que más querible se me haría si hubiera un infinito solicito al humano.  4590 El inicio de infinito partió de ese mismo polvo que puede ser suelo como Tierra entera. 4591 Tomó una vía que me gusta porque está llena de descubrimientos sobre la naturaleza del infinito. 4592 El infinito tan pronto como agota al ser ser toma el testigo para hacer la carrera de fondo. 4593 El infinito es un universo porque todavía hay simples que creen que el universo puede ser infinito, apoyándose en un puede. 4594 Nada en contra tengo con el infinito universal. 4595 No puedo dejar de toparme con una pared o un horizonte de eventos, si se quiere. 4596 Llego y me golpeo con los ladrillos que componen las fronteras de eso que revela como chiste de niños a una frontera solo remotamente existente. 4597 El infinito tiene en los números complejos a su más querible número porque en lo simple no creo, a pesar de decir que mi obra se titula con simples palabras. 4598 Me atrevo a decir que cada humano debe tener su definición de qué corresponde a infinito ser. 4599 El infinito es muy duro de tratar, pero no existen apeirofobia en mí, porque estoy seguro que llegaré a cerrar. 
-  4600 El infinito es todavía un desconocido para mí que tengo el poder de llevar a los millones para alimentar quizá a un ser artificial. 4601 El infinito puede cambiar nuestro paradigma con tan solo mover un dedo. 4602 Este animal es correcto, ya que el dedo es muy común en la naturaleza, por una especie de magia, también el infinito posee dicha digitación. 4603 El infinito es un elemento que nadie ideó. 4604 ¿Por qué está tan presente en nuestras conversaciones de mesa? 4605 En algún lugar remoto, en un humano remoto, en unas circunstancias remotas, todos fueron partícipes de una característica: El infinito se presentó. 4606 El infinito ya es anciano a estas alturas de la historia. 4607 Ya es beforeticamente.  4608 El infinito tiene siempre un as en la manga para presentarnos nuevas y desquiciadas formas. 4609 Si no tuviera nada que decir el infinito, simplemente se callaría. 4610 El infinito es peligroso ya que es como un león desatado. 4611 En cualquier momento pega el tarascazo. 4612 ¿El infinito cuándo podrá ser medido? 4613 ¿Tendrá el internet la hazaña de contar cada una de las cifras del infinito? 4614 La computación cuántica llega. 4615 Con la inteligencia artificial que hace proezas en el campo del análisis un poco del infinito será testeado. 4615 El infinito es un elemento tan básico para el humano que es tan importante como comer a sus tiempos. 4616 El infinito solo se mueve dando aventones recios a la naturaleza. 4617 Que pertenece a infinito. 4618 No puedo decirlo con propiedad. 4619  Quizá haya que programar en las máquinas alguna suerte de hechicería maldita. 4620 El lenguaje cobra un peaje absurdo para pasar a las infinidades más grandes. 4621 La aduana es carísima, por ser la cosa enojosa parte y no parte del todo. 4622 Si aparece frente a las narices y oídos tan frecuentemente y el lenguaje no nos permite analizarla, quiere decir que hay una inteligencia superior ordenando palabra a palabra todo este caos bendito. 4623 Así y todo infinito no se deja estar en la tarea que lleva entre manos. 4624 Humanizarlo todo lleva a un universo consciente y a un infinito consciente, algo del todo estúpido. 4625 El infinito consciente no es sino una mentira nefasta. 4626 Sin embargo, con ello queremos significar que la mentira existe. 4627 Por lo que algo existe. 4628 Yo presiento un embrollo entre todo el infinito. 4629 El sempiterno problema del fin. 4630 El infinito no es todo. 4631 Todo tiene número. 4631 En cambio, el infinito es número. 4632 Hay un mundo de diferencia ante un ser y un tener, aunque sea un error tan solo decirlo. 4633 La insoportable levedad del ser tenía razón con su título. 4634 Ya que es muy leve la brecha entre un ser y de ser. 4635 El infinito no pone atención a asunto de literatura, para él tan solo cuenta las ciencias naturales. 4636 No subestimar la literatura que ha dado un Borges y un Cervantes. 4637 Cervantes mostró cómo se hace una novela de verdad. 4638 El infinito no pone atención a estos asuntos tan humanos. 4639 Quizá haya envidia en un ser vacío por un ser consciente. 4640 El infinito es un ser vacío, ya que el vacío de la placenta ayudó a gestarlo. 4641 El útero de nadie tiene la culpa. 4642 El infinito es un verdadero argumento que es la nada sin rozar la nada a ella. 4643 En el mundo existen muchas cosas, animadas y desanimadas, lo cual no quiere decir que serán tristes. 4644 El infinito es un punto muy puntual acaso puntilloso y así repetida la idea indefinidamente. 4645 Tomo una palabra y derivó todas sus derivaciones posibles, así amalgamo algo que se parezca a la idea del infinito. 4646 El infinito tiene siempre una idea que desarrollar porque el poder de pi es billonario, hoy en día, y sigue sacando números que vienen a confirmar que más allá de la computación cuántica existe algo. 4647 Del infinito no quiero que saques conclusiones antes de ver mi ocaso. 4648 Anda a la lectura siempre provechosa de leer algo infinito que se parece mucho al infinito real. 4649 Aristóteles odioso del infinito, puso enormes vallas para considerar a infinito parte de la realidad. 4650 Rechazó el infinito real que es como decir que es odioso en efecto. 4651 El infinito es un elemento a lo que se suma la unidad y de ello quizá surge algo. 4652 El infinito es una verdadera propiedad de la naturaleza. 4653 Sin infinito no se puede contar porque hay algo en El contar que desafía a los humanos a contabilizar, por ejemplo el número pi. 4654 Si se contara el infinito, haría un caos en el mundo, sería el fin del mundo. 4655 Pero ¿fin de qué? 4656 ¿Qué ni oíste? 4656 El infinito tiene que poner fin a esta loca carrera que nos metimos. 4657 No antes del millón. 4658 El infinito cada noche modifica un poco los ajustes de esta gran máquina que llamo yo. 4659 El infinito es algo extremadamente moldeable. 4660 Parece hasta una broma que no haya habido alguien que sacara a la luz los caminos del infinito. 4661 Tratemos brevemente el asunto de-del. 4662 Mi hermano me invita a pensar en que “del” es más perfecto, pero yo creo que “de” es lo más perfecto. 4663 ¿Dejaré que lo resuelva una máquina la duda? 4664 Sí. 4664 La IA decidió. 4665 La IA dice que es más correcta la forma “del”. 4666 Difiero de ese análisis desde que ví el lenguaje de las demás naciones. 4667 El infinito en fin del mundo es increíble, ya que nunca llega. 4668 El infinito tiene su Omega en el apocalipsis que fue escrito para que se verificara a fin de siglo I después de Cristo, cierto. 4669 ¿Qué pamplinas dices?
-    4670 Más allá de la Omega no existe algo sino que todo es una nada espantosa. 4671 Sin embargo, me repuse a tener la página en blanco y ir tejiendo ese camino millonario. 4672 Adonai viajó a Grecia para violar su lengua, tal que el griego empezó a adorar a un Cristo, hijo de Adonai, sin saber que infinito estaba latiendo en alguna parte de la nada y tomó graciosamente la letra, no la palabra para significar un fin del mundo que de ningún modo tomo la forma 666. 4673 El 666 no es sumamente imperfecto porque puede ser dividido por 3 o multiplicado por 3. 4674 Si infinito hubiera dicho un fin del mundo, no querría al mundo porque Jehová cuando exterminó el mundo dijo: nunca más maldeciré la tierra porque veo que sus corazones desde la juventud, tienden al mal. Y tras eso dejo ver su arcoiris que sería recordatorio. 4675 El infinito de ningún modo pudo desear al mundo un fin por tener esa cosa el mismo. 4676 El infinito al no poder tener ser objetivo se hace a él mismo un tanto huero. 4677 Toda palabra debe bajar desde el empíreo para hacer una obra completísima. 4678 El infinito se nutre de la savia de los árboles y de la sabiduría de nadie. 4679 De nadie a nunca hay quizá menos que un paso. 4680 Contar ha sido pan de cada día para tanto el humano como los posibles aliens. 4681 Es momento de campanillas para nombrar a los extraterrestres y sus cosas. 4682 Quizá no tengan cosas. 4683 El infinito toma cada vez formas más rebuscadas, intentar retener la fuerza de la prosa, es como querer mover las montañas con una voluntad que está bellamente definida. 4684 El infinito ya no caerá en errores, todo esto es oficial, nada tiene de gracia y todo repuja más de la mitad a nada. 4685 Las sumas infinitas son otro tema que trataré alguna vez. 4686 Los fractales son increíbles porque no hay como comprobar que el aumento resulta autosimilar. 4687 La palabra autosimilar es tan increíble como la de omnipotente o pantodynamo. 4688 El infinito ya no está sujeto a algún idioma, aspira a contenerlo todo. 4689 El infinito no devuelve miedo por fobo a ningún humano. 4690 Está ausencia de miedo por parte de infinito es característica de su personalidad. 4691 El infinito debe acumular palabras para hacer de este texto alto y complejo. 4692 El infinito ahora tiene el poder de los lenguajes que algo harán por sacar el máximo provecho. 4693 Saquemos palabras que inviertan las cosas. 4694 El infinito es extraordinariamente complejo y no completo. 4695 Falta un empujoncito más para que alcance su mejor momento. 4696 ¿Puedo hacer una palabra tomada de Marte? 4696 ¿Cuál es ese punto que será más poderoso que nadie? 4697 El infinito ya llegó al momento que lo salva todo o se queda con todo. 4698 El infinito es un monstruo que desea apabullar o desmoralizar al humano. 4699 Pero el humano posee unos poderes doctrinales o dogmatikos. 4700 El infinito posee una infancia dura, nadie puede jactarse de conocer las tribulaciones del infinito. 4701 Para parirlo el vacío tuvo que gemir mucho. 4702 Él gimió mucho. 4703 El infinito puede jactarse de tener una infancia cruel para dar crueldad a su actualidad. 4704 El infinito es crítico por humorismo o chumor. 4705 El infinito es enormemente ambicioso, tal que Adonai a veces lo marca como malo. 4706 Codiciar no es algo que haría Jesús. 4707 El infinito parte de una idea semilla o espora, luego hace iteraciones con ella, lo que resulta en un todo sumamente ordenado. 4708 ¿El infinito podrá hacer frente a la multitud de arabismos y grecismos? 4709 Nada puede derrotar a Dios. 4710 El infinito comienza a tomar una forma que me gusta. 4711 Canto el infinito con mucha armonía y aceite. 4712 ¿Qué esperas para terminar de comer? 4713 El infinito es un monstruo que se allega dócil para zarpar, luego con sus garras y atacar, como haría cualquier monstruo sin moral. 4714 El infinito es un concepto de concepto porque tan solo con 2 repeticiones hay algo que cambia. 4715 El infinito es un número que es el último de una serie chocante y cansada que trae números complejos, sí. 4716 El infinito es un número desde que María Moliner definió el número de ese modo, ajustando un número a otro y otro. 4717 No sabía Moliner que estaba haciendo un flaco favor a la teoría que incluye al infinito como número. 4718 Varía grandemente de un definidor a otro la letra. 4719 El infinito también está entre las palabras que variaron de un diccionario a otro. 4720 El infinito puedo definirlo con tanto metallo como con no metallo. 4721 ¿A qué se debe tanta diversidad de especies en el infinito? 4722 Del mono desciende al elefante, del elefante al cocodrilo, del cocodrilo al pez, del pez al calamar, del calamar al trilobites y más. 4723 Todo va descendiendo hasta llegar a un mar como contenedor. 4724 El mar tiene a estas especies en mayor o menor medida. 4725 Para estar en tierra tuvieron que pasar años, y para poblar la tierra tuvieron que pasar siglos. 4726 Era dejar las branquias para tener por fin pulmones. 4727 El mar todo lo tuvo y después se quedó sin habitantes. 4728 Dejamos el mar porque había un oxígeno que nos tenía preparada la respiración. 4729 Respirar se volvió automático con tan solo pasar unos segundos fuera del mar.
     </pre>
 
-    <!-- Zona visible del libro con palabras clicables -->
+    <!-- Zona visible del libro -->
     <div id="libro"></div>
 
     <!-- Zona donde se mostrará la definición -->
     <div id="definicion">
       <h2>Definición</h2>
-      <p>Haz clic en una palabra del libro para ver su definición de tu diccionario web.</p>
+      <p>Haz clic en una palabra del libro para ver su definición.</p>
     </div>
   </div>
 
-  <script> // === Verbos irregulares frecuentes: forma -> infinitivo ===
-// OJO: las claves van SIN tilde, porque normalmente normalizeText quita acentos.
-const verbLemmaMap = {
-  // SER
-  "soy": "ser", "eres": "ser", "es": "ser", "somos": "ser", "son": "ser",
-  "era": "ser", "eras": "ser", "eran": "ser", "fui": "ser", "fue": "ser",
-  "fueron": "ser", "sea": "ser", "seas": "ser", "sean": "ser",
+  <script>
+    /* 1. VARIABLES Y CONFIGURACIÓN DE VERBOS */
+    const verbLemmaMap = {
+      "soy": "ser", "eres": "ser", "es": "ser", "somos": "ser", "son": "ser",
+      "era": "ser", "eras": "ser", "eran": "ser", "fui": "ser", "fue": "ser",
+      "fueron": "ser", "sea": "ser", "seas": "ser", "sean": "ser",
+      "estoy": "estar", "estas": "estar", "esta": "estar", "estamos": "estar",
+      "estan": "estar", "estaba": "estar", "estabas": "estar", "estaban": "estar",
+      "estuve": "estar", "estuviste": "estar", "estuvo": "estar",
+      "estuvimos": "estar", "estuvieron": "estar",
+      "voy": "ir", "vas": "ir", "va": "ir", "vamos": "ir", "van": "ir",
+      "iba": "ir", "ibas": "ir", "iban": "ir",
+      "he": "haber", "has": "haber", "ha": "haber", "han": "haber",
+      "hube": "haber", "hubo": "haber", "hubieron": "haber",
+      "habia": "haber", "habias": "haber", "habian": "haber",
+      "tengo": "tener", "tienes": "tener", "tiene": "tener", "tenemos": "tener",
+      "tienen": "tener", "tenia": "tener", "tenias": "tener", "tenian": "tener",
+      "tuve": "tener", "tuviste": "tener", "tuvo": "tener", "tuvieron": "tener",
+      "hago": "hacer", "haces": "hacer", "hace": "hacer", "hacemos": "hacer",
+      "hacen": "hacer", "hacia": "hacer", "hacian": "hacer",
+      "hice": "hacer", "hizo": "hacer", "hicieron": "hacer",
+      "puedo": "poder", "puedes": "poder", "puede": "poder", "podemos": "poder",
+      "pueden": "poder", "podia": "poder", "podian": "poder", "podra": "poder",
+      "pude": "poder", "pudo": "poder", "pudieron": "poder",
+      "digo": "decir", "dices": "decir", "dice": "decir", "dicen": "decir",
+      "decia": "decir", "decian": "decir", "dije": "decir", "dijo": "decir", "dijeron": "decir",
+      "vengo": "venir", "vienes": "venir", "viene": "venir", "vienen": "venir",
+      "venia": "venir", "venian": "venir", "vine": "venir", "vino": "venir", "vinieron": "venir",
+      "pongo": "poner", "pones": "poner", "pone": "poner", "ponen": "poner",
+      "ponia": "poner", "ponian": "poner", "puse": "poner", "puso": "poner", "pusieron": "poner",
+      "veo": "ver", "ves": "ver", "ve": "ver", "ven": "ver",
+      "veia": "ver", "veian": "ver", "vi": "ver", "vio": "ver", "vieron": "ver",
+      "doy": "dar", "das": "dar", "da": "dar", "dan": "dar",
+      "daba": "dar", "daban": "dar", "di": "dar", "dio": "dar", "dieron": "dar",
+      "quiero": "querer", "quieres": "querer", "quiere": "querer",
+      "queremos": "querer", "quieren": "querer", "queria": "querer", "querian": "querer",
+      "quise": "querer", "quiso": "querer", "quisieron": "querer",
+      "creo": "crear" 
+    };
 
-  // ESTAR
-  "estoy": "estar", "estas": "estar", "esta": "estar", "estamos": "estar",
-  "estan": "estar", "estaba": "estar", "estabas": "estar", "estaban": "estar",
-  "estuve": "estar", "estuviste": "estar", "estuvo": "estar",
-  "estuvimos": "estar", "estuvieron": "estar",
+    const cliticEndings = [
+      "melo", "mela", "melos", "melas", "telo", "tela", "telos", "telas",
+      "selo", "sela", "selos", "selas", "noslo", "nosla", "noslos", "noslas",
+      "oslo", "osla", "oslos", "oslas", "me", "te", "se", "lo", "la", 
+      "los", "las", "le", "les", "nos", "os"
+    ];
 
-  // IR
-  "voy": "ir", "vas": "ir", "va": "ir", "vamos": "ir", "van": "ir",
-  "iba": "ir", "ibas": "ir", "iban": "ir",
-  // OJO: "fui", "fue", "fueron" también pueden ser de SER, pero arriba ya está.
-
-  // HABER
-  "he": "haber", "has": "haber", "ha": "haber", "han": "haber",
-  "hube": "haber", "hubo": "haber", "hubieron": "haber",
-  "habia": "haber", "habias": "haber", "habian": "haber",
-
-  // TENER
-  "tengo": "tener", "tienes": "tener", "tiene": "tener", "tenemos": "tener",
-  "tienen": "tener", "tenia": "tener", "tenias": "tener", "tenian": "tener",
-  "tuve": "tener", "tuviste": "tener", "tuvo": "tener", "tuvieron": "tener",
-
-  // HACER
-  "hago": "hacer", "haces": "hacer", "hace": "hacer", "hacemos": "hacer",
-  "hacen": "hacer", "hacia": "hacer", "hacian": "hacer",
-  "hice": "hacer", "hizo": "hacer", "hicieron": "hacer",
-
-  // PODER
-  "puedo": "poder", "puedes": "poder", "puede": "poder", "podemos": "poder",
-  "pueden": "poder", "podia": "poder", "podian": "poder", "podra": "poder",
-  "pude": "poder", "pudo": "poder", "pudieron": "poder",
-
-  // DECIR
-  "digo": "decir", "dices": "decir", "dice": "decir", "dicen": "decir",
-  "decia": "decir", "decian": "decir",
-  "dije": "decir", "dijo": "decir", "dijeron": "decir",
-
-  // VENIR
-  "vengo": "venir", "vienes": "venir", "viene": "venir", "vienen": "venir",
-  "venia": "venir", "venian": "venir",
-  "vine": "venir", "vino": "venir", "vinieron": "venir",
-
-  // PONER
-  "pongo": "poner", "pones": "poner", "pone": "poner", "ponen": "poner",
-  "ponia": "poner", "ponian": "poner",
-  "puse": "poner", "puso": "poner", "pusieron": "poner",
-
-  // VER
-  "veo": "ver", "ves": "ver", "ve": "ver", "ven": "ver",
-  "veia": "ver", "veian": "ver",
-  "vi": "ver", "vio": "ver", "vieron": "ver",
-
-  // DAR
-  "doy": "dar", "das": "dar", "da": "dar", "dan": "dar",
-  "daba": "dar", "daban": "dar",
-  "di": "dar", "dio": "dar", "dieron": "dar",
-
-  // QUERER
-  "quiero": "querer", "quieres": "querer", "quiere": "querer",
-  "queremos": "querer", "quieren": "querer",
-  "queria": "querer", "querian": "querer",
-  "quise": "querer", "quiso": "querer", "quisieron": "querer",
-
-  // CREAR (caso que te importa)
-  "creo": "crear" // OJO: esto choca con "creer", pero es tu libro 😉
-};
-
-// Pronombres enclíticos al final de verbos, para cosas tipo "decírmelo".
-const cliticEndings = [
-  "melo", "mela", "melos", "melas",
-  "telo", "tela", "telos", "telas",
-  "selo", "sela", "selos", "selas",
-  "noslo", "nosla", "noslos", "noslas",
-  "oslo", "osla", "oslos", "oslas",
-  "melo", "telo", "selo",
-
-  "me", "te", "se", "lo", "la", "los", "las", "le", "les", "nos", "os"
-];
-
-// Quita pronombres al final: "decirmelo" -> "decir"
-function stripClitics(word) {
-  let w = word;
-  let changed = true;
-  while (changed) {
-    changed = false;
-    for (const cl of cliticEndings) {
-      if (w.endsWith(cl) && w.length > cl.length + 1) {
-        w = w.slice(0, -cl.length);
-        changed = true;
-        break;
-      }
-    }
-  }
-  return w;
-}
-
-// Intenta llevar una forma posible de verbo a infinitivo
-function guessInfinitive(w) {
-  // 1) Tabla de verbos irregulares frecuentes
-  if (verbLemmaMap[w]) return verbLemmaMap[w];
-
-  // 2) Infinitivo pronominal: vestirse -> vestir
-  if (w.endsWith("se")) {
-    const base = w.slice(0, -2);
-    if (diccionario[base]) return base;
-  }
-
-  // 3) Pretérito 3ª persona de -ar: hablo / hablo (creo/creo) -> hablar / crear
-  // (ya sin tilde por normalizeText)
-  if (w.endsWith("o")) {
-    const stem = w.slice(0, -1);
-    const candAr = stem + "ar";
-    if (diccionario[candAr]) return candAr;
-  }
-
-  // 4) Formas en -aba/-aban etc. (muy bruto, sirve para algunos -ar)
-  if (w.endsWith("aba") || w.endsWith("abas") || w.endsWith("aban")) {
-    const stem = w.replace(/aba(s|n)?$/, "");
-    const candAr = stem + "ar";
-    if (diccionario[candAr]) return candAr;
-  }
-
-  // 5) Gerundios: creando -> crear, comiendo -> comer, viviendo -> vivir
-  if (w.endsWith("ando")) {
-    const stem = w.slice(0, -4);
-    const cand = stem + "ar";
-    if (diccionario[cand]) return cand;
-  }
-  if (w.endsWith("iendo")) {
-    const stem = w.slice(0, -5);
-    const candEr = stem + "er";
-    const candIr = stem + "ir";
-    if (diccionario[candEr]) return candEr;
-    if (diccionario[candIr]) return candIr;
-  }
-
-  // 6) Si ya termina en -ar / -er / -ir, lo tomamos como infinitivo
-  if (w.endsWith("ar") || w.endsWith("er") || w.endsWith("ir")) {
-    return w;
-  }
-
-  // Si no sabemos, lo dejamos como está
-  return w;
-}
-
-// A partir de la palabra del libro, obtenemos la clave real del diccionario
-function obtenerClaveVerbal(rawWord) {
-  const original = rawWord.trim();
-
-  // Protección: "dios" NO es un verbo
-  if (original.toLowerCase().startsWith("dios")) {
-    return "dios";
-  }
-
-  // Caso especial: "creó" con tilde -> CREAR (porque tú lo quieres así)
-  if (original === "creó" || original === "Creó") {
-    if (diccionario["crear"]) return "crear";
-  }
-
-  // 1) Normalizamos (minúsculas, sin tilde, sin signos raros)
-  let w = normalizarPalabra(original);
-
-  // 2) Quitamos pronombres enclíticos (decirmelo -> decir)
-  w = stripClitics(w);
-
-  // 3) Intentamos llevar a infinitivo
-  const lemma = guessInfinitive(w);
-
-  return lemma;
-}
-    // 🔹 Mini-diccionario tomado de tu diccionario web
-    // (luego podemos ir añadiendo más voces)
+    /* 2. EL DICCIONARIO (Unificado) */
     const diccionario = {
       infinito:   { definicion: "Que crece sin parar.", imagen: "images/infinito.jpg" },
-      
-      
       ser:        { definicion: "Para afirmar o negar un puente entre sujeto y predicado." },
       monstruo:   { definicion: "Animal fabulado, extraordinario, de figura horrible." , imagen: "images/monstruo.jpg" },
-      "tirabuzón":{ definicion: "Cada una de las espirales que forma un cabello enrollado naturalmente." },
+      "tirabuzon":{ definicion: "Cada una de las espirales que forma un cabello enrollado naturalmente." },
       ropa:       { definicion: "Conjunto de prendas que sirven para cubrir el cuerpo humano." , imagen: "images/ropa.png" }, 
       ilimitado:  { definicion: "Que no posee límite." },
       universo:   { definicion: "Todo lo que existe tanto fuera de la Tierra como dentro." , imagen: "images/universo.png"  }, 
       dios:       { definicion: "Ser supremo que puede todo lo coherente y que se le rinde culto en buena parte del mundo.", imagen: "images/dios.png" },
       cristo:     { definicion: "Hijo de Dios.", imagen: "images/cristo.png" },
-      madre:      { definiciones: [
-                     "Mujer especial que ha engendrado uno o más hijos y que es símbolo de protección.",
-                     "Término coloquialmente abreviado como mamá."
-                   ] },
+      madre:      { definiciones: ["Mujer especial que ha engendrado uno o más hijos y que es símbolo de protección.", "Término coloquialmente abreviado como mamá."] },
       alma:       { definicion: "Soplo que Adonai puso a Adán como añadido a su ser más bruto y que se traspasó al género humano." },
       mundo:      { definicion: "Planeta en que habitamos los seres humanos, ubicado en la franja habitable del sistema solar." },
-      google:     { definicion: "Empresa multinacional tecnológica que ordenó con algoritmos potentes internet." },
-      muerte:     { definiciones: [
-                     "Término de la vida.",
-                     "Ruina o destrucción de una idea."
-                   ] },
-      nada:       { definicion: "Aquello que es pensable solo por negación y no es realizable." },
-      poder:      { definicion: "Facultad libre de hacer algo." },
+      google:     { definiciones: ["Empresa multinacional tecnológica que ordenó con algoritmos potentes internet.", "Motor de búsqueda más usado."] },
+      muerte:     { definiciones: ["Término de la vida.", "Ruina o destrucción de una idea.", "Representacion de la muerte con una figura esquelética.", "Persona insufrible."] , imagen: "images/muerte.png" },
+      nada:       { definicion: "Aquello que es pensable solo por negación y no es realizable.", imagen: "images/nada.jpg" },
+      poder:      { definiciones: ["Facultad libre de hacer algo.", "Tener vía libre para hacer lo que quiera.", "Expresa posibilidad de que ocurra algo.", "Ser capaz de vencer a otro."] },
       numero:     { definicion: "Entidad abstracta que sirve para contar, medir y ordenar." },
-      sol:        { definicion: "Astro de tipo espectral G2V que es el centro de nuestro sistema planetario. Compuesto por hidrógeno y helio, su energía radiante aporta luz y calor para sostener la vida en la Tierra." },
-      meme:       { definicion: "Unidad de información en versión texto, imagen, audio o video que se transmite por Internet con tono burlesco y caricaturesco." }, 
-      internet:   { definicion: "Red global de redes que es descentralizada y que funciona con los protocolos TCP/IP para conectar amplisimo contenido multimedia." }, 
-      "egoísmo":{ definicion: "Doctrina que antepone el amor propio al bienestar colectivo." },
-      profeta:    { definicion: "Persona que por influjo de Dios conoce lo venidero y advierte a la gente para que se convierta a la fe." },
+      sol:        { definicion: "Astro de tipo espectral G2V que es el centro de nuestro sistema planetario." },
+      meme:       { definicion: "Unidad de información en versión texto, imagen, audio o video con tono burlesco." }, 
+      internet:   { definicion: "Red global de redes descentralizada." }, 
+      "egoismo":  { definicion: "Doctrina que antepone el amor propio al bienestar colectivo." },
+      profeta:    { definicion: "Persona que por influjo de Dios conoce lo venidero." },
       ronaldo:    { definicion: "Leyenda máxima en el fútbol del Real Madrid." },
-      embarazada: { definicion: "Participio y adjetivo femenino natural que se refiere a la mujer gestante y que dura 40 semanas o 9 meses para culminar en el parto." , imagen: "images/embarazada.jpeg" }, 
-      ñañar:      { definicion: "Terminar una frase con la palabra de inicio." 
-      , cita:      "«8091 ñañ es la palabra.8092 La ñañ es transparente como el infinito. 8095 La ñañ será la palabra para designar ese raro gusto por terminar por el inicio»"  },
-      judas:      { definiciones: [ "Por judas iscariote: máxima expresión de la traición." ,
-                                    "Muñeco que ponen en semana santa y que posterior es quemado." ] },
+      embarazada: { definicion: "Participio y adjetivo femenino que se refiere a la mujer gestante." , imagen: "images/embarazada.jpeg" }, 
+      ñañar:      { definicion: "Terminar una frase con la palabra de inicio.", cita: "«8091 ñañ es la palabra...»" },
+      judas:      { definiciones: [ "Por judas iscariote: máxima expresión de la traición.", "Muñeco que ponen en semana santa y que posterior es quemado." ] },
       ciceron:    { definicion: "Por marcus tullius cicero: orador o escritor muy elocuente." },
-      amar:       { definiciones: [ 
-                    "Sentir inexplicable de amor por las personas.", 
-                    "Mandamiento que dejó cristo como resumen de la ley de Dios."
-                    ] },
-      odiar:      { definiciones: [
-                    "Sentir simplón de odio por alguien o algo.",
-                    "Justo lo contrario a amar." ] },
+      amar:       { definiciones: [ "Sentir inexplicable de amor por las personas.", "Mandamiento que dejó cristo como resumen de la ley de Dios." ] },
+      odiar:      { definiciones: [ "Sentir simplón de odio por alguien o algo.", "Justo lo contrario a amar." ] },
       habitar:    { definicion: "Vivir en un lugar con alguna permanencia." }, 
-      espacio:    { definicion: "Escenario tridimensional del universo en que ocurren los actos físicos. En teoría de Einstein el tiempo se le une." },
-      blanco:     { definicion: "Color acromático, como la luz, la leche o la nieve, de claridad máxima y oscuridad nula que es la suma de todos los colores del espectro." },
-      gordo:      { definiciones: [
-                          "De muchas carnes o grasa.", 
-                          "Importante" ] , imagen: "images/gordo.jpg" },
-      dimension:  { definicion: "Grado de libertad en un espacio que puede llegar hasta los cuerpos en 3D." },
-      cerebro:    { definicion: "Órgano resultado de la mente, rector del sistema nervioso del humano que coordina el alma con la conciencia." },
-      "etiología":{ definicion: "Estudio de las causas de las cosas." },
-      librero:    { definiciones: [
-                    "Individuo que comercia con libros.",
-                    "Estante donde se colocan los libros." ] },
-      bbc:        { definicion: "Trío de delanteros histórico del Real Madrid compuesto por benzema, bale y Cristiano." , imagen: "images/bbc.jpeg" },
-      msn:        { definicion: "Trío de delanteros histórico del Barcelona compuesto por Messi, Suárez y Neymar." , imagen: "images/msn.jpeg" },
-      google:     { definicion: "Empresa multinacional tecnológica que ordenó con algoritmos potentes internet." },
-      infinitamente: { definiciones: [ 
-                             "De modo infinito.",
-                             "De manera infinita.",
-                             "De forma infinita." ] },
+      espacio:    { definicion: "Escenario tridimensional del universo en que ocurren los actos físicos." },
+      blanco:     { definicion: "Color acromático, como la luz o la nieve." },
+      gordo:      { definiciones: ["De muchas carnes o grasa.", "Importante" ] , imagen: "images/gordo.jpg" },
+      dimension:  { definicion: "Grado de libertad en un espacio." },
+      cerebro:    { definicion: "Órgano rector del sistema nervioso." },
+      "etiologia":{ definicion: "Estudio de las causas de las cosas." },
+      librero:    { definiciones: ["Individuo que comercia con libros.", "Estante donde se colocan los libros." ] },
+      bbc:        { definicion: "Trío de delanteros histórico del Real Madrid: Benzema, Bale y Cristiano." , imagen: "images/bbc.jpeg" },
+      msn:        { definicion: "Trío de delanteros histórico del Barcelona: Messi, Suárez y Neymar." , imagen: "images/msn.jpeg" },
+      infinitamente: { definiciones: [ "De modo infinito.", "De manera infinita.", "De forma infinita." ] },
       idempotente: { definicion: "Igualdad en la capacidad de un número de multiplicarse por él y no transmutarse." , imagen: "images/idempotente.png" },
       partivo:    { definicion:  "Idea que surge de ver la separación entre 2 ques." },
-      adjetivo:   { definicion:  "Palabra que se pone antes o después de un sustantivo y que concuerda con él en género y número sirviendo para caracterizar al sustantivo." },
-      regicida:   { definiciones:  [
-                             "Que intenta o consuma la muerte de un rey.",
-                             "Que come el rey en ajedrez, terminando el juego."  ] },
-      ajedrez:    { definicion: "Juego mental entre dos oponentes en un tablero 8×8 escaques con 16 piezas con distinto poder que consiste en dejar sin opción a un rey por último." , video: "videos/ajedrez.webm" },
-      "información":{definiciones: [
-                              "Conversión desde el dato simple hacia un conjunto que reduce la incertidumbre de algo.",
-                              "Acción y efecto de informar.",
-                              "En genética: conjunto de datos que sirven para que a la célula tenga todo claro." ] , imagen: "images/información.png" },
-      dato:       { definicion: "Estadio previo a una información hecha que es meramente una idea suelta sin gobierno y que unida a otras puede ser analizada." },
-      bidefinido: { definicion: "Definido con 2 frases solas." },
-      tridefinido:{ definicion: "Máxima cantidad de frases que pueden esbozarse para definir." },
-      escritor:   { definicion: "Persona que ha escrito una obra literaria asentada." },
-      escribidor: { definicion: "Persona que escribe sin talento o que lo hace sin inspiración." },
-      loco:       { definicion: "Que se ha vuelto irracional o sea que ha extraviado la razón." },
-      misericordia: { definicion: "Virtud de Dios o el hombre de sentir compasión en el corazón por las pobrezas de alguien." },
-      dibu:       { definicion: "Portero argentino en especial atajador de penales." },
-      deporte:    { definicion: "Actividad física o mental reglada que se usa como competencia y que siempre tiene tanteo." },
-      nostalgia:  { definicion: "Tristeza por encontrarse en ausencia del amor." },
-      conjetura:  { definicion: "Idea que a partir de datos lanza una suposición que de ser cierta se nombraria como teorema." },
-      "matemática":{ definicion: "Área del saber que generaliza los números y las operaciones con vastas aplicaciones." },
-      "matemático":{ definicion: "Aquella persona que estudia la matemática y hace de ello su arte." },
-      dibujar:    { definicion: "Trazar líneas y rellenando el espacio alrededor con color a base de pinceles o bolígrafo obtener una figura." },
-      dibujo:     { definicion: "Confección artística que tiene forma y color." },
-      laberinto:  { definicion: "Lugar físico o conceptual artificialmente creado con caminos absurdos y que dificultan tanto orientarse como encontrar salida." },
-      flaco:      { definicion: "Calificativo que habla de la poca masa grasa o poca masa muscular de un individuo situandose en un IMC bajo 18,5 resulta en tener poco vigor o fuerza para lidiar o en actividades diarias." },
-      el:         { definicion: "Artículo que indica un nombre consabido de número singular y género masculino." },
-      ñato:       { definicion: "De narices pequeñas en prominencia." },
-      "narigón":{ definicion: "De narices abultadas." },
-      demonio:    { definicion: "Ser sobrenatural malvado que es el príncipe de los ángeles caídos que se rebeló ante Dios y fue destinado al tartaro." },
-      "carón":{ definiciones: [ 
-                               "Se dice de la persona con cara prominente no tan usada como carota.",
-                               "Levemente borracho."  ] },
-      infierno:   { definicion: "Lugar de tormentos eternos para las almas que han pecado." , imagen: "images/infierno.png" },
-      cono:       { definicion: "Sólido de revolución que es generado por la rotación de un cateto de un triángulo formando una base circular y en el extremo opuesto un vértice." },
-      existir:    { definicion: "Ser real y enteramente creíble." },
-      tenedor:    { definicion: "Útil de mesa formado de un mango con más de 3 púas al otro extremo con lo cual se pinchan o sostienen alimentos sólidos." },
-      cuchara:    { definicion: "Útil de mesa con mango y en el extremo una concavidad de metal propia para consumir alimentos líquidos mayoritariamente." },
-      cuchillo:   { definicion: "Útil de mesa con un filo por una banda para cortar en trozos alimentos sólidos." },
-      indeterminado: {definicion: "No determinado a un resultado único sino que tiene infinitas medidas." },
-      indefinido: { definicion: "No definido." },
-      "palíndromo":{ definicion: "Frase que se lee levogira igual que dextrogira." },
-      capicua:    { definicion: "Número que se lee igual de inicio a fin que de fin a inicio." },
-      morfema:    { definicion: "Unidad minuscula de significado de una palabra como in- de infinito que significa no o sin. " },
-      virus:{ definiciones: [ 
-                            "Germen infeccioso que entra a la célula humana usando su maquinaria genética para formar partes de su ser y que suele escaparse causando destrucción de la célula huésped, consta de un adn o arn con una cubierta proteína y así simple enferma al humano. ",
-                            "Mecanismo infeccioso informático que se instala en entornos digitales y daña la maquinaria que hace funcionar al computador." ] },
-      androide:   { definicion: "Automáta a manera de humano." },
-      robot:      { definicion: "Automáta sin necesidad de parecerse al humano y que aprende por sí." },
-      maquina:    { definicion: "Objeto que es animado a la efectividad, que se mueve y que realiza trabajo." },
-      ultrainstinto: { definicion: "Tecnica divina que permite pelear sin pensar y por tanto, escapar de cualquier peligro. La usó goku en el torneo contra jiren.", imagen: "images/ultrainstinto.jpg" },
-      jiren:      { definicion: "Mortal más fuerte que Su Dios de la destrucción en el universo 11 de dragon ball super." , imagen: "images/jiren.jpg" }, 
-      nada:       { definicion: "aquello que es pensable solo por negación y no es realizable." , imagen: "images/nada.jpg" },
-      gato:       { definicion: "Mamífero carnívoro doméstico de la familia Félidos (Felis catus), de cuerpo ágil, garras retráctiles y sentidos muy desarrollados (visión crepuscular, oído fino, gran equilibrio). Es territorial y cazador de pequeños animales; se comunica con maullidos, bufidos y ronroneo." , imagen: "images/gato.png" },
-      precomputada:{ definicion: "Calculada con anterioridad y lista para ser usado o recuperado." , imagen: "images/precomputada.png" },
-      holomorfa:   { definicion: "Función que es diferenciable y suave en cada punto." , imagen: "images/holomorfa.png" },
-      meromorfa:   { definicion: "Función que es diferenciable y suave en todo punto excepto en uno de polo que diverge hacia infinito." , imagen: "images/meromorfa.png" }, 
-      jirafa:      { definicion: "Mamífero artiodactilo rumiante que es el animal más alto del mundo con su cuello de 2,4 metros, posee osiconos y manchas con las que se camuflan, pueden alcanzar ramas altas en acacias de África." , imagen: "images/jirafa.jpg"  },
-      elefante:    { definicion: "El Mamífero más grande en la Tierra de género proboscidio y con características distintivas: grandes orejas, trompa prensil y elástica que usa para beber y respirar, dos grandes orejas y con rudimnetos de una inteligencia grande." , imagen: "images/elefante.jpg" },
-      maradoniano: { definicion: "Gol especial que consiste en driblar a todo el equipo marcando gol así." , imagen: "images/maradoniano.jpg" },
-      negar:       { definicion: "Decir que no." },
-      "negación":{ definicion: "Acto y efecto de negar." }, 
-      no:          { definicion: "Adverbio fundamental que es usado para negar todo tipo de frases." }, 
-      hype:        { definicion: "Esperanza en el usuario de un bien de que será revolucionario los avances de la técnica." },
-      poder:       { definicion: "Facultad libre de hacer algo." }, 
-      todar:       { definicion: "Verbo de El todo que sirve para mover el universo ya sea material o lingüístico." },
-      persona:{ definiciones: [ 
-                                 "Individuo de la clase humana.", 
-                                 "Individuo con nombre que se ignora o que se omite." , 
-                                 "Categoría gramatical que se manifiesta en pronombres y verbos y que distingue tres clases de individuos." ], imagen: "images/persona.png" },
-      limitado:    { definicion: "Que tiene límites que ponen coto a su acción." }, 
-      nadie:       { definicion: "1.Ningún individuo." },
-      eternamente:{ definiciones: [
-                                 "1.De forma eterna.", 
-                                 "2. Jamás." ] },
-      eterno:      { definiciones: [ 
-                                 "1.Que no posee inicio ni fin.", 
-                                 "2.Que se reitera muchísimo.", 
-                                 "3.Se dice de Dios." ] },
-      todopoderoso: { definicion: "Que es poderoso hasta todo." },
-      omnipotente: { definicion: "Que lo puede todo, características reclamada por Dios." },
-      aprender:    { definicion: "Adquirir el saber por medio del tratamiento de la información." },
-      napolitano:{ definiciones: [ 
-                                 "1.Natural de napoles.",
-                                 "2.Perteneciente a napoles.",
-                                 "3.Lengua de napoles.",
-                                 "4.Higo de piel negra y sabor dulce.",
-                                 "5.Conjunto de las primeras tres cartas en el juego de los tres sietes."  ] , imagen: "images/napolitano.png" },
-      ultrabasico:{ definiciones: [
-                                 "1.Rocas igneas con una composición de menos de 45% de silice.", 
-                                 "2.Algo extremadamente fundamental.",
-                                 "3.Slang en redes que es algo super simple." ] },
-      artificial:{ definiciones: [
-                                 "1.Fabricado por el hombre.",
-                                 "2.Lo que es contrario a natural.",
-                                 "3.Falso o simulado." ] , imagen: "images/artificial.png" },
-      muerte:{ definiciones: [
-                                 "1.Termino de la vida.",
-                                 "2.Representacion de la muerte con una figura esquelética y con guadaña.", 
-                                 "3.Persona insufrible.",
-                                 "4.Ruina o destrucción de una idea." ], imagen: "images/muerte.png" },
-      hollejo:{ definiciones: [ 
-                                 "1.Piel o cáscara de los frutos o legumbres.",
-                                 "2.Piel humana o pellejo." ] },
-      mapear:{ definiciones: [ 
-                                 "1.Crear mapas de territorios con sus límites." , 
-                                 "2.Investigar la parte en el todo, por ejemplo: los genes en los cromosomas.",
-                                 "3.Hacer correspondencia de datos en entornos informáticos." ] },
-      patiestevado:{ definiciones: [ 
-                                 "1.De piernas arqueadas." ,
-                                 "2.De patas estevadas." ,
-                                 "3.Con las piernas arqueadas conformando una especie de paréntesis." ,
-                                 "4.Participio de patiestevar."  ], imagen: "images/patiestevado.png" },
-      "sensación":{ definiciones: [ 
-                                 "1.El sentir en el cuerpo los estímulos físicos decodificados por el cerebro.",
-                                 "2.Percepción mas general que no necesariamente debe ser fisica sino que puede ser idea como el sentir de inutilidad.",
-                                 "3.Gran impresión que ocasiona la noticia de un suceso.", 
-                                 "4.Corazonada o presentimiento." ] },
-      epica:    { definicion: "Epopeya narrada o cantada por un bardo que trata de los héroes del mundo antiguo." },
-      epico:    { definicion: "Algo grandioso o fuera de norma." },
-      eliminatoria:{ definiciones: [
-                              "1.Clasificatoria.",
-                              "2.Competicion anterior a los 4tos de final o los partidos anteriores al mundial en sí." ] },
-      intencion:{ definiciones: [ 
-                              "1.Decisión del querer en orden a un fin.",
-                              "2.En iglesias acto dedicado a una persona viva o muerta.",
-                              "3.Instinto dañoso de un animal a diferencia de otros de su misma especie.",
-                              "4.Cautela con que es llevado a cabo un acto." ] },
-      poder:{ definiciones: [
-                              "1.Tener vía libre para hacer lo que quiera.", 
-                              "2.Expresa posibilidad de que ocurra algo.",
-                              "3.Ser capaz de vencer a otro.",
-                              "4.Ocupado de manera negativa: Sufrir las impertinencias de alguien." ] },
-      epoder: { definicion: "El imperio o dominio sobre algo." },
-      puede:  { definicion: "Forma de tercera persona del singular del verbo poder en modo indicativo que se habla de temas factuales." },
-      pueda:  { definicion: "Forma de tercera persona del singular del verbo poder en modo subjuntivo que se habla de temas virtuales." },
-      clitico: { definicion: "Palabra atona que forma grupo acentual siendo estos pronombres." },
-      enclitico: { definicion: "Pronombre que va pegado al final de un verbo infinitivo o gerundio formando grupo acentual." },
-      proclitico: { definicion: "Pronombre que va antes de un verbo separado de él y aportando al grupo acentual." },
-      googleable: { definicion: "Que es fácil de encontrar en el buscador Google." },
-      ingoogleable: { definicion: "Que es imposible de encontrar en el buscador Google." },
-      gugol:      { definicion: "Número finito que es un 1 seguido de 100 ceros." },
-      googlear:   { definicion: "Buscar en Google algo o a alguien." },
-      infinitotriz: { definicion: "Que gira infinitamente alrededor de algo." },
-      soltero:    { definicion: "Que no ha contraído matrimonio." },
-      escobeta:{ definiciones: [
-                                "1.Escoba en miniatura." ,
-                                "2.Cepillo para los atuendos." ,
-                                "3.Escoba de cerdas.",
-                                "4.Escoba de raíz de zacatón, corta y dura." ,
-                                "5.Mechón de cerdas que aparece en el papo a pavos avejentados." ] },
-      simular:{ definiciones: [ 
-                                "1.Imitar la existencia de algo de manera fiel." ,
-                                "2.Aparentar en tecnología artificialmente el funcionamiento de sistema." ] },
-      atar: { definicion: "Enlazar los cordones en los zapatos." , video: "videos/atar.webm" },
-      subir:{ definiciones:  [ 
-                               "1.Ir hacia la parte superior de algo.",
-                               "2.Ir en origen desde un lugar hasta otro más empinado.", 
-                               "3.Viajar hacia el origen de algo.",
-                               "4.Montar un animal.",
-                               "5.Entrar al interior de un coche.",
-                               "6.Hacer crecer el precio de un producto.",
-                               "7.Dicho del sonido de un instrumento: pasar a ser más agudos.",
-                               "8.Ocurrir el mareo por el alcohol.",
-                               "9.Hacer que aumente la intensidad del sonido de un aparato reproductor.",
-                               "10.Introducir información en una página de Internet." ] , video: "videos/subir.webm" },
-      llorar:{ definiciones: [ 
-                               "1.Arrojar en la cara lagrimas desde los ojos.",
-                               "2.Manar de los ojos líquido lagrimal.",
-                               "3.Destilar savia la vid en inicio de primavera." ] , video: "videos/llorar.webm" },
-      ciclo:{ definiciones:  [
-                               "1. m. Periodo de tiempo que, finalizado vuelve a iterarse.",
-                               "2. m. Colección de una serie de fenómenos u trabajos que se iteran ordenadamente.",
-                               "3. m. Conjunto de cambios por los que pasa un elemento hasta volver a lo inicial.",
-                               "4. m. Serie de pasos por los que pasa un ser a lo largo de su vida.",
-                               "5. m. Conjuntos de relatos épicos de un periodo histórico o de un héroe.",
-                               "6. m. Cada una de las espiras que conforman enrededor del tallo los puntos de anclaje de las hojas.",
-                               "7. m. La estructura molecular en forma de anillo.",
-                               "8. m. Bicicleta.",
-                               "9. m. Un tik tok." ] , imagen: "images/ciclo.jpg" },
-      agujero:{ definiciones:  [ 
-                               "1.Abertura o hueco en una superficie o en un sólido.",
-                               "2.De las agujas.",
-                               "3.Falta inmotivada de plata en una empresa." ] },
-      negro:{ definiciones:  [ 
-                               "1.Ausencia total o casi de reflejo luminoso.",
-                               "2.De color negro.",
-                               "3.Perteneciente a la raza negra.",
-                               "4.Ritual en que se invoca al demonio.",
-                               "5.Del color de carbón, de oscuridad total o la boca de un túnel",
-                               "6.Muy bronceado.",
-                               "7.Modo de tratamiento de quienes se quieren.",
-                               "8.Persona que hace un trabajo intelectual por encargo de otra haciendo todo el esfuerzo.",
-                               "9.Estado de ánimo triste o pesimista.",
-                               "10.Género de cine que de trama policiaca en entorno violento." ] }, 
-      vestir:{ definiciones:  [ 
-                               "1.Cubrir el cuerpo de una persona con ropajes.",
-                               "2.Costear las vestiduras un padre al hijo.",
-                               "3.Guarnecer un vestido para adorno.",
-                               "4.Emplear la retórica para embellecer el lenguaje.",
-                               "5.Tapizar de hierba los campos.",
-                               "6.Cubrir de pelo o pluma a los animales.",
-                               "7.Hacer el sastre los vestidos para un cliente.",
-                               "8.Llevar un ropaje de forma, color o distintivo especial para ocasión.",
-                               "9.Alzarse de la cama habiendo estado enfermo." ] , video: "videos/vestir.webm" },
-                               
-                               
-     
-    };
-
-    
-    // 🔤 Normalizar palabra: quitar signos, minúsculas, quitar tildes
-function normalizarPalabra(raw)
-// ==========================================
-    // 1. FUNCIONES DE AYUDA (Normalización)
-    // ==========================================
-    
-    // Quita tildes, mayúsculas y signos para poder comparar "Infinito," con "infinito"
-    function normalizarPalabra(raw) {
-      return raw
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
-        .replace(/[^a-z0-9ñ]/g, "");                      // quita signos raros
-    }
-
-    // ==========================================
-    // 2. FUNCIONES DE RESALTADO (Visual)
-    // ==========================================
-
-    // Quita el color azul de cualquier palabra que lo tenga
-    function limpiarResaltado() {
-      const resaltadas = document.querySelectorAll(".palabra.resaltada");
-      resaltadas.forEach(span => {
-        span.classList.remove("resaltada");
-      });
-    }
-
-    // Busca en todo el libro palabras visualmente iguales a la clicada y las marca
-    function resaltarCoincidencias(rawWord) {
-      const claveBuscada = normalizarPalabra(rawWord);
-      
-      // Proteccion: si la palabra está vacía, no hacemos nada
-      if (claveBuscada.length === 0) return;
-
-      const todasLasPalabras = document.querySelectorAll("#libro .palabra");
-
-      todasLasPalabras.forEach(span => {
-        // Normalizamos el texto de cada span en el libro
-        const claveSpan = normalizarPalabra(span.innerText);
-        
-        // Si coinciden, le ponemos la clase CSS
-        if (claveSpan === claveBuscada) {
-          span.classList.add("resaltada");
-        }
-      });
-    }
-
-    // ==========================================
-    // 3. LÓGICA PRINCIPAL (Mostrar Definición)
-    // ==========================================
-
-    function mostrarDefinicion(rawWord, tokenIndex) {
-      // --- A) GESTIÓN VISUAL DEL TEXTO ---
-      limpiarResaltado();             // 1. Limpiamos lo anterior
-      resaltarCoincidencias(rawWord); // 2. Resaltamos la palabra actual
-
-      // --- B) BÚSQUEDA EN DICCIONARIO ---
-      const clave   = obtenerClaveVerbal(rawWord); // Lematiza (soy -> ser)
-      const panel   = document.getElementById("definicion");
-      const entrada = diccionario[clave];
-
-      // Si no existe en el diccionario
-      if (!entrada) {
-        panel.innerHTML = `
-          <h2>${rawWord}</h2>
-          <p class="sin-def">
-            No tengo definición para esta palabra.
-            <br><small style="color:#ccc;">(Clave buscada: ${clave})</small>
-          </p>
-        `;
-        return;
-      }
-
-      // Recopilar definiciones
-      let definiciones = [];
-      if (entrada.definicion) definiciones.push(entrada.definicion);
-      if (Array.isArray(entrada.definiciones)) definiciones = definiciones.concat(entrada.definiciones);
-
-      if (definiciones.length === 0) {
-        panel.innerHTML = `<h2>${rawWord}</h2><p>Definición vacía.</p>`;
-        return;
-      }
-
-      // --- C) CONTEXTO Y SELECCIÓN DE DEFINICIÓN ---
-      const contexto = obtenerContexto(tokenIndex);
-      const indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
-
-      // Generar HTML de definiciones (la elegida va en azul dentro del panel)
-      const htmlDefs = definiciones
-        .map((texto, i) => {
-          // Resaltamos la definición específica que coincide con el contexto
-          const estilo = i === indiceElegido 
-            ? ' style="color: #0056b3; font-weight: bold; background-color: #f0f8ff; padding:5px; border-radius:4px;"' 
-            : '';
-          return `<p${estilo}>${i+1}. ${texto}</p>`;
-        })
-        .join("");
-
-      // --- D) MULTIMEDIA (Imagen/Video) ---
-      let mediaHtml = "";
-      if (entrada.imagen) {
-        mediaHtml += `<div style="margin-top:10px; text-align:center;">
-                        <img src="${entrada.imagen}" alt="${clave}" style="max-width:100%; border-radius:8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-                      </div>`;
-      }
-      if (entrada.video) {
-        mediaHtml += `<div style="margin-top:10px;">
-                        <video src="${entrada.video}" controls style="width:100%; border-radius:8px;"></video>
-                      </div>`;
-      }
-
-      // --- E) PINTAR EN EL PANEL LATERAL ---
-      panel.innerHTML = `
-        <h2 style="text-transform: capitalize;">${rawWord} <small style="font-size:0.5em; color:#888;">(${clave})</small></h2>
-        ${htmlDefs}
-        ${mediaHtml}
-      `;
-    }
-
-    // ==========================================
-    // 4. INICIALIZACIÓN
-    // ==========================================
-    
-    function prepararLibro() {
-      const textoRaw = document.getElementById("texto-libro").innerText;
-      const contenedor = document.getElementById("libro");
-      
-      // Separamos por espacios/signos conservando los separadores
-      const tokens = textoRaw.split(/(\s+)/); 
-      
-      tokensLibro = []; // Reiniciar array global de contexto
-      contenedor.innerHTML = "";
-      let indiceToken = 0;
-
-      tokens.forEach(token => {
-        // Si es solo espacio, lo ponemos como texto normal
-        if (/^\s+$/.test(token)) {
-          contenedor.appendChild(document.createTextNode(token));
-        } else {
-          // Si es palabra, creamos el SPAN interactivo
-          const span = document.createElement("span");
-          span.textContent = token;
-          span.className = "palabra";
-          
-          // Capturamos el índice actual para el evento click
-          const myIndex = indiceToken;
-
-          span.addEventListener("click", () => {
-            mostrarDefinicion(token, myIndex);
-          });
-
-          contenedor.appendChild(span);
-          tokensLibro.push(token); // Guardamos para el contexto
-          indiceToken++;
-        }
-      });
-    }
-
-    // Arrancamos todo
-    prepararLibro();{
-  return raw
-    .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
-    .replace(/[^a-z0-9ñ]/g, "");                      // quita todo lo que no sea letra o número
-}
-
-// Guardaremos aquí las palabras (sin espacios) del libro en orden
-let tokensLibro = [];
-
-// Obtener un contexto alrededor del índice del token (ventana de ±15 palabras)
-function obtenerContexto(idx) {
-  const ventana = 15;
-  const inicio = Math.max(0, idx - ventana);
-  const fin = Math.min(tokensLibro.length, idx + ventana + 1);
-  return tokensLibro.slice(inicio, fin).join(" ");
-}
-
-// Limpiar texto para comparar: minúsculas, sin tildes, solo letras/números
-function limpiarTexto(texto) {
-  return texto
-    .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9ñáéíóúü\s]/gi, " ");
-}
-
-// Convertir texto en lista de palabras “clave”
-function palabrasClave(texto) {
-  return limpiarTexto(texto)
-    .split(/\s+/)
-    .filter(w => w.length > 3); // evitamos palabras muy cortas
-}
-
-// Elegir el índice de la definición que mejor coincide con el contexto
-function elegirIndiceDefinicion(definiciones, contexto) {
-  const ctxWords = palabrasClave(contexto);
-  if (!ctxWords.length) return 0;
-
-  const setCtx = new Set(ctxWords);
-  let mejor = 0;
-  let mejorScore = -1;
-
-  definiciones.forEach((def, idx) => {
-    const palabrasDef = palabrasClave(def);
-    let score = 0;
-    palabrasDef.forEach(p => {
-      if (setCtx.has(p)) score++;
-    });
-    if (score > mejorScore) {
-      mejorScore = score;
-      mejor = idx;
-    }
-  });
-
-  return mejor;
-}
-// Quita el resaltado azul de todas las palabras
-function limpiarResaltado() {
-  document.querySelectorAll(".palabra.resaltada").forEach(span => {
-    span.classList.remove("resaltada");
-  });
-}
-
-// Resalta en azul todas las apariciones de la palabra clicada
-function resaltarCoincidencias(rawWord) {
-  const clave = normalizarPalabra(rawWord); // misma normalización que para el diccionario
-
-  document.querySelectorAll(".palabra").forEach(span => {
-    const textoSpan = span.textContent || "";
-    const claveSpan = normalizarPalabra(textoSpan);
-    if (claveSpan === clave) {
-      span.classList.add("resaltada");
-    }
-  });
-}
-function mostrarDefinicion(rawWord, tokenIndex) {
-  // 1) Calculamos la clave real que usará el diccionario
-  const clave   = obtenerClaveVerbal(rawWord);
-  const panel   = document.getElementById("definicion");
-  const entrada = diccionario[clave];
-
-  // 2) Resaltado visual en el texto del libro
-  limpiarResaltado();            // quitamos resaltados anteriores
-  resaltarCoincidencias(rawWord); // marcamos todas las apariciones de esta palabra
-
-  // 3) Si no hay entrada en el diccionario, mensaje simple
-  if (!entrada) {
-    panel.innerHTML = `
-      <h2>${rawWord}</h2>
-      <p class="sin-def">
-        Esta palabra aún no tiene definición en tu diccionario.
-        <br><small>(clave interna: ${clave})</small>
-      </p>
-    `;
-    return;
-  }
-
-  // 4) Reunimos todas las definiciones en una sola lista
-  let definiciones = [];
-  if (entrada.definicion) {
-    definiciones.push(entrada.definicion);
-  }
-  if (Array.isArray(entrada.definiciones)) {
-    definiciones = definiciones.concat(entrada.definiciones);
-  }
-
-  if (definiciones.length === 0) {
-    panel.innerHTML = `
-      <h2>${rawWord}</h2>
-      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
-    `;
-    return;
-  }
-
-  // 5) Obtenemos el contexto alrededor de la palabra clicada
-  const contexto = obtenerContexto(tokenIndex);
-
-  // 6) Elegimos la definición que mejor encaja con el contexto
-  const indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
-
-  // 7) Construimos el HTML: todas las definiciones, solo una en azul
-  const htmlDefs = definiciones
-    .map((texto, i) => {
-      const style = i === indiceElegido ? ' style="color: blue;"' : '';
-      return `<p${style}>${texto}</p>`;
-    })
-    .join("");
-
-  panel.innerHTML = `
-    <h2>${rawWord}</h2>
-    ${htmlDefs}
-  `;
-}
- 
-
-  // 2) Resaltado visual en el texto del libro
-  limpiarResaltado();             // quitamos resaltados anteriores
-  resaltarCoincidencias(rawWord); // marcamos todas las apariciones de esta palabra
-
-  // 3) Si no hay entrada en el diccionario, mensaje simple
-
-
-  // 4) Reunimos todas las definiciones en una sola lista
-  let definiciones = [];
-  if (entrada.definicion) {
-    definiciones.push(entrada.definicion);
-  }
-  if (Array.isArray(entrada.definiciones)) {
-    definiciones = definiciones.concat(entrada.definiciones);
-  }
-
-  if (definiciones.length === 0) {
-    panel.innerHTML = `
-      <h2>${rawWord}</h2>
-      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
-    `;
-    return;
-  }
-
-  // 5) Obtenemos el contexto alrededor de la palabra clicada
-  const contexto = obtenerContexto(tokenIndex);
-
-  // 6) Elegimos la definición que mejor encaja con el contexto
-  const indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
-
-  // 7) Construimos el HTML: todas las definiciones, solo una en azul
-  const htmlDefs = definiciones
-    .map((texto, i) => {
-      const style = i === indiceElegido ? ' style="color: blue;"' : '';
-      return `<p${style}>${texto}</p>`;
-    })
-    .join("");
-
-  panel.innerHTML = `
-    <h2>${rawWord}</h2>
-    ${htmlDefs}
-  `;
-  }
-
-  // 2) Resaltado visual en el texto del libro
-  limpiarResaltado();           // quitamos resaltados anteriores
-  resaltarCoincidencias(rawWord); // marcamos todas las apariciones de esta palabra
-
-  // 3) Si no hay entrada en el diccionario, mensaje simple
-  
-
-  // 4) Reunimos todas las definiciones en una sola lista
-  let definiciones = [];
-  if (entrada.definicion) {
-    definiciones.push(entrada.definicion);
-  }
-  if (Array.isArray(entrada.definiciones)) {
-    definiciones = definiciones.concat(entrada.definiciones);
-  }
-
-  if (definiciones.length === 0) {
-    panel.innerHTML = `
-      <h2>${rawWord}</h2>
-      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
-    `;
-    return;
-  }
-
-  // 5) Obtenemos el contexto alrededor de la palabra clicada
-  const contexto = obtenerContexto(tokenIndex);
-
-  // 6) Elegimos la definición que mejor encaja con el contexto
-  const indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
-
-  // 7) Construimos el HTML: todas las definiciones, solo una en azul
-  const htmlDefs = definiciones
-    .map((texto, i) => {
-      const style = i === indiceElegido ? ' style="color: blue;"' : '';
-      return `<p${style}>${texto}</p>`;
-    })
-    .join("");
-
-  panel.innerHTML = `
-    <h2>${rawWord}</h2>
-    ${htmlDefs}
-  `;
-}
-
-if (!entrada) {
-  panel.innerHTML = `
-    <h2>${rawWord}</h2>
-    <p class="sin-def">
-      Esta palabra aún no tiene definición en tu diccionario.
-      (clave interna: ${clave})
-    </p>
-  `;
-  return;
-}
-
-  // Reunimos todas las definiciones en una sola lista
-  let definiciones = [];
-  if (entrada.definicion) {
-    definiciones.push(entrada.definicion);
-  }
-  if (Array.isArray(entrada.definiciones)) {
-    definiciones = definiciones.concat(entrada.definiciones);
-  }
-
-  if (definiciones.length === 0) {
-    panel.innerHTML = `
-      <h2>${rawWord}</h2>
-      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
-    `;
-    return;
-  }
-
-  // Obtenemos contexto alrededor de la palabra clicada
-  const contexto = obtenerContexto(tokenIndex);
-
-  // Elegimos la definición que mejor encaja con el contexto
-  const indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
-
-  // Construimos el HTML: todas las definiciones, solo una en azul
-  const htmlDefs = definiciones
-    .map((texto, i) => {
-      const style = i === indiceElegido ? ' style="color: blue;"' : '';
-      return `<p${style}>${texto}</p>`;
-    })
-    .join("");
-
-  // Si quieres, más adelante volvemos a añadir imagen/video aquí
-  panel.innerHTML = `
-    <h2>${rawWord}</h2>
-    ${htmlDefs}
-  `;
-}
-
-// Preparar el libro: convertir texto en spans clicables y rellenar tokensLibro
-function prepararLibro() {
-  const fuente = document.getElementById("texto-libro").innerText;
-  const contenedorLibro = document.getElementById("libro");
-
-  const tokens = fuente.split(/(\s+)/);
-  tokensLibro = []; // reiniciamos
-
-  contenedorLibro.innerHTML = "";
-  let indiceToken = 0;
-
-  tokens.forEach(token => {
-    if (/^\s+$/.test(token)) {
-      // Es solo espacio: lo añadimos tal cual
-      contenedorLibro.appendChild(document.createTextNode(token));
-    } else {
-      // Palabra/token real: span clicable
-      const span = document.createElement("span");
-      span.textContent = token;
-      span.className = "palabra";
-
-      const idx = indiceToken;
-      span.addEventListener("click", () => {
-        // 1) Clave de búsqueda para resaltar (sin mayúsculas, sin tildes, sin signos)
-        const claveBuscada = normalizarPalabra(token);
-
-        // 2) Resaltamos todas las ocurrencias iguales
-        resaltarCoincidencias(claveBuscada);
-
-        // 3) Mostramos la definición (como antes)
-        mostrarDefinicion(token, idx);
-      });
-
-      tokensLibro.push(token);
-      indiceToken++;
-
-      contenedorLibro.appendChild(span);
-    }
-  });
-}
-
-// Inicializamos
-prepararLibro();
-  </script>
-
-      
-</body>
-  </html>
+      adjetivo:   { definicion:  "Palabra que califica al sustantivo." },
+      regicida:   { definiciones:  ["Que intenta o consuma la muerte de un rey.", "Que come el rey en ajedrez, terminando el juego."  ] },
+      ajedrez:    { definicion: "Juego mental entre dos oponentes en un tablero 8×8." , video: "videos/ajedrez.webm" },
+      "informacion":{definiciones: ["Conversió
