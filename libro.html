@@ -573,7 +573,7 @@
   function palabrasClave(texto) {
     return limpiarTexto(texto)
       .split(/\s+/)
-      .filter(w => w.length > 3); // evitamos palabras muy cortas
+      .filter(w => w.length > 2); // evitamos palabras muy cortas
   }
 
   // Elegir el índice de la definición que mejor coincide con el contexto
