@@ -252,7 +252,21 @@ if (original.toLowerCase().startsWith("dios")) {
   }
 
   // 1) Normalizamos como ya haces tú (minúsculas, sin tilde, sin signos raros)
-  let w = normalizarPalabra(original);
+  let w = normalizarPalabra(original);// 🌟 Resalta todas las palabras del libro que coinciden con la clicada
+function resaltarPalabras(claveBuscada) {
+  const spans = document.querySelectorAll(".palabra");
+
+  spans.forEach(span => {
+    const textoSpan = span.textContent;
+    const claveSpan = normalizarPalabra(textoSpan);
+
+    if (claveSpan === claveBuscada) {
+      span.classList.add("resaltada");
+    } else {
+      span.classList.remove("resaltada");
+    }
+  });
+}
 
   // 2) Quitamos pronombres enclíticos (decirmelo -> decir)
   w = stripClitics(w);
