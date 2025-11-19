@@ -555,10 +555,32 @@
 
   // Obtener un contexto alrededor del índice del token (ventana de ±15 palabras)
   function obtenerContexto(idx) {
-    const ventana = 15;
-    const inicio = Math.max(0, idx - ventana);
-    const fin = Math.min(tokensLibro.length, idx + ventana + 1);
-    return tokensLibro.slice(inicio, fin).join(" ");
+  // Tomamos los tokens de una misma "frase",
+  // delimitada por punto, interrogación o exclamación.
+  let inicio = idx;
+  let fin = idx;
+
+  // Hacia la izquierda hasta encontrar un separador de frase
+  while (inicio > 0) {
+    const t = tokensLibro[inicio];
+    if (/[.!?]/.test(t)) {
+      // empezamos DESPUÉS de ese signo
+      inicio++;
+      break;
+    }
+    inicio--;
+  }
+
+  // Hacia la derecha hasta encontrar un separador de frase
+  while (fin < tokensLibro.length - 1) {
+    const t = tokensLibro[fin];
+    if (/[.!?]/.test(t)) {
+      break;
+    }
+    fin++;
+  }
+
+  return tokensLibro.slice(inicio, fin + 1).join(" ");
   }
 
   // Limpiar texto para comparar: minúsculas, sin tildes, solo letras/números
