@@ -237,7 +237,7 @@ function guessInfinitive(w) {
 }
 
 // A partir de la palabra del libro, obtenemos la clave real del diccionario
-function getDictionaryKeyFromWord(rawWord) {
+function obtenerClaveVerbal(rawWord) {
   const original = rawWord.trim();
 
   // Caso especial: "creó" con tilde -> CREAR (porque tú lo quieres así)
