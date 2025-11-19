@@ -681,13 +681,7 @@ function mostrarDefinicion(rawWord, tokenIndex) {
   resaltarCoincidencias(rawWord); // marcamos todas las apariciones de esta palabra
 
   // 3) Si no hay entrada en el diccionario, mensaje simple
-  if (!entrada) {
-    panel.innerHTML = `
-      <h2>${rawWord}</h2>
-      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
-    `;
-    return;
-  }
+  
 
   // 4) Reunimos todas las definiciones en una sola lista
   let definiciones = [];
@@ -802,7 +796,7 @@ function prepararLibro() {
         const claveBuscada = normalizarPalabra(token);
 
         // 2) Resaltamos todas las ocurrencias iguales
-        resaltarPalabras(claveBuscada);
+        resaltarCoincidencias(claveBuscada);
 
         // 3) Mostramos la definición (como antes)
         mostrarDefinicion(token, idx);
