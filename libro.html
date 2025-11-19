@@ -242,32 +242,20 @@ function guessInfinitive(w) {
 
 // A partir de la palabra del libro, obtenemos la clave real del diccionario
 function obtenerClaveVerbal(rawWord) {
-  const original = rawWord.trim();// Protección: "dios" NO es un verbo
-if (original.toLowerCase().startsWith("dios")) {
-  return "dios";
-}
+  const original = rawWord.trim();
+
+  // Protección: "dios" NO es un verbo
+  if (original.toLowerCase().startsWith("dios")) {
+    return "dios";
+  }
 
   // Caso especial: "creó" con tilde -> CREAR (porque tú lo quieres así)
   if (original === "creó" || original === "Creó") {
     if (diccionario["crear"]) return "crear";
   }
 
-  // 1) Normalizamos como ya haces tú (minúsculas, sin tilde, sin signos raros)
-  let w = normalizarPalabra(original);// 🌟 Resalta todas las palabras del libro que coinciden con la clicada
-function resaltarPalabras(claveBuscada) {
-  const spans = document.querySelectorAll(".palabra");
-
-  spans.forEach(span => {
-    const textoSpan = span.textContent;
-    const claveSpan = normalizarPalabra(textoSpan);
-
-    if (claveSpan === claveBuscada) {
-      span.classList.add("resaltada");
-    } else {
-      span.classList.remove("resaltada");
-    }
-  });
-}
+  // 1) Normalizamos (minúsculas, sin tilde, sin signos raros)
+  let w = normalizarPalabra(original);
 
   // 2) Quitamos pronombres enclíticos (decirmelo -> decir)
   w = stripClitics(w);
@@ -276,7 +264,7 @@ function resaltarPalabras(claveBuscada) {
   const lemma = guessInfinitive(w);
 
   return lemma;
-  }
+}
     // 🔹 Mini-diccionario tomado de tu diccionario web
     // (luego podemos ir añadiendo más voces)
     const diccionario = {
