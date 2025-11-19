@@ -628,36 +628,6 @@ function expandirConSinonimos(palabra) {
     lista.push(...sinonimos[base]);
   } return lista; }
 
-    // ── SINÓNIMOS AUTOMÁTICOS PARA EL ENRUTADOR ──
-  const sinonimos = {
-    // poder vencer a otro (definición 3)
-    vencer: ["ganar", "derrotar", "triunfar", "vencer"],
-
-    // sufrir impertinencias (definición 4)
-    sufrir: ["aguantar", "soportar", "tolerar", "padecer", "sufrir"],
-    impertinencias: ["vejaciones", "abusos", "humillaciones", "maltratos"],
-
-    // expresar posibilidad (definición 2)
-    posibilidad: [
-      "posibilidad",
-      "quizas",
-      "talvez",
-      "acaso",
-      "hipotetico",
-      "probable",
-      "eventual"
-    ]
-  };
-
-  // Dada una palabra de la definición, devuelve esa palabra + sus sinónimos
-  function expandirConSinonimos(palabra) {
-    const base = palabra.toLowerCase();
-    const lista = [base];
-    if (sinonimos[base]) {
-      lista.push(...sinonimos[base]);
-    }
-    return lista;
-  }
 
   // -----------------------------------------------------------
   // ELEGIR DEFINICIÓN + EXPLICACIÓN DEL PORQUÉ
