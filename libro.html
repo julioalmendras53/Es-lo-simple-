@@ -600,13 +600,24 @@
 
     // ── SINÓNIMOS AUTOMÁTICOS PARA EL ENRUTADOR ──
 const sinonimos = {
-  // poder vencer a otro
-  vencer: ["ganar", "derrotar"],
-  // sufrir impertinencias
-  sufrir: ["aguantar", "soportar", "tolerar", "padecer"],
+  // poder vencer a otro (definición 3)
+  vencer: ["ganar", "derrotar", "triunfar", "vencer"],
+
+  // sufrir impertinencias (definición 4)
+  sufrir: ["aguantar", "soportar", "tolerar", "padecer", "sufrir"],
   impertinencias: ["vejaciones", "abusos", "humillaciones", "maltratos"],
-  // expresar posibilidad
-  posibilidad: ["acceder", "permitido", "permiso", "posible"]
+
+  // expresar posibilidad (definición 2)
+  // ¡OJO! todo sin tilde porque luego normalizamos.
+  posibilidad: [
+    "posibilidad",
+    "quizas",
+    "talvez",
+    "acaso",
+    "hipotetico",
+    "probable",
+    "eventual"
+  ]
 };
 
 // Dada una palabra de la definición, devuelve esa palabra + sus sinónimos
