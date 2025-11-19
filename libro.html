@@ -576,6 +576,27 @@
       .filter(w => w.length > 2); // evitamos palabras muy cortas
   }
 
+    // ── SINÓNIMOS AUTOMÁTICOS PARA EL ENRUTADOR ──
+const sinonimos = {
+  // poder vencer a otro
+  vencer: ["ganar", "derrotar"],
+  // sufrir impertinencias
+  sufrir: ["aguantar", "soportar", "tolerar", "padecer"],
+  impertinencias: ["vejaciones", "abusos", "humillaciones", "maltratos"],
+  // expresar posibilidad
+  posibilidad: ["acceder", "permitido", "permiso", "posible"]
+};
+
+// Dada una palabra de la definición, devuelve esa palabra + sus sinónimos
+function expandirConSinonimos(palabra) {
+  const base = palabra.toLowerCase();
+  const lista = [base];
+  if (sinonimos[base]) {
+    lista.push(...sinonimos[base]);
+  }
+  return lista;
+  }
+
   // Elegir el índice de la definición que mejor coincide con el contexto
   function elegirIndiceDefinicion(definiciones, contexto) {
     const ctxWords = palabrasClave(contexto);
