@@ -615,10 +615,7 @@ function expandirConSinonimos(palabra) {
   const lista = [base];
   if (sinonimos[base]) {
     lista.push(...sinonimos[base]);
-  }
-  return lista;
-  }
-
+  } return lista;
   function elegirIndiceDefinicion(definiciones, contexto) {
   const ctxWords = palabrasClave(contexto);
   if (!ctxWords.length) return 0;
@@ -632,12 +629,20 @@ function expandirConSinonimos(palabra) {
     let score = 0;
 
     palabrasDef.forEach(p => {
-      // palabra de la definición + sus sinónimos
-      const variantes = expandirConSinonimos(p);
+      const base = p.toLowerCase();
+
+      // 1) Coincidencia exacta: vale 3 puntos
+      if (setCtx.has(base)) {
+        score += 3;
+        return;
+      }
+
+      // 2) Coincidencia por sinónimos: vale 1 punto
+      const variantes = expandirConSinonimos(base);
       for (const v of variantes) {
         if (setCtx.has(v)) {
-          score++;
-          break; // ya contó por esta palabra, no sumamos dos veces
+          score += 1;
+          break;
         }
       }
     });
