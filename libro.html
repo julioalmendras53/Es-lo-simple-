@@ -545,7 +545,164 @@ function obtenerClaveVerbal(rawWord) {
 
     
     // 🔤 Normalizar palabra: quitar signos, minúsculas, quitar tildes
-function normalizarPalabra(raw) {
+function normalizarPalabra(raw)
+// ==========================================
+    // 1. FUNCIONES DE AYUDA (Normalización)
+    // ==========================================
+    
+    // Quita tildes, mayúsculas y signos para poder comparar "Infinito," con "infinito"
+    function normalizarPalabra(raw) {
+      return raw
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
+        .replace(/[^a-z0-9ñ]/g, "");                      // quita signos raros
+    }
+
+    // ==========================================
+    // 2. FUNCIONES DE RESALTADO (Visual)
+    // ==========================================
+
+    // Quita el color azul de cualquier palabra que lo tenga
+    function limpiarResaltado() {
+      const resaltadas = document.querySelectorAll(".palabra.resaltada");
+      resaltadas.forEach(span => {
+        span.classList.remove("resaltada");
+      });
+    }
+
+    // Busca en todo el libro palabras visualmente iguales a la clicada y las marca
+    function resaltarCoincidencias(rawWord) {
+      const claveBuscada = normalizarPalabra(rawWord);
+      
+      // Proteccion: si la palabra está vacía, no hacemos nada
+      if (claveBuscada.length === 0) return;
+
+      const todasLasPalabras = document.querySelectorAll("#libro .palabra");
+
+      todasLasPalabras.forEach(span => {
+        // Normalizamos el texto de cada span en el libro
+        const claveSpan = normalizarPalabra(span.innerText);
+        
+        // Si coinciden, le ponemos la clase CSS
+        if (claveSpan === claveBuscada) {
+          span.classList.add("resaltada");
+        }
+      });
+    }
+
+    // ==========================================
+    // 3. LÓGICA PRINCIPAL (Mostrar Definición)
+    // ==========================================
+
+    function mostrarDefinicion(rawWord, tokenIndex) {
+      // --- A) GESTIÓN VISUAL DEL TEXTO ---
+      limpiarResaltado();             // 1. Limpiamos lo anterior
+      resaltarCoincidencias(rawWord); // 2. Resaltamos la palabra actual
+
+      // --- B) BÚSQUEDA EN DICCIONARIO ---
+      const clave   = obtenerClaveVerbal(rawWord); // Lematiza (soy -> ser)
+      const panel   = document.getElementById("definicion");
+      const entrada = diccionario[clave];
+
+      // Si no existe en el diccionario
+      if (!entrada) {
+        panel.innerHTML = `
+          <h2>${rawWord}</h2>
+          <p class="sin-def">
+            No tengo definición para esta palabra.
+            <br><small style="color:#ccc;">(Clave buscada: ${clave})</small>
+          </p>
+        `;
+        return;
+      }
+
+      // Recopilar definiciones
+      let definiciones = [];
+      if (entrada.definicion) definiciones.push(entrada.definicion);
+      if (Array.isArray(entrada.definiciones)) definiciones = definiciones.concat(entrada.definiciones);
+
+      if (definiciones.length === 0) {
+        panel.innerHTML = `<h2>${rawWord}</h2><p>Definición vacía.</p>`;
+        return;
+      }
+
+      // --- C) CONTEXTO Y SELECCIÓN DE DEFINICIÓN ---
+      const contexto = obtenerContexto(tokenIndex);
+      const indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
+
+      // Generar HTML de definiciones (la elegida va en azul dentro del panel)
+      const htmlDefs = definiciones
+        .map((texto, i) => {
+          // Resaltamos la definición específica que coincide con el contexto
+          const estilo = i === indiceElegido 
+            ? ' style="color: #0056b3; font-weight: bold; background-color: #f0f8ff; padding:5px; border-radius:4px;"' 
+            : '';
+          return `<p${estilo}>${i+1}. ${texto}</p>`;
+        })
+        .join("");
+
+      // --- D) MULTIMEDIA (Imagen/Video) ---
+      let mediaHtml = "";
+      if (entrada.imagen) {
+        mediaHtml += `<div style="margin-top:10px; text-align:center;">
+                        <img src="${entrada.imagen}" alt="${clave}" style="max-width:100%; border-radius:8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                      </div>`;
+      }
+      if (entrada.video) {
+        mediaHtml += `<div style="margin-top:10px;">
+                        <video src="${entrada.video}" controls style="width:100%; border-radius:8px;"></video>
+                      </div>`;
+      }
+
+      // --- E) PINTAR EN EL PANEL LATERAL ---
+      panel.innerHTML = `
+        <h2 style="text-transform: capitalize;">${rawWord} <small style="font-size:0.5em; color:#888;">(${clave})</small></h2>
+        ${htmlDefs}
+        ${mediaHtml}
+      `;
+    }
+
+    // ==========================================
+    // 4. INICIALIZACIÓN
+    // ==========================================
+    
+    function prepararLibro() {
+      const textoRaw = document.getElementById("texto-libro").innerText;
+      const contenedor = document.getElementById("libro");
+      
+      // Separamos por espacios/signos conservando los separadores
+      const tokens = textoRaw.split(/(\s+)/); 
+      
+      tokensLibro = []; // Reiniciar array global de contexto
+      contenedor.innerHTML = "";
+      let indiceToken = 0;
+
+      tokens.forEach(token => {
+        // Si es solo espacio, lo ponemos como texto normal
+        if (/^\s+$/.test(token)) {
+          contenedor.appendChild(document.createTextNode(token));
+        } else {
+          // Si es palabra, creamos el SPAN interactivo
+          const span = document.createElement("span");
+          span.textContent = token;
+          span.className = "palabra";
+          
+          // Capturamos el índice actual para el evento click
+          const myIndex = indiceToken;
+
+          span.addEventListener("click", () => {
+            mostrarDefinicion(token, myIndex);
+          });
+
+          contenedor.appendChild(span);
+          tokensLibro.push(token); // Guardamos para el contexto
+          indiceToken++;
+        }
+      });
+    }
+
+    // Arrancamos todo
+    prepararLibro();{
   return raw
     .toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
