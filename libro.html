@@ -738,10 +738,32 @@ function expandirConSinonimos(palabra) {
     }
 
     // 5) Obtenemos el contexto alrededor de la palabra clicada
-    const contexto = obtenerContexto(tokenIndex);
+const contexto = obtenerContexto(tokenIndex);
 
-    // 6) Elegimos la definición que mejor encaja con el contexto
-    const indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
+let indiceElegido;
+
+// Regla especial para PODER: construcciones del tipo "puede que / pueda que"
+if (clave === "poder") {
+  const norm = normalizarPalabra(rawWord); // "puede", "pueda", etc.
+  const prevTok  = tokensLibro[tokenIndex - 1] || "";
+  const nextTok  = tokensLibro[tokenIndex + 1] || "";
+  const prevNorm = normalizarPalabra(prevTok);
+  const nextNorm = normalizarPalabra(nextTok);
+
+  const esConstruccionPosibilidad =
+    (norm === "puede" || norm === "pueda" || norm === "podria") &&
+    (nextNorm === "que" || prevNorm === "que");
+
+  if (esConstruccionPosibilidad && definiciones.length >= 2) {
+    // Forzamos la acepción 2 (índice 1) → "Expresa posibilidad..."
+    indiceElegido = 1;
+  } else {
+    indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
+  }
+} else {
+  // Caso general (no es "poder")
+  indiceElegido = elegirIndiceDefinicion(definiciones, contexto);
+        }
 
     // 7) Construimos el HTML: todas las definiciones, solo una en azul
     const htmlDefs = definiciones
