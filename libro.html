@@ -597,28 +597,36 @@ function expandirConSinonimos(palabra) {
   return lista;
   }
 
-  // Elegir el índice de la definición que mejor coincide con el contexto
   function elegirIndiceDefinicion(definiciones, contexto) {
-    const ctxWords = palabrasClave(contexto);
-    if (!ctxWords.length) return 0;
+  const ctxWords = palabrasClave(contexto);
+  if (!ctxWords.length) return 0;
 
-    const setCtx = new Set(ctxWords);
-    let mejor = 0;
-    let mejorScore = -1;
+  const setCtx = new Set(ctxWords);
+  let mejor = 0;
+  let mejorScore = -1;
 
-    definiciones.forEach((def, idx) => {
-      const palabrasDef = palabrasClave(def);
-      let score = 0;
-      palabrasDef.forEach(p => {
-        if (setCtx.has(p)) score++;
-      });
-      if (score > mejorScore) {
-        mejorScore = score;
-        mejor = idx;
+  definiciones.forEach((def, idx) => {
+    const palabrasDef = palabrasClave(def);
+    let score = 0;
+
+    palabrasDef.forEach(p => {
+      // palabra de la definición + sus sinónimos
+      const variantes = expandirConSinonimos(p);
+      for (const v of variantes) {
+        if (setCtx.has(v)) {
+          score++;
+          break; // ya contó por esta palabra, no sumamos dos veces
+        }
       }
     });
 
-    return mejor;
+    if (score > mejorScore) {
+      mejorScore = score;
+      mejor = idx;
+    }
+  });
+
+  return mejor;
   }
 
   // Quita el resaltado azul de todas las palabras
