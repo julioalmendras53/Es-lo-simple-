@@ -795,66 +795,100 @@ const categorias = {
   anorar: ["verbo"]
 };
     
-
 // Dada una palabra de la definición, devuelve esa palabra + sus sinónimos
 function expandirConSinonimos(palabra) {
   const base = palabra.toLowerCase();
   const lista = [base];
   if (sinonimos[base]) {
     lista.push(...sinonimos[base]);
-  } return lista; }
+  }
+  return lista;
+}
 
+// -----------------------------------------------------------
+// ELEGIR DEFINICIÓN + EXPLICACIÓN DEL PORQUÉ (MOTOR DE PESOS)
+// -----------------------------------------------------------
+function elegirDefinicionConExplicacion(definiciones, contexto) {
+  const ctxWords = palabrasClave(contexto);     // palabras limpias del contexto
+  const setCtx   = new Set(ctxWords);
 
-  // -----------------------------------------------------------
-  // ELEGIR DEFINICIÓN + EXPLICACIÓN DEL PORQUÉ
-  // -----------------------------------------------------------
-  function elegirDefinicionConExplicacion(definiciones, contexto) {
-    const ctxWords = palabrasClave(contexto);
-    const setCtx = new Set(ctxWords);
+  let mejorIndice = 0;
+  let mejorScore  = -Infinity;
+  let mejorExplicacion = {
+    exactas: [],
+    sinonimos: [],
+    categorias: []
+  };
 
-    let mejorIndice = 0;
-    let mejorScore = -1;
-    let mejorExplicacion = { exactas: [], sinonimos: [] };
+  definiciones.forEach((def, idx) => {
+    const palabrasDef = palabrasClave(def);
+    let score = 0;
+    let exactas   = [];
+    let sinos     = [];
+    let catsUsadas = [];
 
-    definiciones.forEach((def, idx) => {
-      const palabrasDef = palabrasClave(def);
-      let score = 0;
-      let exactas = [];
-      let sinos = [];
+    palabrasDef.forEach(p => {
+      const base = p.toLowerCase();
+      let palabraContextoCoincidente = null;
+      let tipoCoincidencia = null; // "exacta" | "sinonimo"
 
-      palabrasDef.forEach(p => {
-        const base = p.toLowerCase();
-
-        // --- Coincidencia exacta ---
-        if (setCtx.has(base)) {
-          score += 3;
-          exactas.push(base);
-          return;
-        }
-
-        // --- Coincidencia por sinónimos ---
+      // 1) Coincidencia exacta contexto-definición
+      if (setCtx.has(base)) {
+        tipoCoincidencia = "exacta";
+        palabraContextoCoincidente = base;
+        score += 2; // +2 por exacta (acordado)
+        exactas.push(base);
+      } else {
+        // 2) Coincidencia por sinónimos
         const variantes = expandirConSinonimos(base);
         for (const v of variantes) {
           if (setCtx.has(v)) {
-            score += 1;
+            tipoCoincidencia = "sinonimo";
+            palabraContextoCoincidente = v;
+            score += 1; // +1 por sinónimo (acordado)
             sinos.push({ palabraDef: base, coincidencia: v });
             break;
           }
         }
-      });
+      }
 
-      if (score > mejorScore) {
-        mejorScore = score;
-        mejorIndice = idx;
-        mejorExplicacion = { exactas, sinonimos: sinos };
+      // 3) Si hubo algún tipo de coincidencia, sumamos el peso de categoría
+      if (palabraContextoCoincidente) {
+        const palabraCtx = palabraContextoCoincidente;
+        const cat = categoriasPalabra[palabraCtx]; // ej. "verbo"
+        if (cat && pesosCategoria[cat] !== undefined) {
+          const pesoCat = pesosCategoria[cat];
+          score += pesoCat; // sumatoria simple
+          catsUsadas.push({
+            palabra: palabraCtx,
+            categoria: cat,
+            peso: pesoCat
+          });
+        }
       }
     });
 
-    return {
-      indice: mejorIndice,
-      explicacion: mejorExplicacion
-    };
-  }
+    if (score > mejorScore) {
+      mejorScore = score;
+      mejorIndice = idx;
+      mejorExplicacion = {
+        exactas,
+        sinonimos: sinos,
+        categorias: catsUsadas,
+        score
+      };
+    }
+  });
+
+  return {
+    indice: mejorIndice,
+    explicacion: mejorExplicacion
+  };
+    }
+
+
+
+  
 
   // Quita el resaltado azul de todas las palabras
   function limpiarResaltado() {
