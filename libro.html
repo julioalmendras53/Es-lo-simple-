@@ -776,12 +776,25 @@
                                 "2.En iglesias acto dedicado a una persona viva o muerta.",
                                 "3.Instinto dañoso de un animal a diferencia de otros de su misma especie.",
                                 "4.Cautela con que es llevado a cabo un acto." ] },
-    poder:{ definiciones: [
-                                "1.Tener vía libre para hacer lo que quiera.", 
-                                "2.Expresa posibilidad de que ocurra algo.",
-                                "3.Ser capaz de vencer a otro.",
-                                "4.Ocupado de manera negativa: Sufrir las impertinencias de alguien." ] },
-    epoder: { definicion: "El imperio o dominio sobre algo." },
+    poder: {
+  sentidos: [
+    { id: "sust", tipo: "sustantivo",
+      texto: "El imperio o dominio sobre algo o alguien." },
+
+    { id: "v_capacidad", tipo: "verbo",
+      texto: "Tener vía libre y efectiva para hacer algo." },
+
+    { id: "v_posibilidad", tipo: "verbo",
+      texto: "Expresa posibilidad de que ocurra algo." },
+
+    { id: "v_vencer", tipo: "verbo",
+      texto: "Ser capaz de vencer a otro." },
+
+    { id: "v_sufrir", tipo: "verbo",
+      texto: "Ocupado de manera negativa: Sufrir las impertinencias de alguien." }
+  ]
+},
+
     puede:  { definicion: "Forma de tercera persona del singular del verbo poder en modo indicativo que se habla de temas factuales." },
     pueda:  { definicion: "Forma de tercera persona del singular del verbo poder en modo subjuntivo que se habla de temas virtuales." },
     clitico: { definicion: "Palabra atona que forma grupo acentual siendo estos pronombres." },
@@ -934,6 +947,33 @@
       .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
       .replace(/[^a-z0-9ñ]/g, "");                      // quita todo lo que no sea letra o número
   }
+
+// Detecta si "poder" es sustantivo o verbo según el contexto
+function tipoPoder(tokens, idx) {
+    const palabra = normalizarPalabra(tokens[idx] || "");
+    const prev = normalizarPalabra(tokens[idx - 1] || "");
+    const next = normalizarPalabra(tokens[idx + 1] || "");
+
+    // Cualquier forma conjugada es verbo
+    const conjugaciones = [
+        "puedo","puedes","puede","podemos","pueden",
+        "podia","podian","podra","podrian",
+        "pude","pudo","pudieron"
+    ];
+    if (conjugaciones.includes(palabra)) return "verbo";
+
+    // Artículo o posesivo antes → sustantivo
+    const determinantes = ["el","un","una","mi","tu","su","este","ese","aquel","del","al"];
+    if (determinantes.includes(prev) && palabra === "poder") return "sustantivo";
+
+    // "poder" seguido de otro infinitivo → verbo
+    if (palabra === "poder" && (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir"))) {
+        return "verbo";
+    }
+
+    return null; // no se puede decidir solo con morfología
+}
+    
 
   // Guardaremos aquí las palabras (sin espacios) del libro en orden
   let tokensLibro = [];
