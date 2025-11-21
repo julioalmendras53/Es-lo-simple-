@@ -683,11 +683,22 @@
   }
 
   // Convertir texto en lista de palabras “clave”
-  function palabrasClave(texto) {
-    return limpiarTexto(texto)
-      .split(/\s+/)
-      .filter(w => w.length > 2); // evitamos palabras muy cortas
-  }
+  // Lista de palabras funcionales que NO queremos usar para decidir acepción
+const stopwords = new Set([
+  "el","la","los","las","un","una","unos","unas",
+  "lo","al","del",
+  "de","a","en","por","para","con","sin","sobre",
+  "y","o","u","ni",
+  "que","se","su","sus","mi","mis","tu","tus","su","sus",
+  "este","esta","estos","estas","ese","esa","esos","esas","aquel","aquella","aquellos","aquellas"
+]);
+
+// Convertir texto en lista de palabras “clave”
+function palabrasClave(texto) {
+  return limpiarTexto(texto)
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !stopwords.has(w));
+}
 
     // ── SINÓNIMOS AUTOMÁTICOS PARA EL ENRUTADOR ──
 const sinonimos = {
@@ -709,6 +720,18 @@ const sinonimos = {
     "probable",
     "eventual"
   ]
+};
+
+const pesosCategoria = { 
+   verbo: 2,
+   sustantivo: 1,
+   adjetivo: 0,
+   adverbio: -1,
+   pronombre: -2,
+   determinante: -3,
+   preposicion: -4,
+   conjuncion: -5,
+   interjeccion: -6
 };
 const categorias = {
   infinito: ["sustantivo", "adjetivo"],
