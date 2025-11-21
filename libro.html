@@ -888,23 +888,7 @@ function elegirDefinicionConExplicacion(definiciones, contexto) {
   };
     }
 
-    if (score > mejorScore) {
-      mejorScore = score;
-      mejorIndice = idx;
-      mejorExplicacion = {
-        exactas,
-        sinonimos: sinos,
-        categorias: catsUsadas,
-        score
-      };
-    }
-  });
-
-  return {
-    indice: mejorIndice,
-    explicacion: mejorExplicacion
-  };
-    }
+  
 
 
 
