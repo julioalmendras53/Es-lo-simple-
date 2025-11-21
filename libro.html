@@ -775,26 +775,6 @@
                                 "2.En iglesias acto dedicado a una persona viva o muerta.",
                                 "3.Instinto dañoso de un animal a diferencia de otros de su misma especie.",
                                 "4.Cautela con que es llevado a cabo un acto." ] },
-    poder: {
-  sentidos: [
-    { id: "sust", tipo: "sustantivo",
-      texto: "El imperio o dominio sobre algo o alguien." },
-
-    { id: "v_capacidad", tipo: "verbo",
-      texto: "Tener vía libre y efectiva para hacer algo." },
-
-    { id: "v_posibilidad", tipo: "verbo",
-      texto: "Expresa posibilidad de que ocurra algo." },
-
-    { id: "v_vencer", tipo: "verbo",
-      texto: "Ser capaz de vencer a otro." },
-
-    { id: "v_sufrir", tipo: "verbo",
-      texto: "Ocupado de manera negativa: Sufrir las impertinencias de alguien." }
-  ]
-},
-
-  
     clitico: { definicion: "Palabra atona que forma grupo acentual siendo estos pronombres." },
     enclitico: { definicion: "Pronombre que va pegado al final de un verbo infinitivo o gerundio formando grupo acentual." },
     proclitico: { definicion: "Pronombre que va antes de un verbo separado de él y aportando al grupo acentual." },
@@ -932,11 +912,23 @@
                                  "6.Lograr subir a una altura áspera.",
                                  "7.Cumplirse un plazo.",
                                  "8.Triunfar en pelea física." ] },
-    supervitaminar:{ definiciones:  [
-                                 "1.Potenciar algo por un agente.",
-                                 "2.Hipertrofiar algo hasta lo grotesco.",
-                                 "3.Dopar por trampa." ] }  
+    supervitaminar:{ definiciones: [ 
+      "1.Potenciar algo por un agente.",
+      "2.Hipertrofiar algo hasta lo grotesco.",
+      "3.Dopar por trampa."
+    ] },
+
+    poder: {
+      definiciones: [
+        "1.Imperio o dominio sobre algo o alguien.",
+        "2.Tener vía libre y efectiva para hacer algo.",
+        "3.Expresa posibilidad de que algo ocurra.",
+        "4.Ser capaz de vencer a otro.",
+        "5.Soportar o sufrir las impertinencias de alguien."
+      ]
+    },
   };
+  
 
   // 🔤 Normalizar palabra: quitar signos, minúsculas, quitar tildes
   function normalizarPalabra(raw) {
