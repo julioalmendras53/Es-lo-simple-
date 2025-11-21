@@ -809,7 +809,7 @@ function expandirConSinonimos(palabra) {
 // ELEGIR DEFINICIÓN + EXPLICACIÓN DEL PORQUÉ (MOTOR DE PESOS)
 // -----------------------------------------------------------
 function elegirDefinicionConExplicacion(definiciones, contexto) {
-  const ctxWords = palabrasClave(contexto);     // palabras limpias del contexto
+  const ctxWords = palabrasClave(contexto);
   const setCtx   = new Set(ctxWords);
 
   let mejorIndice = 0;
@@ -817,63 +817,76 @@ function elegirDefinicionConExplicacion(definiciones, contexto) {
   let mejorExplicacion = {
     exactas: [],
     sinonimos: [],
-    categorias: []
+    categorias: [],
+    score: 0
   };
 
   definiciones.forEach((def, idx) => {
     const palabrasDef = palabrasClave(def);
     let score = 0;
-    let exactas   = [];
-    let sinos     = [];
+    let exactas    = [];
+    let sinos      = [];
     let catsUsadas = [];
 
     palabrasDef.forEach(p => {
       const base = p.toLowerCase();
-      let palabraContextoCoincidente = null;
-      let tipoCoincidencia = null; // "exacta" | "sinonimo"
+      let tipo = null;
+      let coincid = null;
 
-      // 1) Coincidencia exacta contexto-definición
+      // — COINCIDENCIA EXACTA —
       if (setCtx.has(base)) {
-        tipoCoincidencia = "exacta";
-        palabraContextoCoincidente = base;
-        score += 2; // +2 por exacta (acordado)
+        tipo = "exacta";
+        coincid = base;
+        score += 2;
         exactas.push(base);
+
       } else {
-        // 2) Coincidencia por sinónimos
+        // — COINCIDENCIA POR SINÓNIMO —
         const variantes = expandirConSinonimos(base);
         for (const v of variantes) {
           if (setCtx.has(v)) {
-            tipoCoincidencia = "sinonimo";
-            palabraContextoCoincidente = v;
-            score += 1; // +1 por sinónimo (acordado)
+            tipo = "sinonimo";
+            coincid = v;
+            score += 1;
             sinos.push({ palabraDef: base, coincidencia: v });
             break;
           }
         }
       }
 
-      // 3) Si hubo algún tipo de coincidencia, sumamos el peso de categoría
-      if (palabraContextoCoincidente) {
-        const palabraCtx = palabraContextoCoincidente;
-        // Recuperamos las categorías reales que declaraste
-const catList = categorias[palabraCtx];
-
-if (catList) {
-  for (const cat of catList) {
-    if (pesosCategoria[cat] !== undefined) {
-      const pesoCat = pesosCategoria[cat];
-      score += pesoCat;
-      catsUsadas.push({
-        palabra: palabraCtx,
-        categoria: cat,
-        peso: pesoCat
-      });
-    }
-  }
-    }
-  }
-}
+      // — PESOS POR CATEGORÍA —
+      if (coincid) {
+        const catList = categorias[coincid];
+        if (catList) {
+          for (const cat of catList) {
+            if (pesosCategoria[cat] !== undefined) {
+              const peso = pesosCategoria[cat];
+              score += peso;
+              catsUsadas.push({ palabra: coincid, categoria: cat, peso });
+            }
+          }
+        }
+      }
     });
+
+    // — ACTUALIZAR GANADOR —
+    if (score > mejorScore) {
+      mejorScore = score;
+      mejorIndice = idx;
+      mejorExplicacion = {
+        exactas,
+        sinonimos: sinos,
+        categorias: catsUsadas,
+        score
+      };
+    }
+  });
+
+  return {
+    indice: mejorIndice,
+    explicacion: mejorExplicacion
+  };
+    }
 
     if (score > mejorScore) {
       mejorScore = score;
