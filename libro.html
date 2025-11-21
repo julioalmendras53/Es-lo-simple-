@@ -855,17 +855,17 @@ function elegirDefinicionConExplicacion(definiciones, contexto) {
       // 3) Si hubo algún tipo de coincidencia, sumamos el peso de categoría
       if (palabraContextoCoincidente) {
         const palabraCtx = palabraContextoCoincidente;
-        const cat = categoriasPalabra[palabraCtx]; // ej. "verbo"
-        if (cat && pesosCategoria[cat] !== undefined) {
-          const pesoCat = pesosCategoria[cat];
-          score += pesoCat; // sumatoria simple
-          catsUsadas.push({
-            palabra: palabraCtx,
-            categoria: cat,
-            peso: pesoCat
-          });
-        }
-      }
+        const catList = categorias[palabraCtx];
+if (catList) {
+  // si hay más de una categoría, sumamos la media o la primera
+  for (const cat of catList) {
+    if (pesosCategoria[cat] !== undefined) {
+      const pesoCat = pesosCategoria[cat];
+      score += pesoCat; // sumatoria simple
+      catsUsadas.push({ palabra: palabraCtx, categoria: cat, peso: pesoCat });
+    }
+  }
+}
     });
 
     if (score > mejorScore) {
