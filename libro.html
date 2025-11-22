@@ -984,9 +984,13 @@ function tipoPoder(tokens, idx) {
   // 1) Conjugaciones claras → verbo
   const conjugaciones = [
     "puedo","puedes","puede","podemos","pueden",
-    "podia","podian","podra","podrian",
-    "pude","pudo","pudieron",
-    "pueda","puedas","puedan","pudiera","pudieran"
+    "podia","podias","podiamos","podian",
+    "podra","podras","podremos","podran",
+    "podria","podrias","podriamos","podrian",
+    "pude","pudiste","pudo","pudimos","pudieron",
+    "pueda","puedas","podamos","puedan",
+    "pudiera","pudieras","pudieramos","pudieran",
+    "pudiese","pudieses","pudiesemos","pudiesen"
   ];
   if (conjugaciones.includes(palabra)) return "verbo";
 
@@ -1017,7 +1021,7 @@ function tipoPoder(tokens, idx) {
   }
 
   return null;
-}
+    }
     
 
     
