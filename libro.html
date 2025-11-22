@@ -141,9 +141,20 @@
     "hice": "hacer", "hizo": "hacer", "hicieron": "hacer",
 
     // PODER
-    "puedo": "poder", "puedes": "poder", "puede": "poder", "podemos": "poder",
-    "pueden": "poder", "podia": "poder", "podian": "poder", "podra": "poder",
-    "pude": "poder", "pudo": "poder", "pudieron": "poder",
+"puedo": "poder", "puedes": "poder", "puede": "poder", "podemos": "poder",
+"pueden": "poder",
+
+"podia": "poder", "podias": "poder", "podiamos": "poder", "podian": "poder",
+
+"podra": "poder", "podras": "poder", "podremos": "poder", "podran": "poder",
+
+"podria": "poder", "podrias": "poder", "podriamos": "poder", "podrian": "poder",
+
+"pude": "poder", "pudiste": "poder", "pudo": "poder", "pudimos": "poder", "pudieron": "poder",
+
+"pueda": "poder", "puedas": "poder", "podamos": "poder", "puedan": "poder",
+"pudiera": "poder", "pudieras": "poder", "pudieramos": "poder", "pudieran": "poder",
+"pudiese": "poder", "pudieses": "poder", "pudiesemos": "poder", "pudiesen": "poder",
 
     // DECIR
     "digo": "decir", "dices": "decir", "dice": "decir", "dicen": "decir",
@@ -1008,31 +1019,7 @@ function tipoPoder(tokens, idx) {
   return null;
 }
     
-// Detecta si "poder" es sustantivo o verbo según el contexto
-function tipoPoder(tokens, idx) {
-    const palabra = normalizarPalabra(tokens[idx] || "");
-    const prev = normalizarPalabra(tokens[idx - 1] || "");
-    const next = normalizarPalabra(tokens[idx + 1] || "");
 
-    // Cualquier forma conjugada es verbo
-    const conjugaciones = [
-        "puedo","puedes","puede","podemos","pueden",
-        "podia","podian","podra","podrian",
-        "pude","pudo","pudieron"
-    ];
-    if (conjugaciones.includes(palabra)) return "verbo";
-
-    // Artículo o posesivo antes → sustantivo
-    const determinantes = ["el","un","una","mi","tu","su","este","ese","aquel","del","al"];
-    if (determinantes.includes(prev) && palabra === "poder") return "sustantivo";
-
-    // "poder" seguido de otro infinitivo → verbo
-    if (palabra === "poder" && (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir"))) {
-        return "verbo";
-    }
-
-    return null; // no se puede decidir solo con morfología
-}
     
 
   // Guardaremos aquí las palabras (sin espacios) del libro en orden
