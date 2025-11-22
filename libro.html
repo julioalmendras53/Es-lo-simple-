@@ -1241,145 +1241,121 @@ function elegirDefinicionConExplicacion(definiciones, contexto) {
 
   
 function mostrarDefinicion(rawWord, tokenIndex) {
-  const clave = obtenerClaveVerbal(rawWord, tokenIndex); }
+  const clave = obtenerClaveVerbal(rawWord, tokenIndex);
+  const entrada = diccionario[clave];
+  const panel = document.getElementById("definicion");
 
+  // 1) Resaltado visual en el texto del libro
+  limpiarResaltado();
+  resaltarCoincidencias(rawWord);
 
-  
-
-  // Quita el resaltado azul de todas las palabras
-  function limpiarResaltado() {
-    document.querySelectorAll(".palabra.resaltada").forEach(span => {
-      span.classList.remove("resaltada");
-    });
-  }
-
-  // Resalta en azul todas las apariciones de la palabra clicada
-  function resaltarCoincidencias(rawWord) {
-    const clave = normalizarPalabra(rawWord); // misma normalización que para el diccionario
-
-    document.querySelectorAll(".palabra").forEach(span => {
-      const textoSpan = span.textContent || "";
-      const claveSpan = normalizarPalabra(textoSpan);
-      if (claveSpan === clave) {
-        span.classList.add("resaltada");
-      }
-    });
-  }
-
-    // 1) Resaltado visual en el texto del libro
-    limpiarResaltado();
-    resaltarCoincidencias(rawWord);
-
-    // 2) Si no hay entrada en el diccionario
-    if (!entrada) {
-      panel.innerHTML = `
-        <h2>${rawWord}</h2>
-        <p class="sin-def">
-          Esta palabra aún no tiene definición en tu diccionario.
-          <br><small>(clave interna: ${clave})</small>
-        </p>
-      `;
-      return;
-    }
-
-    // 3) Reunimos todas las definiciones en una sola lista
-    let definiciones = [];
-    if (entrada.definicion) {
-      definiciones.push(entrada.definicion);
-    }
-    if (Array.isArray(entrada.definiciones)) {
-      definiciones = definiciones.concat(entrada.definiciones);
-    }
-
-    if (definiciones.length === 0) {
-      panel.innerHTML = `
-        <h2>${rawWord}</h2>
-        <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
-      `;
-      return;
-    }
-
-    // 4) Obtenemos el contexto alrededor de la palabra clicada
-    const contexto = obtenerContexto(tokenIndex);
-
-    // 5) Elegimos definición según contexto
-    let { indice: indiceElegido, explicacion } =
-      elegirDefinicionConExplicacion(definiciones, contexto);
-
-    // Regla especial para PODER: construcciones del tipo "puede que / pueda que"
-    if (clave === "poder") {
-      const norm = normalizarPalabra(rawWord); // "puede", "pueda", etc.
-      const prevTok  = tokensLibro[tokenIndex - 1] || "";
-      const nextTok  = tokensLibro[tokenIndex + 1] || "";
-      const prevNorm = normalizarPalabra(prevTok);
-      const nextNorm = normalizarPalabra(nextTok);
-
-      const esConstruccionPosibilidad =
-        (norm === "puede" || norm === "pueda" || norm === "podria") &&
-        (nextNorm === "que" || prevNorm === "que");
-
-      if (esConstruccionPosibilidad && definiciones.length >= 2) {
-        // Forzamos la acepción 2 (índice 1) → "Expresa posibilidad..."
-        indiceElegido = 1;
-        explicacion = {
-          exactas: [],
-          sinonimos: [],
-          reglaEspecial: "Se detectó la construcción «puede que / pueda que», que en tu gramática marca la acepción de posibilidad."
-        };
-      }
-    }
-
-    // 6) Construimos el HTML de las definiciones (una en azul)
-    const htmlDefs = definiciones
-      .map((texto, i) => {
-        const style = i === indiceElegido ? ' style="color: blue;"' : '';
-        return `<p${style}>${texto}</p>`;
-      })
-      .join("");
-
-    // 7) Construimos una explicación corta del porqué
-    let htmlExp = "";
-    if (definiciones.length > 1) {
-      const partes = [];
-
-      if (explicacion.exactas && explicacion.exactas.length) {
-        const únicas = [...new Set(explicacion.exactas)];
-        partes.push(
-          `Coincidencias exactas en el contexto: <b>${únicas.join(", ")}</b>.`
-        );
-      }
-
-      if (explicacion.sinonimos && explicacion.sinonimos.length) {
-        const lista = explicacion.sinonimos
-          .map(p => `${p.palabraDef} ↔ ${p.coincidencia}`)
-          .join(", ");
-        partes.push(
-          `Coincidencias por sinónimos: <b>${lista}</b>.`
-        );
-      }
-
-      if (explicacion.reglaEspecial) {
-        partes.push(explicacion.reglaEspecial);
-      }
-
-      if (partes.length) {
-        htmlExp = `
-          <hr>
-          <p style="font-size:0.9em;">
-            <strong>Por qué escogí esta acepción:</strong>
-            ${partes.join(" ")}
-          </p>
-        `;
-      }
-    }
-
-    // 8) Pintamos todo en el panel
+  // 2) Si no hay entrada en el diccionario
+  if (!entrada) {
     panel.innerHTML = `
       <h2>${rawWord}</h2>
-      ${htmlDefs}
-      ${htmlExp}
+      <p class="sin-def">
+        Esta palabra aún no tiene definición en tu diccionario.
+        <br><small>(clave interna: ${clave})</small>
+      </p>
     `;
+    return;
+  }
+
+  // 3) Reunimos todas las definiciones en una sola lista
+  let definiciones = [];
+  if (entrada.definicion) definiciones.push(entrada.definicion);
+  if (Array.isArray(entrada.definiciones)) {
+    definiciones = definiciones.concat(entrada.definiciones);
+  }
+
+  if (definiciones.length === 0) {
+    panel.innerHTML = `
+      <h2>${rawWord}</h2>
+      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
+    `;
+    return;
+  }
+
+  // 4) Contexto
+  const contexto = obtenerContexto(tokenIndex);
+
+  // 5) Elegimos definición según contexto
+  let { indice: indiceElegido, explicacion } =
+    elegirDefinicionConExplicacion(definiciones, contexto);
+
+  // ✅ Arreglo 2 abajo (clave de poder)
+  const esPoderVerbal = (clave === "poder-verbo" || clave === "poder");
+
+  // Regla especial para PODER: “puede que / pueda que…”
+  if (esPoderVerbal) {
+    const norm = normalizarPalabra(rawWord); // puede, pueda, podria, etc.
+    const prevTok  = tokensLibro[tokenIndex - 1] || "";
+    const nextTok  = tokensLibro[tokenIndex + 1] || "";
+    const prevNorm = normalizarPalabra(prevTok);
+    const nextNorm = normalizarPalabra(nextTok);
+
+    const esConstruccionPosibilidad =
+      (norm === "puede" || norm === "pueda" || norm === "podria") &&
+      (nextNorm === "que" || prevNorm === "que");
+
+    if (esConstruccionPosibilidad && definiciones.length >= 2) {
+      indiceElegido = 1; // acepción 2
+      explicacion = {
+        exactas: [],
+        sinonimos: [],
+        reglaEspecial:
+          "Se detectó la construcción «puede que / pueda que», que marca la acepción de posibilidad."
+      };
     }
+  }
+
+  // 6) HTML definiciones
+  const htmlDefs = definiciones
+    .map((texto, i) => {
+      const style = i === indiceElegido ? ' style="color: blue;"' : '';
+      return `<p${style}>${texto}</p>`;
+    })
+    .join("");
+
+  // 7) Explicación corta
+  let htmlExp = "";
+  if (definiciones.length > 1) {
+    const partes = [];
+
+    if (explicacion.exactas && explicacion.exactas.length) {
+      const únicas = [...new Set(explicacion.exactas)];
+      partes.push(`Coincidencias exactas en el contexto: <b>${únicas.join(", ")}</b>.`);
+    }
+
+    if (explicacion.sinonimos && explicacion.sinonimos.length) {
+      const lista = explicacion.sinonimos
+        .map(p => `${p.palabraDef} ↔ ${p.coincidencia}`)
+        .join(", ");
+      partes.push(`Coincidencias por sinónimos: <b>${lista}</b>.`);
+    }
+
+    if (explicacion.reglaEspecial) {
+      partes.push(explicacion.reglaEspecial);
+    }
+
+    if (partes.length) {
+      htmlExp = `
+        <hr>
+        <p style="font-size:0.9em;">
+          <strong>Por qué escogí esta acepción:</strong>
+          ${partes.join(" ")}
+        </p>
+      `;
+    }
+  }
+
+  // 8) Pintar panel
+  panel.innerHTML = `
+    <h2>${rawWord}</h2>
+    ${htmlDefs}
+    ${htmlExp}
+  `;
+}
         
       
 
