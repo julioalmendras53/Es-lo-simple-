@@ -556,29 +556,52 @@
   }
 
   // A partir de la palabra del libro, obtenemos la clave real del diccionario
-  function obtenerClaveVerbal(rawWord) {
-    const original = rawWord.trim();
+  function obtenerClaveVerbal(rawWord, indiceTokenReal = null) {
+  const original = rawWord.trim();
 
-    // Protección: "dios" NO es un verbo
-    if (original.toLowerCase().startsWith("dios")) {
-      return "dios";
+  // Protección: "dios" NO es un verbo
+  if (original.toLowerCase().startsWith("dios")) {
+    return "dios";
+  }
+
+  // Caso especial: "creó" con tilde → CREAR
+  if (original === "creó" || original === "Creó") {
+    if (diccionario["crear"]) return "crear";
+  }
+
+  // ---- Normalización estándar primero ----
+  let w = normalizarPalabra(original); // quita puntuación, baja a minúscula, etc.
+  w = stripClitics(w);
+  const lemma = guessInfinitive(w);
+
+  // ---- Detección especial de PODER ya normalizado ----
+  if (lemma === "poder") {
+
+    // Si te pasaron el índice real del click, úsalo
+    let idx = indiceTokenReal;
+
+    // Si no, busca por forma normalizada (NO por original)
+    if (idx == null) {
+      idx = tokensLibro.findIndex(t => normalizarPalabra(t) === "poder");
     }
 
-    // Caso especial: "creó" con tilde -> CREAR
-    if (original === "creó" || original === "Creó") {
-      if (diccionario["crear"]) return "crear";
+    if (idx >= 0) {
+      const tipoPod = tipoPoder(tokensLibro, idx);
+
+      if (tipoPod === "verbo" && diccionario["poder-verbo"]) {
+        return "poder-verbo";
+      }
+
+      if (tipoPod === "sustantivo" && diccionario["poder-sustantivo"]) {
+        return "poder-sustantivo";
+      }
     }
 
-    // 1) Normalizamos (minúsculas, sin tilde, sin signos raros)
-    let w = normalizarPalabra(original);
+    // Fallback si no detecta tipo
+    return "poder-verbo"; 
+  }
 
-    // 2) Quitamos pronombres enclíticos (decirmelo -> decir)
-    w = stripClitics(w);
-
-    // 3) Intentamos llevar a infinitivo
-    const lemma = guessInfinitive(w);
-
-    return lemma;
+  return lemma;
   }
 
   // 🔹 Mini-diccionario (tu objeto original)
@@ -918,7 +941,7 @@
       "3.Dopar por trampa."
     ] },
 
-    poder: {
+    poder-verbo:{
       definiciones: [
         
         "1.Tener vía libre para hacer a lo quiera.",
@@ -926,8 +949,13 @@
         "3.Ser capaz de vencer a otro.",
         "4.Ocupado de manera negativa: Sufrir las impertinencias de alguien." ]
     },
-  };
-  
+    poder-sustantivo: { definiciones:  [ 
+        "1.Facultad para hacer.",
+        "2.Gobierno en un Estado.",
+        "3.Capacidad física de las bestias.",
+        "4.Permiso que se cede de alguien a alguien." ] }  };
+        
+
 
   // 🔤 Normalizar palabra: quitar signos, minúsculas, quitar tildes
   function normalizarPalabra(raw) {
@@ -1238,8 +1266,10 @@ function elegirDefinicionConExplicacion(definiciones, contexto) {
   }
 
   // Mostrar definición con selección por contexto + explicación
-  function mostrarDefinicion(rawWord, tokenIndex) {
-    const clave   = obtenerClaveVerbal(rawWord);
+  span.onclick = () => {
+   const clave = obtenerClaveVerbal(token, i);
+   mostrarDefinicion(clave);
+};
     const panel   = document.getElementById("definicion");
     const entrada = diccionario[clave];
 
