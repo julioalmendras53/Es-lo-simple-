@@ -1321,7 +1321,25 @@ function elegirDefinicionConExplicacion(definiciones, contexto) {
   };
     }
 
-  
+// Quita el resaltado azul de todas las palabras
+function limpiarResaltado() {
+  document.querySelectorAll('#libro .palabra.resaltada').forEach(span => {
+    span.classList.remove('resaltada');
+  });
+}
+
+// Resalta todas las ocurrencias de la palabra clicada
+function resaltarCoincidencias(rawWord) {
+  const objetivo = normalizarPalabra(rawWord);
+
+  document.querySelectorAll('#libro .palabra').forEach(span => {
+    const textoSpan = span.textContent || "";
+    if (normalizarPalabra(textoSpan) === objetivo) {
+      span.classList.add('resaltada');
+    }
+  });
+}
+    
 function mostrarDefinicion(rawWord, tokenIndex) {
   const clave = obtenerClaveVerbal(rawWord, tokenIndex);
   const entrada =
