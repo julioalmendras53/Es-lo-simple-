@@ -670,7 +670,12 @@ function tipoPoder(tokens, idx) {
   }
 
   // 🔹 Mini-diccionario (tu objeto original)
-  const diccionario = {
+  // Índice auxiliar: mismas entradas pero con clave normalizada (sin tildes, con ñ)
+const diccionarioIdx = {};
+for (const [k, v] of Object.entries(diccionario)) {
+  diccionarioIdx[normalizarPalabra(k)] = v;
+}
+  {
     infinito:   { definicion: "Que crece sin parar.", imagen: "images/infinito.jpg" },
     
     
@@ -1317,7 +1322,9 @@ function elegirDefinicionConExplicacion(definiciones, contexto) {
   
 function mostrarDefinicion(rawWord, tokenIndex) {
   const clave = obtenerClaveVerbal(rawWord, tokenIndex);
-  const entrada = diccionario[clave];
+  const entrada =
+  diccionario[clave] ||
+  diccionarioIdx[normalizarPalabra(clave)];
   const panel = document.getElementById("definicion");
 
   // 1) Resaltado visual en el texto del libro
