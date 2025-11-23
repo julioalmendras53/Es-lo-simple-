@@ -671,11 +671,7 @@ function tipoPoder(tokens, idx) {
 
   // 🔹 Mini-diccionario (tu objeto original)
   // Índice auxiliar: mismas entradas pero con clave normalizada (sin tildes, con ñ)
-const diccionarioIdx = {};
-for (const [k, v] of Object.entries(diccionario)) {
-  diccionarioIdx[normalizarPalabra(k)] = v;
-}
-  {
+const diccionario = {
     infinito:   { definicion: "Que crece sin parar.", imagen: "images/infinito.jpg" },
     
     
@@ -1011,6 +1007,12 @@ for (const [k, v] of Object.entries(diccionario)) {
         "2.Gobierno en un Estado.",
         "3.Capacidad física de las bestias.",
         "4.Permiso que se cede de alguien a alguien." ] }  };
+    
+    // Índice auxiliar: mismas entradas pero con clave normalizada (sin tildes, con ñ)
+const diccionarioIdx = {};
+for (const [k, v] of Object.entries(diccionario)) {
+  diccionarioIdx[normalizarPalabra(k)] = v;
+}
         
 
 
