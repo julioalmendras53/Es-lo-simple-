@@ -45,10 +45,7 @@
       font-weight: bold;
     }
 
-    h1 {
-      grid-column: 1 / -1;
-      margin-top: 0;
-    }
+    h1 { grid-column: 1 / -1; margin-top: 0; }
 
     .sin-def {
       color: #999;
@@ -62,7 +59,7 @@
 
   <h1>Libro del Infinito</h1>
 
-  <!-- Texto original del libro -->
+  <!-- TEXTO DEL LIBRO -->
   <pre id="texto-libro" style="display:none;">
 4296 El poder del estado en infinito no tiene sentido.
 4297 El infinito de poder puede.
@@ -71,10 +68,8 @@
 4300 No puedo aguantar las vejaciones que trae tener un fin.
   </pre>
 
-  <!-- Libro renderizado -->
   <div id="libro"></div>
 
-  <!-- Panel de definición -->
   <div id="definicion">
     <h2>Definición</h2>
     <p>Haz clic en una palabra del libro para ver su definición.</p>
@@ -83,10 +78,9 @@
 </div>
 
 <script>
-/* ------------------------------
-   Funciones base
------------------------------- */
-
+/* -------------------------------------
+   FUNCIONES DE NORMALIZACIÓN
+------------------------------------- */
 function normalizarPalabra(raw = "") {
   return raw
     .toLowerCase()
@@ -94,45 +88,188 @@ function normalizarPalabra(raw = "") {
     .replace(/[^a-z0-9ñ]/gi, "");
 }
 
-/* ------------------------------
-   Diccionario del usuario
------------------------------- */
-
+/* -------------------------------------
+   DICCIONARIO COMPLETO (FUNCIONAL)
+------------------------------------- */
 const diccionario = {
+
+  agujero: {
+    definiciones: [
+      "1.Abertura o hueco en una superficie o en un sólido.",
+      "2.De las agujas.",
+      "3.Falta inmotivada de plata en una empresa."
+    ]
+  },
+
+  negro: {
+    definiciones: [
+      "1.Ausencia total o casi de reflejo luminoso.",
+      "2.De color negro.",
+      "3.Perteneciente a la raza negra.",
+      "4.Ritual en que se invoca al demonio.",
+      "5.Del color de carbón, de oscuridad total o la boca de un túnel",
+      "6.Muy bronceado.",
+      "7.Modo de tratamiento de quienes se quieren.",
+      "8.Persona que hace un trabajo intelectual por encargo de otra haciendo todo el esfuerzo.",
+      "9.Estado de ánimo triste o pesimista.",
+      "10.Género de cine que de trama policiaca en entorno violento."
+    ]
+  },
+
+  de: {
+    definiciones: [
+      "1.Indica pertenencia. La paciencia de job.",
+      "2.Locuciones adverbiales: Almorzó de pie.",
+      "3.Procedencia: Vengo de Aranjuez.",
+      "4.Material: vestido de seda.",
+      "5.Contenido: vaso de agua.",
+      "6.Asunto: trata de la guerra.",
+      "7.Causa: murió de viruelas.",
+      "8.Naturaleza: hombre de valor.",
+      "9.Desde: de Madrid a Toledo.",
+      "10.Lejor de pensar.",
+      "11.Hipotético: de saberlo vendría.",
+      "12.Perífrasis: acaba de pasar.",
+      "13.Tiempo: de madrugada.",
+      "14.Refuerzo: el bueno de Juan.",
+      "15.Ilación: de esto se sigue.",
+      "16.Rapidez: beber de un trago.",
+      "17.Lástima: ay de los vencidos.",
+      "18.A por la 16.",
+      "19.Comparación.",
+      "20.Para. Gorro de dormir.",
+      "21.Por miedo."
+    ]
+  },
+
+  amanecer: {
+    definiciones: [
+      "1.Comenzar a verse la luz.",
+      "2.Estar en un lugar al amanecer.",
+      "3.Nacer figurado.",
+      "4.Pasar la noche en vela.",
+      "5.Alumbre."
+    ]
+  },
+
+  manana: {
+    definiciones: [
+      "1.Parte del día entre amanecer y mediodía.",
+      "2.Medianoche a mediodía.",
+      "3.El tiempo futuro.",
+      "4.El día siguiente."
+    ]
+  },
+
+  en: {
+    definiciones: [
+      "1.Tiempo, lugar o modo.",
+      "2.Sobre.",
+      "3.Ocupación.",
+      "4.Tránsito.",
+      "5.Tan pronto como.",
+      "6.Límite de movimiento."
+    ]
+  },
+
+  ese: {
+    definiciones: [
+      "1.Cercano al interlocutor.",
+      "2.Mencionado.",
+      "3.Menosprecio.",
+      "4.Persona que se ha marchado."
+    ]
+  },
+
+  campo: {
+    definiciones: [
+      "1.Terreno extenso.",
+      "2.Terreno trabajable.",
+      "3.Campiña.",
+      "4.Terreno de juego.",
+      "5.Mitad del campo en fútbol.",
+      "6.Término de municipio.",
+      "7.Campo de conocimiento.",
+      "8.Campo eléctrico.",
+      "9.Campo de base de datos.",
+      "10.Comarca ocupada por ejército.",
+      "11.Ejército.",
+      "12.Campo visual."
+    ]
+  },
+
+  hipotetico: { definicion: "Perteneciente a la hipótesis." },
+
+  vencer: {
+    definiciones: [
+      "1.Batir al enemigo.",
+      "2.Ser superior.",
+      "3.Controlar emociones.",
+      "4.Superar obstáculos.",
+      "5.Atraer a alguien al propio deseo.",
+      "6.Subir a un sitio áspero.",
+      "7.Cumplirse plazo.",
+      "8.Ganar en pelea física."
+    ]
+  },
+
+  supervitaminar: {
+    definiciones: [
+      "1.Potenciar algo.",
+      "2.Hipertrofiar.",
+      "3.Dopar con trampa."
+    ]
+  },
+
   poder-verbo: {
     definiciones: [
       "1.Tener vía libre para hacer a lo quiera.",
-      "2.Expresa posibilidad de que ocurra algo.",
+      "2.Expresa posibilidad.",
       "3.Ser capaz de vencer a otro.",
-      "4.Ocupado de manera negativa: Sufrir las impertinencias de alguien."
+      "4.Sufrir impertinencias."
     ]
   },
 
   poder-sustantivo: {
     definiciones: [
       "1.Facultad para hacer.",
-      "2.Gobierno en un Estado.",
-      "3.Capacidad física de las bestias.",
-      "4.Permiso que se cede de alguien a alguien."
+      "2.Gobierno.",
+      "3.Fuerza física de animales.",
+      "4.Permiso legal cedido."
     ]
-  }
+  },
 
+  infinito: {
+    definiciones: [
+      "1.Que no tiene fin.",
+      "2.Ilimitado.",
+      "3.Lo que carece de límite."
+    ]
+  },
+
+  estado: { definiciones: ["1.Condición.", "2.Organización política."] },
+  sentido: { definiciones: ["1.Significado.", "2.Función fisiológica."] },
+  fin: { definiciones: ["1.Término.", "2.Propósito."] },
+  tener: { definiciones: ["1.Poseer.", "2.Sujetar.", "3.Ocurrir."] },
+  traer: { definiciones: ["1.Llevar hacia aquí.", "2.Causar."] },
+  vejaciones: { definiciones: ["1.Maltrato.", "2.Humillación persistente."] },
+
+  dios: { definiciones: ["1.Ser supremo."] }
 };
 
 
-/* -------------------------------------------------------
-   Creación de índice normalizado (agujero = AGUJERO etc.)
--------------------------------------------------------- */
+/* -------------------------------------
+   ÍNDICE NORMALIZADO
+------------------------------------- */
 const diccionarioIdx = {};
 for (const [k, v] of Object.entries(diccionario)) {
   diccionarioIdx[normalizarPalabra(k)] = v;
 }
 
 
-/* -------------------------------------------------------
-   Detección especial de PODER
--------------------------------------------------------- */
-
+/* -------------------------------------
+   DETECCIÓN PODER
+------------------------------------- */
 function tipoPoder(tokens, idx) {
   const palabra = normalizarPalabra(tokens[idx] || "");
   const prev = normalizarPalabra(tokens[idx - 1] || "");
@@ -166,18 +303,16 @@ function tipoPoder(tokens, idx) {
     return "sustantivo";
   }
 
-  if (
-    palabra === "poder" &&
-    (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir"))
-  ) return "verbo";
+  if (palabra === "poder" && (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir")))
+    return "verbo";
 
   return null;
 }
 
 
-/* -------------------------------------------------------
-   Lematizador simple
--------------------------------------------------------- */
+/* -------------------------------------
+   LEMATIZACIÓN
+------------------------------------- */
 
 const verbLemmaMap = {
   "puedo": "poder", "puedes": "poder", "puede": "poder",
@@ -251,53 +386,50 @@ function guessInfinitive(w) {
     if (diccionario[candIr]) return candIr;
   }
 
-  if (w.endsWith("ar") || w.endsWith("er") || w.endsWith("ir")) return w;
+  if (w.endsWith("ar") || w.endsWith("er") || w.endsWith("ir"))
+    return w;
 
   return w;
 }
 
-/* -------------------------------------------------------
-   Construcción del texto interactivo
--------------------------------------------------------- */
+/* -------------------------------------
+   TOKENIZACIÓN Y CONSTRUCCIÓN DEL LIBRO
+------------------------------------- */
 
 let tokensLibro = [];
 
-function obtenerClaveVerbal(rawWord, indiceTokenReal = null) {
-  const original = rawWord.trim();
+function prepararLibro() {
+  const fuente = document.getElementById("texto-libro").innerText;
+  const contenedorLibro = document.getElementById("libro");
 
-  if (original.toLowerCase().startsWith("dios")) return "dios";
+  const tokens = fuente.split(/(\s+)/);
+  tokensLibro = [];
 
-  if (original === "creó" || original === "Creó") {
-    if (diccionario["crear"]) return "crear";
-  }
+  contenedorLibro.innerHTML = "";
+  let indiceToken = 0;
 
-  let w = normalizarPalabra(original);
-  w = stripClitics(w);
-  const lemma = guessInfinitive(w);
+  tokens.forEach(token => {
+    if (/^\s+$/.test(token)) {
+      contenedorLibro.appendChild(document.createTextNode(token));
+    } else {
+      const span = document.createElement("span");
+      span.textContent = token;
+      span.className = "palabra";
 
-  if (lemma === "poder") {
-    let idx = indiceTokenReal;
+      const idx = indiceToken;
+      span.addEventListener("click", () => mostrarDefinicion(token, idx));
 
-    if (idx == null) {
-      idx = tokensLibro.findIndex(t => normalizarPalabra(t) === "poder");
+      tokensLibro.push(token);
+      indiceToken++;
+
+      contenedorLibro.appendChild(span);
     }
-
-    if (idx >= 0) {
-      const tipoPod = tipoPoder(tokensLibro, idx);
-
-      if (tipoPod === "verbo") return "poder-verbo";
-      if (tipoPod === "sustantivo") return "poder-sustantivo";
-    }
-
-    return "poder-verbo";
-  }
-
-  return lemma;
+  });
 }
 
-/* -------------------------------------------------------
-   Contexto y extracción de palabras clave
--------------------------------------------------------- */
+/* -------------------------------------
+   CONTEXTO
+------------------------------------- */
 
 function obtenerContexto(idx) {
   let inicio = idx;
@@ -314,14 +446,16 @@ function obtenerContexto(idx) {
 
   while (fin < tokensLibro.length - 1) {
     const t = tokensLibro[fin];
-    if (/[.!?]/.test(t)) {
-      break;
-    }
+    if (/[.!?]/.test(t)) break;
     fin++;
   }
 
   return tokensLibro.slice(inicio, fin + 1).join(" ");
 }
+
+/* -------------------------------------
+   PALABRAS CLAVE
+------------------------------------- */
 
 function limpiarTexto(texto) {
   return texto
@@ -345,6 +479,10 @@ function palabrasClave(texto) {
     .split(/\s+/)
     .filter(w => w.length > 2 && !stopwords.has(w));
 }
+
+/* -------------------------------------
+   SINÓNIMOS
+------------------------------------- */
 
 const sinonimos = {
   vencer: ["ganar","derrotar","triunfar","vencer"],
@@ -385,6 +523,10 @@ const categorias = {
   sentido: ["sustantivo"]
 };
 
+
+/* -------------------------------------
+   EXPANSIÓN DE SINÓNIMOS
+------------------------------------- */
 function expandirConSinonimos(p) {
   const base = p.toLowerCase();
   const lista = [base];
@@ -392,6 +534,9 @@ function expandirConSinonimos(p) {
   return lista;
 }
 
+/* -------------------------------------
+   ELECCIÓN DE DEFINICIÓN
+------------------------------------- */
 function elegirDefinicionConExplicacion(definiciones, contexto) {
   const ctxWords = palabrasClave(contexto);
   const setCtx = new Set(ctxWords);
@@ -451,9 +596,9 @@ function elegirDefinicionConExplicacion(definiciones, contexto) {
   return { indice: mejorIndice, explicacion: mejorExplicacion };
 }
 
-/* -------------------------------------------------------
-   Resaltado
--------------------------------------------------------- */
+/* -------------------------------------
+   RESALTADO
+------------------------------------- */
 
 function limpiarResaltado() {
   document.querySelectorAll("#libro .palabra.resaltada")
@@ -469,13 +614,38 @@ function resaltarCoincidencias(rawWord) {
   });
 }
 
-/* -------------------------------------------------------
-   Mostrar definición
--------------------------------------------------------- */
+/* -------------------------------------
+   MUESTRA DE DEFINICIÓN
+------------------------------------- */
 
-function mostrarDefinicion(rawWord, tokenIndex) {
-  const clave = obtenerClaveVerbal(rawWord, tokenIndex);
-  const entrada = diccionario[clave] || diccionarioIdx[normalizarPalabra(clave)];
+function obtenerClaveVerbal(rawWord, idx) {
+  const original = rawWord.trim();
+
+  if (original.toLowerCase().startsWith("dios")) return "dios";
+
+  if (original === "creó" || original === "Creó")
+    return diccionario["crear"] ? "crear" : original;
+
+  let w = normalizarPalabra(original);
+  w = stripClitics(w);
+  const lemma = guessInfinitive(w);
+
+  if (lemma === "poder") {
+    const tipo = tipoPoder(tokensLibro, idx);
+    if (tipo === "verbo") return "poder-verbo";
+    if (tipo === "sustantivo") return "poder-sustantivo";
+    return "poder-verbo";
+  }
+
+  return lemma;
+}
+
+function mostrarDefinicion(rawWord, idx) {
+  const clave = obtenerClaveVerbal(rawWord, idx);
+
+  const entrada =
+    diccionario[clave] ||
+    diccionarioIdx[normalizarPalabra(clave)];
 
   const panel = document.getElementById("definicion");
 
@@ -486,7 +656,7 @@ function mostrarDefinicion(rawWord, tokenIndex) {
     panel.innerHTML = `
       <h2>${rawWord}</h2>
       <p class="sin-def">
-        Esta palabra aún no tiene definición en tu diccionario.
+        Esta palabra no tiene definición aún.
         <br><small>(clave interna: ${clave})</small>
       </p>`;
     return;
@@ -494,44 +664,15 @@ function mostrarDefinicion(rawWord, tokenIndex) {
 
   let definiciones = [];
   if (entrada.definicion) definiciones.push(entrada.definicion);
-  if (Array.isArray(entrada.definiciones)) definiciones.push(...entrada.definiciones);
+  if (entrada.definiciones) definiciones.push(...entrada.definiciones);
 
-  if (definiciones.length === 0) {
-    panel.innerHTML = `
-      <h2>${rawWord}</h2>
-      <p class="sin-def">Esta palabra aún no tiene definición.</p>`;
-    return;
-  }
+  const contexto = obtenerContexto(idx);
 
-  const contexto = obtenerContexto(tokenIndex);
   let { indice: indiceElegido, explicacion } =
     elegirDefinicionConExplicacion(definiciones, contexto);
 
-  const esPoderVerbal = (clave === "poder-verbo" || clave === "poder");
-
-  if (esPoderVerbal) {
-    const norm = normalizarPalabra(rawWord);
-    const prevNorm = normalizarPalabra(tokensLibro[tokenIndex - 1] || "");
-    const nextNorm = normalizarPalabra(tokensLibro[tokenIndex + 1] || "");
-
-    const esPosibilidad =
-      (norm === "puede" || norm === "pueda" || norm === "podria") &&
-      (nextNorm === "que" || prevNorm === "que");
-
-    if (esPosibilidad && definiciones.length >= 2) {
-      indiceElegido = 1;
-      explicacion = {
-        exactas: [],
-        sinonimos: [],
-        categorias: [],
-        score: 0,
-        reglaEspecial: "Construcción «puede que / pueda que» detectada → posibilidad."
-      };
-    }
-  }
-
   const htmlDefs = definiciones
-    .map((texto, i) => `<p${i === indiceElegido ? ' style="color:blue;"' : ''}>${texto}</p>`)
+    .map((d, i) => `<p${i === indiceElegido ? ' style="color:blue;"' : ''}>${d}</p>`)
     .join("");
 
   let htmlExp = "";
@@ -545,48 +686,15 @@ function mostrarDefinicion(rawWord, tokenIndex) {
       explicacion.sinonimos.map(s => `${s.palabraDef} ↔ ${s.coincidencia}`).join(", ") +
       "</b>.");
 
-  if (explicacion.reglaEspecial)
-    partes.push(explicacion.reglaEspecial);
-
-  if (partes.length) {
+  if (partes.length)
     htmlExp = `<hr><p style="font-size:0.9em;"><strong>Razón:</strong> ${partes.join(" ")}</p>`;
-  }
 
   panel.innerHTML = `<h2>${rawWord}</h2>${htmlDefs}${htmlExp}`;
 }
 
-/* -------------------------------------------------------
-   Construcción del libro
--------------------------------------------------------- */
-
-function prepararLibro() {
-  const fuente = document.getElementById("texto-libro").innerText;
-  const contenedorLibro = document.getElementById("libro");
-
-  const tokens = fuente.split(/(\s+)/);
-  tokensLibro = [];
-
-  contenedorLibro.innerHTML = "";
-  let indiceToken = 0;
-
-  tokens.forEach(token => {
-    if (/^\s+$/.test(token)) {
-      contenedorLibro.appendChild(document.createTextNode(token));
-    } else {
-      const span = document.createElement("span");
-      span.textContent = token;
-      span.className = "palabra";
-
-      const idx = indiceToken;
-      span.addEventListener("click", () => mostrarDefinicion(token, idx));
-
-      tokensLibro.push(token);
-      indiceToken++;
-
-      contenedorLibro.appendChild(span);
-    }
-  });
-}
+/* -------------------------------------
+   INICIO
+------------------------------------- */
 
 prepararLibro();
 
