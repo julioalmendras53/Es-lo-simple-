@@ -115,10 +115,6 @@
         ]
       },
 
-      
-
-    
-          
       agujero: {
         definiciones: [
           "1.Abertura o hueco en una superficie o en un sólido.",
@@ -142,8 +138,6 @@
         ]
       },
 
-      
-        
       de: {
         definiciones: [
           "1.Indica pertenencia. La paciencia de job.",
@@ -280,7 +274,7 @@
     function tipoPoder(tokens, idx) {
       const palabra = normalizarPalabra(tokens[idx] || "");
       const prev    = normalizarPalabra(tokens[idx - 1] || "");
-      const next    = normalizarPalabra(tokens[idx + 1] || "";
+      const next    = normalizarPalabra(tokens[idx + 1] || ""); // ← AQUÍ ESTABA EL ERROR
 
       // 1) Conjugaciones claras → verbo
       const conjugaciones = [
@@ -569,7 +563,7 @@
       tener: ["verbo"],
       estar: ["verbo"],
       orillas: ["sustantivo"],
-      agujero: ["sустantivo"],
+      agujero: ["sustantivo"],
       negro: ["adjetivo"],
       engullir: ["verbo"],
       absolutamente: ["adverbio"],
@@ -589,11 +583,11 @@
       carente: ["adjetivo"],
       aqui: ["adverbio"],
       veces: ["sustantivo"],
-      cantar: ["verбо"],
+      cantar: ["verbo"],
       locura: ["sustantivo"],
       matematica: ["adjetivo"],
-      querer: ["verбо"],
-      saber: ["verбо"],
+      querer: ["verbo"],
+      saber: ["verbo"],
       siguiente: ["adjetivo"],
       nivel: ["sustantivo"],
       loca: ["adjetivo"],
@@ -603,7 +597,7 @@
       alguno: ["determinante"],
       muy: ["adverbio"],
       cautela: ["sustantivo"],
-      ir: ["verво"],
+      ir: ["verbo"],
       astuto: ["adjetivo"],
       alla: ["adverbio"],
       bestias: ["sustantivo"],
