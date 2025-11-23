@@ -71,9 +71,8 @@
 
     <!-- Texto del libro (oculto, se procesa con JS) -->
     <pre id="texto-libro" style="display:none;">
-    4297 El infinito de poder puede. 4298 El infinito puede que amanezca mañana en ese campo hipotético. 4299 El infinito podrá vencer a dios en su propio juego, el fin. 4300 No puedo aguantar las vejaciones que trae tener un fin. 
-
-      </pre>
+4297 El infinito de poder puede. 4298 El infinito puede que amanezca mañana en ese campo hipotético. 4299 El infinito podrá vencer a dios en su propio juego, el fin. 4300 No puedo aguantar las vejaciones que trae tener un fin.
+    </pre>
 
     <!-- Zona visible del libro con palabras clicables -->
     <div id="libro"></div>
@@ -87,1176 +86,1218 @@
 
   <script>
     // 🔤 Normalizar palabra: minúsculas, sin tildes, sin puntuación
-function normalizarPalabra(raw = "") {
-  return raw
-    .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
-    .replace(/[^a-z0-9ñáéíóúü]/gi, "");              // deja solo letras/números
-} 
-    // Detecta si "poder" es sustantivo o verbo según el contexto
-function tipoPoder(tokens, idx) {
-  const palabra = normalizarPalabra(tokens[idx] || "");
-  const prev    = normalizarPalabra(tokens[idx - 1] || "");
-  const next    = normalizarPalabra(tokens[idx + 1] || "");
-
-  // 1) Conjugaciones claras → verbo
-  const conjugaciones = [
-    "puedo","puedes","puede","podemos","pueden",
-    "podia","podias","podiamos","podian",
-    "podra","podras","podremos","podran",
-    "podria","podrias","podriamos","podrian",
-    "pude","pudiste","pudo","pudimos","pudieron",
-    "pueda","puedas","podamos","puedan",
-    "pudiera","pudieras","pudieramos","pudieran",
-    "pudiese","pudieses","pudiesemos","pudiesen"
-  ];
-  if (conjugaciones.includes(palabra)) return "verbo";
-
-  // 2) Determinante/posesivo antes → sustantivo
-  const determinantes = [
-    "el","la","los","las","un","una","unos","unas",
-    "mi","mis","tu","tus","su","sus",
-    "este","esta","estos","estas",
-    "ese","esa","esos","esas",
-    "aquel","aquella","aquellos","aquellas",
-    "del","al"
-  ];
-  if (palabra === "poder" && determinantes.includes(prev)) return "sustantivo";
-
-  // 3) "de poder" → sustantivo normalmente,
-  // salvo que vaya seguido de infinitivo (ha de poder hacer)
-  if (palabra === "poder" && prev === "de") {
-    if (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir")) {
-      return "verbo";
+    function normalizarPalabra(raw = "") {
+      return raw
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
+        .replace(/[^a-z0-9ñ]/gi, "");                    // deja solo letras y números básicos + ñ
     }
-    return "sustantivo";
-  }
 
-  // 4) "poder" seguido de infinitivo → verbo
-  if (palabra === "poder" &&
-      (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir"))) {
-    return "verbo";
-  }
+    // -----------------------
+    // MINI DICCIONARIO BASE
+    // -----------------------
+    const diccionario = {
+      googleable:  { definicion: "Que es fácil de encontrar en el buscador Google." },
+      ingoogleable:{ definicion: "Que es imposible de encontrar en el buscador Google." },
+      gugol:       { definicion: "Número finito que es un 1 seguido de 100 ceros." },
+      googlear:    { definicion: "Buscar en Google algo o a alguien." },
+      infinitotriz:{ definicion: "Que gira infinitamente alrededor de algo." },
+      soltero:     { definicion: "Que no ha contraído matrimonio." },
 
-  return null;
+      escobeta: {
+        definiciones: [
+          "1.Escoba en miniatura.",
+          "2.Cepillo para los atuendos.",
+          "3.Escoba de cerdas.",
+          "4.Escoba de raíz de zacatón, corta y dura.",
+          "5.Mechón de cerdas que aparece en el papo a pavos avejentados."
+        ]
+      },
+
+      simular: {
+        definiciones: [
+          "1.Imitar la existencia de algo de manera fiel.",
+          "2.Aparentar en tecnología artificialmente el funcionamiento de sistema."
+        ]
+      },
+
+      atar: {
+        definicion: "Enlazar los cordones en los zapatos.",
+        video: "videos/atar.webm"
+      },
+
+      subir: {
+        definiciones: [
+          "1.Ir hacia la parte superior de algo.",
+          "2.Ir en origen desde un lugar hasta otro más empinado.",
+          "3.Viajar hacia el origen de algo.",
+          "4.Montar un animal.",
+          "5.Entrar al interior de un coche.",
+          "6.Hacer crecer el precio de un producto.",
+          "7.Dicho del sonido de un instrumento: pasar a ser más agudos.",
+          "8.Ocurrir el mareo por el alcohol.",
+          "9.Hacer que aumente la intensidad del sonido de un aparato reproductor.",
+          "10.Introducir información en una página de Internet."
+        ],
+        video: "videos/subir.webm"
+      },
+
+      llorar: {
+        definiciones: [
+          "1.Arrojar en la cara lagrimas desde los ojos.",
+          "2.Manar de los ojos líquido lagrimal.",
+          "3.Destilar savia la vid en inicio de primavera."
+        ],
+        video: "videos/llorar.webm"
+      },
+
+      ciclo: {
+        definiciones: [
+          "1. m. Periodo de tiempo que, finalizado vuelve a iterarse.",
+          "2. m. Colección de una serie de fenómenos u trabajos que se iteran ordenadamente.",
+          "3. m. Conjunto de cambios por los que pasa un elemento hasta volver a lo inicial.",
+          "4. m. Serie de pasos por los que pasa un ser a lo largo de su vida.",
+          "5. m. Conjuntos de relatos épicos de un periodo histórico o de un héroe.",
+          "6. m. Cada una de las espiras que conforman enrededor del tallo los puntos de anclaje de las hojas.",
+          "7. m. La estructura molecular en forma de anillo.",
+          "8. m. Bicicleta.",
+          "9. m. Un tik tok."
+        ],
+        imagen: "images/ciclo.jpg"
+      },
+
+      agujero: {
+        definiciones: [
+          "1.Abertura o hueco en una superficie o en un sólido.",
+          "2.De las agujas.",
+          "3.Falta inmotivada de plata en una empresa."
+        ]
+      },
+
+      negro: {
+        definiciones: [
+          "1.Ausencia total o casi de reflejo luminoso.",
+          "2.De color negro.",
+          "3.Perteneciente a la raza negra.",
+          "4.Ritual en que se invoca al demonio.",
+          "5.Del color de carbón, de oscuridad total o la boca de un túnel",
+          "6.Muy bronceado.",
+          "7.Modo de tratamiento de quienes se quieren.",
+          "8.Persona que hace un trabajo intelectual por encargo de otra haciendo todo el esfuerzo.",
+          "9.Estado de ánimo triste o pesimista.",
+          "10.Género de cine que de trama policiaca en entorno violento."
+        ]
+      },
+
+      vestir: {
+        definiciones: [
+          "1.Cubrir el cuerpo de una persona con ropajes.",
+          "2.Costear las vestiduras un padre al hijo.",
+          "3.Guarnecer un vestido para adorno.",
+          "4.Emplear la retórica para embellecer el lenguaje.",
+          "5.Tapizar de hierba los campos.",
+          "6.Cubrir de pelo o pluma a los animales.",
+          "7.Hacer el sastre los vestidos para un cliente.",
+          "8.Llevar un ropaje de forma, color o distintivo especial para ocasión.",
+          "9.Alzarse de la cama habiendo estado enfermo."
+        ],
+        video: "videos/vestir.webm"
+      },
+
+      de: {
+        definiciones: [
+          "1.Indica pertenencia. La paciencia de job.",
+          "2.Para hacer diferentes locuciones adverbiales de modo. Almorzó de pie.",
+          "3.Indica de dónde procede alguien. Vengo de Aranjuez.",
+          "4.Indica el material del que está creado algo. El vestido de seda.",
+          "5.Para indicar lo que tiene algo. Un vaso de agua.",
+          "6.Indica asunto. Este libro trata de la última guerra.",
+          "7.Indica la causa de algo. Murió de viruelas.",
+          "8.Usado para expresar la naturaleza de algo. Hombre de valor.",
+          "9.Desde. De Madrid a Toledo.",
+          "10.Precedida de adverbio y seguida de infinitivo. Lejos de pensar.",
+          "11.Seguido de infinitivo con peso de hipótesis. De saberlo antes, habría venido.",
+          "12.Llenado de verbos. Acaba de pasar.",
+          "13.Usado con ciertos nombres para indicar el tiempo en que sucede. Lo hizo de madrugada.",
+          "14.Para refortalecer un calificativo. El bueno de juan.",
+          "15.Usado como indicación de ilacion. De esto se sigue.",
+          "16.Indica la veloz ejecución de algo. Se bebió de un trago la tisana.",
+          "17.Expresion de lástima. Ay de los vencidos.",
+          "18.Llenado de preposiciones. A por la 16.",
+          "19.Para introducir una comparación. He comido más de lo debido.",
+          "20.Para. Gorro de dormir.",
+          "21.Por. Lo hice de miedo."
+        ]
+      },
+
+      amanecer: {
+        definiciones: [
+          "1.Comenzar a verse la luz del día.",
+          "2.Estar en un lugar o situacion al verse la luz del día.",
+          "3.Nacer en figurado.",
+          "4.Recorrer la noche insomne.",
+          "5.Alumbre."
+        ]
+      },
+
+      manana: {
+        definiciones: [
+          "1.Parte del día entre el amanecer y el mediodía.",
+          "2.Parte del día entre la medianoche y el mediodía.",
+          "3.Tiempo que viene.",
+          "4.El día inmediatamente posterior al de hoy."
+        ]
+      },
+
+      en: {
+        definiciones: [
+          "1.Indica en qué tiempo, lugar o modo se realiza lo que habla el verbo. Pedro está en madrid.",
+          "2.Sobre. El rey le ha dado una pensión en la renta del tabaco.",
+          "3.Indica la ocupación de alguien. Trabajar en bioquímica.",
+          "4.Indica situación de tránsito.",
+          "5.Tan pronto como.",
+          "6.Denota el límite de algún verbo de movimiento. Entrar en casa."
+        ]
+      },
+
+      ese: {
+        definiciones: [
+          "1.Que está cercano del individuo con el que se conversa.",
+          "2.Que se menciona o se mencionara.",
+          "3.Señala menosprecio por algo o por persona.",
+          "4.Señala una persona que está lejana o que se marchó."
+        ]
+      },
+
+      campo: {
+        definiciones: [
+          "1.Terreno extenso a las afueras de pueblo.",
+          "2.Terreno que puede trabajarse.",
+          "3.En oposición a sierra, campiña.",
+          "4.Terreno de juego donde se práctica deportes como el fútbol.",
+          "5.Mitad de terreno de fútbol que se defiende.",
+          "6.Término de municipio.",
+          "7.Reino que puede ser imaginario sobre determinado conocimiento.",
+          "8.Region del espacio en que está definida una magnitud, como el campo eléctrico.",
+          "9.En una base de datos, espacio para almacenar información.",
+          "10.Comarca ocupada por ejércitos durante actos de guerra.",
+          "11.Ejército.",
+          "12.Redondel visual del ojo."
+        ]
+      },
+
+      hipotetico: { definicion: "Perteneciente a la hipótesis." },
+
+      vencer: {
+        definiciones: [
+          "1.Batir al enemigo.",
+          "2.Ser superior en comparación.",
+          "3.Sujetar las emociones reduciendolos a la razón.",
+          "4.Superar estorbos.",
+          "5.Atraer a otra persona a que siga su deseo.",
+          "6.Lograr subir a una altura áspera.",
+          "7.Cumplirse un plazo.",
+          "8.Triunfar en pelea física."
+        ]
+      },
+
+      supervitaminar: {
+        definiciones: [
+          "1.Potenciar algo por un agente.",
+          "2.Hipertrofiar algo hasta lo grotesco.",
+          "3.Dopar por trampa."
+        ]
+      },
+
+      poder-verbo: {
+        definiciones: [
+          "1.Tener vía libre para hacer a lo quiera.",
+          "2.Expresa posibilidad de que ocurra algo.",
+          "3.Ser capaz de vencer a otro.",
+          "4.Ocupado de manera negativa: Sufrir las impertinencias de alguien."
+        ]
+      },
+
+      poder-sustantivo: {
+        definiciones: [
+          "1.Facultad para hacer.",
+          "2.Gobierno en un Estado.",
+          "3.Capacidad física de las bestias.",
+          "4.Permiso que se cede de alguien a alguien."
+        ]
+      }
+    };
+
+    // Índice auxiliar: mismas entradas pero con clave normalizada
+    const diccionarioIdx = {};
+    for (const [k, v] of Object.entries(diccionario)) {
+      diccionarioIdx[normalizarPalabra(k)] = v;
+    }
+
+    // -----------------------------------------
+    // DETECTAR SI "PODER" ES VERBO O SUSTANTIVO
+    // -----------------------------------------
+    function tipoPoder(tokens, idx) {
+      const palabra = normalizarPalabra(tokens[idx] || "");
+      const prev    = normalizarPalabra(tokens[idx - 1] || "");
+      const next    = normalizarPalabra(tokens[idx + 1] || "");
+
+      // 1) Conjugaciones claras → verbo
+      const conjugaciones = [
+        "puedo","puedes","puede","podemos","pueden",
+        "podia","podias","podiamos","podian",
+        "podra","podras","podremos","podran",
+        "podria","podrias","podriamos","podrian",
+        "pude","pudiste","pudo","pudimos","pudieron",
+        "pueda","puedas","podamos","puedan",
+        "pudiera","pudieras","pudieramos","pudieran",
+        "pudiese","pudieses","pudiesemos","pudiesen"
+      ];
+      if (conjugaciones.includes(palabra)) return "verbo";
+
+      // 2) Determinante/posesivo antes → sustantivo
+      const determinantes = [
+        "el","la","los","las","un","una","unos","unas",
+        "mi","mis","tu","tus","su","sus",
+        "este","esta","estos","estas",
+        "ese","esa","esos","esas",
+        "aquel","aquella","aquellos","aquellas",
+        "del","al"
+      ];
+      if (palabra === "poder" && determinantes.includes(prev)) return "sustantivo";
+
+      // 3) "de poder" → sustantivo normalmente,
+      // salvo que vaya seguido de infinitivo (ha de poder hacer)
+      if (palabra === "poder" && prev === "de") {
+        if (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir")) {
+          return "verbo";
         }
-  // === Verbos irregulares frecuentes: forma -> infinitivo ===
-  // OJO: las claves van SIN tilde, porque normalmente normalizeText quita acentos.
-  const verbLemmaMap = {
-    
-
-    // AMANECER
-"amanezco": "amanecer",
-"amaneces": "amanecer",
-"amanece": "amanecer",
-"amanecemos": "amanecer",
-"amanecen": "amanecer",
-
-"amanecia": "amanecer",
-"amanecias": "amanecer",
-"amaneciamos": "amanecer",
-"amanecian": "amanecer",
-
-"amanecio": "amanecer",
-"amanecieron": "amanecer",
-
-"amanecera": "amanecer",
-"amaneceran": "amanecer",
-"amaneceria": "amanecer",
-
-"amanezca": "amanecer",
-"amanezcas": "amanecer",
-"amanezcamos": "amanecer",
-"amanezcan": "amanecer",
-
-"amaneciera": "amanecer",
-"amanecieran": "amanecer",
-
-"amaneciendo": "amanecer",
-"amanecido": "amanecer",
-
-    
-
-    // TENER
-    "tengo": "tener", "tienes": "tener", "tiene": "tener", "tenemos": "tener",
-    "tienen": "tener", "tenia": "tener", "tenias": "tener", "tenian": "tener",
-    "tuve": "tener", "tuviste": "tener", "tuvo": "tener", "tuvieron": "tener",
-
-    // HACER
-    "hago": "hacer", "haces": "hacer", "hace": "hacer", "hacemos": "hacer",
-    "hacen": "hacer", "hacia": "hacer", "hacian": "hacer",
-    "hice": "hacer", "hizo": "hacer", "hicieron": "hacer",
-
-    // PODER
-"puedo": "poder", "puedes": "poder", "puede": "poder", "podemos": "poder",
-"pueden": "poder",
-
-"podia": "poder", "podias": "poder", "podiamos": "poder", "podian": "poder",
-
-"podra": "poder", "podras": "poder", "podremos": "poder", "podran": "poder",
-
-"podria": "poder", "podrias": "poder", "podriamos": "poder", "podrian": "poder",
-
-"pude": "poder", "pudiste": "poder", "pudo": "poder", "pudimos": "poder", "pudieron": "poder",
-
-"pueda": "poder", "puedas": "poder", "podamos": "poder", "puedan": "poder",
-"pudiera": "poder", "pudieras": "poder", "pudieramos": "poder", "pudieran": "poder",
-"pudiese": "poder", "pudieses": "poder", "pudiesemos": "poder", "pudiesen": "poder",
-
-    // DECIR
-    "digo": "decir", "dices": "decir", "dice": "decir", "dicen": "decir",
-    "decia": "decir", "decian": "decir",
-    "dije": "decir", "dijo": "decir", "dijeron": "decir",
-
-    // VENIR
-    "vengo": "venir", "vienes": "venir", "viene": "venir", "vienen": "venir",
-    "venia": "venir", "venian": "venir",
-    "vine": "venir", "vino": "venir", "vinieron": "venir",
-
-    // PONER
-    "pongo": "poner", "pones": "poner", "pone": "poner", "ponen": "poner",
-    "ponia": "poner", "ponian": "poner",
-    "puse": "poner", "puso": "poner", "pusieron": "poner",
-
-    // VER
-    "veo": "ver", "ves": "ver", "ve": "ver", "ven": "ver",
-    "veia": "ver", "veian": "ver",
-    "vi": "ver", "vio": "ver", "vieron": "ver",
-
-    // DAR
-    "doy": "dar", "das": "dar", "da": "dar", "dan": "dar",
-    "daba": "dar", "daban": "dar",
-    "di": "dar", "dio": "dar", "dieron": "dar",
-
-    // QUERER
-    "quiero": "querer", "quieres": "querer", "quiere": "querer",
-    "queremos": "querer", "quieren": "querer",
-    "queria": "querer", "querian": "querer",
-    "quise": "querer", "quiso": "querer", "quisieron": "querer",
-
-  
-  // SER
-  "soy": "ser", "eres": "ser", "es": "ser", "somos": "ser", "son": "ser",
-  "era": "ser", "eran": "ser",
-  "fui": "ser", "fuiste": "ser", "fue": "ser", "fueron": "ser",
-  "sera": "ser", "seran": "ser",
-
-  // HABER
-  "has": "haber", "ha": "haber", "hemos": "haber", "han": "haber",
-  "habia": "haber", "habian": "haber",
-  "hube": "haber", "hubo": "haber", "hubieron": "haber",
-
-  // ESTAR
-  "estoy": "estar", "estas": "estar", "esta": "estar",
-  "estamos": "estar", "estan": "estar",
-  "estaba": "estar", "estaban": "estar",
-  "estuve": "estar", "estuvo": "estar", "estuvieron": "estar",
-  "estara": "estar",
-
-  // IR
-  "voy": "ir", "vas": "ir", "va": "ir", "vamos": "ir", "van": "ir",
-  "iba": "ir", "iban": "ir",
-  "ira": "ir",
-
-  // SABER  (no mapeo "se" para no chocar con el pronombre)
-  "sabes": "saber", "sabe": "saber", "sabemos": "saber", "saben": "saber",
-  "sabia": "saber", "sabian": "saber",
-  "supe": "saber", "supo": "saber", "supieron": "saber",
-
-  // CREER  (sin "creo", que ya usas para CREAR)
-  "crees": "creer", "cree": "creer", "creemos": "creer", "creen": "creer",
-  "creia": "creer", "creian": "creer",
-  "crei": "creer", "creyo": "creer", "creyeron": "creer",
-
-  // PENSAR
-  "pienso": "pensar", "piensas": "pensar", "piensa": "pensar",
-  "pensamos": "pensar", "piensan": "pensar",
-  "pensaba": "pensar", "pensaban": "pensar",
-  "pense": "pensar", "penso": "pensar", "pensaron": "pensar",
-
-  // LLEGAR
-  "llego": "llegar", "llegas": "llegar", "llega": "llegar",
-  "llegamos": "llegar", "llegan": "llegar",
-  "llegaba": "llegar", "llegaban": "llegar",
-  "llegue": "llegar", "llegaron": "llegar",
-
-  // PASAR
-  "paso": "pasar", "pasas": "pasar", "pasa": "pasar",
-  "pasamos": "pasar", "pasan": "pasar",
-  "pasaba": "pasar", "pasaban": "pasar",
-  "pase": "pasar", "pasaron": "pasar",
-
-  // PARECER
-  "parezco": "parecer", "pareces": "parecer", "parece": "parecer",
-  "parecemos": "parecer", "parecen": "parecer",
-  "parecia": "parecer", "parecian": "parecer",
-  "parecio": "parecer", "parecieron": "parecer",
-
-  // EXISTIR
-  "existo": "existir", "existes": "existir", "existe": "existir",
-  "existimos": "existir", "existen": "existir",
-  "existia": "existir", "existian": "existir",
-  "existio": "existir", "existieron": "existir",
-
-  // DEFINIR
-  "defino": "definir", "defines": "definir", "define": "definir",
-  "definimos": "definir", "definen": "definir",
-  "definia": "definir", "definian": "definir",
-  "defini": "definir", "definio": "definir", "definieron": "definir",
-
-  // QUEDAR
-  "quedo": "quedar", "quedas": "quedar", "queda": "quedar",
-  "quedamos": "quedar", "quedan": "quedar",
-  "quedaba": "quedar", "quedaban": "quedar",
-  "quede": "quedar", "quedaron": "quedar",
-
-  // DEJAR
-  "dejo": "dejar", "dejas": "dejar", "deja": "dejar",
-  "dejamos": "dejar", "dejan": "dejar",
-  "dejaba": "dejar", "dejaban": "dejar",
-  "deje": "dejar", "dejaron": "dejar",
-
-  // TOMAR
-  "tomo": "tomar", "tomas": "tomar", "toma": "tomar",
-  "tomamos": "tomar", "toman": "tomar",
-  "tomaba": "tomar", "tomaban": "tomar",
-  "tome": "tomar", "tomaron": "tomar",
-
-  // ENCONTRAR
-  "encuentro": "encontrar", "encuentras": "encontrar", "encuentra": "encontrar",
-  "encontramos": "encontrar", "encuentran": "encontrar",
-  "encontraba": "encontrar", "encontraban": "encontrar",
-  "encontre": "encontrar", "encontro": "encontrar", "encontraron": "encontrar",
-
-  // SEGUIR
-  "sigo": "seguir", "sigues": "seguir", "sigue": "seguir",
-  "seguimos": "seguir", "siguen": "seguir",
-  "seguia": "seguir", "seguian": "seguir",
-  "segui": "seguir", "siguio": "seguir", "siguieron": "seguir",
-
-  // VOLVER
-  "vuelvo": "volver", "vuelves": "volver", "vuelve": "volver",
-  "volvemos": "volver", "vuelven": "volver",
-  "volvia": "volver", "volvian": "volver",
-  "volvi": "volver", "volvio": "volver", "volvieron": "volver",
-
-  // MIRAR
-  "miro": "mirar", "miras": "mirar", "mira": "mirar",
-  "miramos": "mirar", "miran": "mirar",
-  "miraba": "mirar", "miraban": "mirar",
-  "mire": "mirar", "miraron": "mirar",
-
-  // HABLAR
-  "hablo": "hablar", "hablas": "hablar", "habla": "hablar",
-  "hablamos": "hablar", "hablan": "hablar",
-  "hablaba": "hablar", "hablaban": "hablar",
-  "hable": "hablar", "hablaron": "hablar",
-
-  // ENTENDER
-  "entiendo": "entender", "entiendes": "entender", "entiende": "entender",
-  "entendemos": "entender", "entienden": "entender",
-  "entendia": "entender", "entendian": "entender",
-  "entendi": "entender", "entendio": "entender", "entendieron": "entender",
-
-  // ESCRIBIR
-  "escribo": "escribir", "escribes": "escribir", "escribe": "escribir",
-  "escribimos": "escribir", "escriben": "escribir",
-  "escribia": "escribir", "escribian": "escribir",
-  "escribi": "escribir", "escribio": "escribir", "escribieron": "escribir",
-
-  // TERMINAR
-  "termino": "terminar", "terminas": "terminar", "termina": "terminar",
-  "terminamos": "terminar", "terminan": "terminar",
-  "terminaba": "terminar", "terminaban": "terminar",
-  "termine": "terminar", "terminaron": "terminar",
-
-  // ACABAR
-  "acabo": "acabar", "acabas": "acabar", "acaba": "acabar",
-  "acabamos": "acabar", "acaban": "acabar",
-  "acababa": "acabar", "acababan": "acabar",
-  "acabe": "acabar", "acabaron": "acabar",
-
-  // NEGAR
-  "niego": "negar", "niegas": "negar", "niega": "negar",
-  "negamos": "negar", "niegan": "negar",
-  "negaba": "negar", "negaban": "negar",
-  "negue": "negar", "nego": "negar", "negaron": "negar",
-
-  // CONTAR
-  "cuento": "contar", "cuentas": "contar", "cuenta": "contar",
-  "contamos": "contar", "cuentan": "contar",
-  "contaba": "contar", "contaban": "contar",
-  "conte": "contar", "conto": "contar", "contaron": "contar",
-
-  // BUSCAR
-  "busco": "buscar", "buscas": "buscar", "busca": "buscar",
-  "buscamos": "buscar", "buscan": "buscar",
-  "buscaba": "buscar", "buscaban": "buscar",
-  "busque": "buscar", "busco": "buscar", "buscaron": "buscar",
-
-  // SALIR
-  "salgo": "salir", "sales": "salir", "sale": "salir",
-  "salimos": "salir", "salen": "salir",
-  "salia": "salir", "salian": "salir",
-  "sali": "salir", "salio": "salir", "salieron": "salir",
-
-  // LLEVAR
-  "llevo": "llevar", "llevas": "llevar", "lleva": "llevar",
-  "llevamos": "llevar", "llevan": "llevar",
-  "llevaba": "llevar", "llevaban": "llevar",
-  "lleve": "llevar", "llevaron": "llevar",
-
-  // LLAMAR
-  "llamo": "llamar", "llamas": "llamar", "llama": "llamar",
-  "llamamos": "llamar", "llaman": "llamar",
-  "llamaba": "llamar", "llamaban": "llamar",
-  "llame": "llamar", "llamaron": "llamar",
-
-  // CONOCER
-  "conozco": "conocer", "conoces": "conocer", "conoce": "conocer",
-  "conocemos": "conocer", "conocen": "conocer",
-  "conocia": "conocer", "conocian": "conocer",
-  "conoci": "conocer", "conocio": "conocer", "conocieron": "conocer",
-
-  // USAR
-  "uso": "usar", "usas": "usar", "usa": "usar",
-  "usamos": "usar", "usan": "usar",
-  "usaba": "usar", "usaban": "usar",
-  "use": "usar", "usaron": "usar",
-
-  // MORIR
-  "muero": "morir", "mueres": "morir", "muere": "morir",
-  "morimos": "morir", "mueren": "morir",
-  "moria": "morir", "morian": "morir",
-  "mori": "morir", "murio": "morir", "murieron": "morir",
-
-  // NACER
-  "nazco": "nacer", "naces": "nacer", "nace": "nacer",
-  "nacemos": "nacer", "nacen": "nacer",
-  "nacia": "nacer", "nacian": "nacer",
-  "naci": "nacer", "nacio": "nacer", "nacieron": "nacer",
-
-  // IMAGINAR
-  "imagino": "imaginar", "imaginas": "imaginar", "imagina": "imaginar",
-  "imaginamos": "imaginar", "imaginan": "imaginar",
-  "imaginaba": "imaginar", "imaginaban": "imaginar",
-  "imagine": "imaginar", "imaginaron": "imaginar",
-
-  // SIGNIFICAR
-  "significo": "significar", "significas": "significar", "significa": "significar",
-  "significamos": "significar", "significan": "significar",
-  "significaba": "significar", "significaban": "significar",
-  "signifique": "significar", "significaron": "significar",
-
-  // TOCAR
-  "toco": "tocar", "tocas": "tocar", "toca": "tocar",
-  "tocamos": "tocar", "tocan": "tocar",
-  "tocaba": "tocar", "tocaban": "tocar",
-  "toque": "tocar", "tocaron": "tocar",
-
-  // MOVER
-  "muevo": "mover", "mueves": "mover", "mueve": "mover",
-  "movemos": "mover", "mueven": "mover",
-  "movia": "mover", "movian": "mover",
-  "movi": "mover", "movio": "mover", "movieron": "mover",
-
-  // CAMBIAR
-  "cambio": "cambiar", "cambias": "cambiar", "cambia": "cambiar",
-  "cambiamos": "cambiar", "cambian": "cambiar",
-  "cambiaba": "cambiar", "cambiaban": "cambiar",
-  "cambie": "cambiar", "cambiaron": "cambiar",
-
-  // NECESITAR
-  "necesito": "necesitar", "necesitas": "necesitar", "necesita": "necesitar",
-  "necesitamos": "necesitar", "necesitan": "necesitar",
-  "necesitaba": "necesitar", "necesitaban": "necesitar",
-  "necesite": "necesitar", "necesitaron": "necesitar",
-
-  // PEDIR
-  "pido": "pedir", "pides": "pedir", "pide": "pedir",
-  "pedimos": "pedir", "piden": "pedir",
-  "pedia": "pedir", "pedian": "pedir",
-  "pedi": "pedir", "pidio": "pedir", "pidieron": "pedir",
-
-  // SENTIR
-  "siento": "sentir", "sientes": "sentir", "siente": "sentir",
-  "sentimos": "sentir", "sienten": "sentir",
-  "sentia": "sentir", "sentian": "sentir",
-  "senti": "sentir", "sintio": "sentir", "sintieron": "sentir",
-
-  // DEMOSTRAR
-  "demuestro": "demostrar", "demuestras": "demostrar", "demuestra": "demostrar",
-  "demostramos": "demostrar", "demuestran": "demostrar",
-  "demostraba": "demostrar", "demostraban": "demostrar",
-  "demostre": "demostrar", "demostro": "demostrar", "demostraron": "demostrar",
-
-  // GUSTAR
-  "gusto": "gustar", "gustas": "gustar", "gusta": "gustar",
-  "gustamos": "gustar", "gustan": "gustar",
-  "gustaba": "gustar", "gustaban": "gustar",
-  "guste": "gustar", "gustaron": "gustar",
-
-  // PARTIR
-  "parto": "partir", "partes": "partir", "parte": "partir",
-  "partimos": "partir", "parten": "partir",
-  "partia": "partir", "partian": "partir",
-  "parti": "partir", "partio": "partir", "partieron": "partir",
-
-  // INTENTAR
-  "intento": "intentar", "intentas": "intentar", "intenta": "intentar",
-  "intentamos": "intentar", "intentan": "intentar",
-  "intentaba": "intentar", "intentaban": "intentar",
-  "intente": "intentar", "intentaron": "intentar",
-
-  // OLVIDAR
-  "olvido": "olvidar", "olvidas": "olvidar", "olvida": "olvidar",
-  "olvidamos": "olvidar", "olvidan": "olvidar",
-  "olvidaba": "olvidar", "olvidaban": "olvidar",
-  "olvide": "olvidar", "olvidaron": "olvidar",
-
-  // REPETIR
-  "repito": "repetir", "repites": "repetir", "repite": "repetir",
-  "repetimos": "repetir", "repiten": "repetir",
-  "repetia": "repetir", "repetian": "repetir",
-  "repeti": "repetir", "repitio": "repetir", "repitieron": "repetir",
-
-  // GENERAR
-  "genero": "generar", "generas": "generar", "genera": "generar",
-  "generamos": "generar", "generan": "generar",
-  "generaba": "generar", "generaban": "generar",
-  "genere": "generar", "generaron": "generar",
-
-  // FORMAR
-  "formo": "formar", "formas": "formar", "forma": "formar",
-  "formamos": "formar", "forman": "formar",
-  "formaba": "formar", "formaban": "formar",
-  "forme": "formar", "formaron": "formar",
-
-
-    // CREAR (caso que te importa) // choca con "creer", pero en tu libro lo quieres así
-    "creo": "crear" , 
-  };
-
-  // Pronombres enclíticos al final de verbos, para cosas tipo "decirmelo".
-  const cliticEndings = [
-    "melo", "mela", "melos", "melas",
-    "telo", "tela", "telos", "telas",
-    "selo", "sela", "selos", "selas",
-    "noslo", "nosla", "noslos", "noslas",
-    "oslo", "osla", "oslos", "oslas",
-    "melo", "telo", "selo",
-    "me", "te", "se", "lo", "la", "los", "las", "le", "les", "nos", "os"
-  ];
-
-  // Quita pronombres al final: "decirmelo" -> "decir"
-  function stripClitics(word) {
-    let w = word;
-    let changed = true;
-    while (changed) {
-      changed = false;
-      for (const cl of cliticEndings) {
-        if (w.endsWith(cl) && w.length > cl.length + 1) {
-          w = w.slice(0, -cl.length);
-          changed = true;
-          break;
-        }
-      }
-    }
-    return w;
-  }
-
-  // Intenta llevar una forma posible de verbo a infinitivo
-  function guessInfinitive(w) {
-    // 1) Tabla de verbos irregulares frecuentes
-    if (verbLemmaMap[w]) return verbLemmaMap[w];
-
-    // 2) Infinitivo pronominal: vestirse -> vestir
-    if (w.endsWith("se")) {
-      const base = w.slice(0, -2);
-      if (diccionario[base]) return base;
-    }
-
-    // 3) Formas en -o (hablo/creo) -> hablar/crear
-    if (w.endsWith("o")) {
-      const stem = w.slice(0, -1);
-      const candAr = stem + "ar";
-      if (diccionario[candAr]) return candAr;
-    }
-
-    // 4) Formas en -aba/-abas/-aban (muy bruto)
-    if (w.endsWith("aba") || w.endsWith("abas") || w.endsWith("aban")) {
-      const stem = w.replace(/aba(s|n)?$/, "");
-      const candAr = stem + "ar";
-      if (diccionario[candAr]) return candAr;
-    }
-
-    // 5) Gerundios: creando -> crear, comiendo -> comer, viviendo -> vivir
-    if (w.endsWith("ando")) {
-      const stem = w.slice(0, -4);
-      const cand = stem + "ar";
-      if (diccionario[cand]) return cand;
-    }
-    if (w.endsWith("iendo")) {
-      const stem = w.slice(0, -5);
-      const candEr = stem + "er";
-      const candIr = stem + "ir";
-      if (diccionario[candEr]) return candEr;
-      if (diccionario[candIr]) return candIr;
-    }
-
-    // 6) Si ya termina en -ar / -er / -ir, lo tomamos como infinitivo
-    if (w.endsWith("ar") || w.endsWith("er") || w.endsWith("ir")) {
-      return w;
-    }
-
-    // Si no sabemos, lo dejamos como está
-    return w;
-  }
-
-  // A partir de la palabra del libro, obtenemos la clave real del diccionario
-  function obtenerClaveVerbal(rawWord, indiceTokenReal = null) {
-  const original = rawWord.trim();
-
-  // Protección: "dios" NO es un verbo
-  if (original.toLowerCase().startsWith("dios")) {
-    return "dios";
-  }
-
-  // Caso especial: "creó" con tilde → CREAR
-  if (original === "creó" || original === "Creó") {
-    if (diccionario["crear"]) return "crear";
-  }
-
-  // ---- Normalización estándar primero ----
-  let w = normalizarPalabra(original); // quita puntuación, baja a minúscula, etc.
-  w = stripClitics(w);
-  const lemma = guessInfinitive(w);
-
-  // ---- Detección especial de PODER ya normalizado ----
-  if (lemma === "poder") {
-
-    // Si te pasaron el índice real del click, úsalo
-    let idx = indiceTokenReal;
-
-    // Si no, busca por forma normalizada (NO por original)
-    if (idx == null) {
-      idx = tokensLibro.findIndex(t => normalizarPalabra(t) === "poder");
-    }
-
-    if (idx >= 0) {
-      const tipoPod = tipoPoder(tokensLibro, idx);
-
-      if (tipoPod === "verbo" && diccionario["poder-verbo"]) {
-        return "poder-verbo";
+        return "sustantivo";
       }
 
-      if (tipoPod === "sustantivo" && diccionario["poder-sustantivo"]) {
-        return "poder-sustantivo";
+      // 4) "poder" seguido de infinitivo → verbo
+      if (palabra === "poder" &&
+          (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir"))) {
+        return "verbo";
       }
+
+      return null;
     }
 
-    // Fallback si no detecta tipo
-    return "poder-verbo"; 
-  }
+    // ================================
+    // LEMATIZADOR MUY SIMPLE DE VERBOS
+    // ================================
+    const verbLemmaMap = {
+      // AMANECER
+      "amanezco": "amanecer",
+      "amaneces": "amanecer",
+      "amanece": "amanecer",
+      "amanecemos": "amanecer",
+      "amanecen": "amanecer",
+      "amanecia": "amanecer",
+      "amanecias": "amanecer",
+      "amaneciamos": "amanecer",
+      "amanecian": "amanecer",
+      "amanecio": "amanecer",
+      "amanecieron": "amanecer",
+      "amanecera": "amanecer",
+      "amaneceran": "amanecer",
+      "amaneceria": "amanecer",
+      "amanezca": "amanecer",
+      "amanezcas": "amanecer",
+      "amanezcamos": "amanecer",
+      "amanezcan": "amanecer",
+      "amaneciera": "amanecer",
+      "amanecieran": "amanecer",
+      "amaneciendo": "amanecer",
+      "amanecido": "amanecer",
 
-  return lemma;
-  }
+      // TENER
+      "tengo": "tener", "tienes": "tener", "tiene": "tener", "tenemos": "tener",
+      "tienen": "tener", "tenia": "tener", "tenias": "tener", "tenian": "tener",
+      "tuve": "tener", "tuviste": "tener", "tuvo": "tener", "tuvieron": "tener",
 
-  // 🔹 Mini-diccionario (tu objeto original)
-  // Índice auxiliar: mismas entradas pero con clave normalizada (sin tildes, con ñ)
-const diccionario = {
-    
-    
-    googleable: { definicion: "Que es fácil de encontrar en el buscador Google." },
-    ingoogleable: { definicion: "Que es imposible de encontrar en el buscador Google." },
-    gugol:      { definicion: "Número finito que es un 1 seguido de 100 ceros." },
-    googlear:   { definicion: "Buscar en Google algo o a alguien." },
-    infinitotriz: { definicion: "Que gira infinitamente alrededor de algo." },
-    soltero:    { definicion: "Que no ha contraído matrimonio." },
-    escobeta:{ definiciones: [
-                                  "1.Escoba en miniatura." ,
-                                  "2.Cepillo para los atuendos." ,
-                                  "3.Escoba de cerdas.",
-                                  "4.Escoba de raíz de zacatón, corta y dura." ,
-                                  "5.Mechón de cerdas que aparece en el papo a pavos avejentados." ] },
-    simular:{ definiciones: [ 
-                                  "1.Imitar la existencia de algo de manera fiel." ,
-                                  "2.Aparentar en tecnología artificialmente el funcionamiento de sistema." ] },
-    atar: { definicion: "Enlazar los cordones en los zapatos." , video: "videos/atar.webm" },
-    subir:{ definiciones:  [ 
-                                 "1.Ir hacia la parte superior de algo.",
-                                 "2.Ir en origen desde un lugar hasta otro más empinado.", 
-                                 "3.Viajar hacia el origen de algo.",
-                                 "4.Montar un animal.",
-                                 "5.Entrar al interior de un coche.",
-                                 "6.Hacer crecer el precio de un producto.",
-                                 "7.Dicho del sonido de un instrumento: pasar a ser más agudos.",
-                                 "8.Ocurrir el mareo por el alcohol.",
-                                 "9.Hacer que aumente la intensidad del sonido de un aparato reproductor.",
-                                 "10.Introducir información en una página de Internet." ] , video: "videos/subir.webm" },
-    llorar:{ definiciones: [ 
-                                 "1.Arrojar en la cara lagrimas desde los ojos.",
-                                 "2.Manar de los ojos líquido lagrimal.",
-                                 "3.Destilar savia la vid en inicio de primavera." ] , video: "videos/llorar.webm" },
-    ciclo:{ definiciones:  [
-                                 "1. m. Periodo de tiempo que, finalizado vuelve a iterarse.",
-                                 "2. m. Colección de una serie de fenómenos u trabajos que se iteran ordenadamente.",
-                                 "3. m. Conjunto de cambios por los que pasa un elemento hasta volver a lo inicial.",
-                                 "4. m. Serie de pasos por los que pasa un ser a lo largo de su vida.",
-                                 "5. m. Conjuntos de relatos épicos de un periodo histórico o de un héroe.",
-                                 "6. m. Cada una de las espiras que conforman enrededor del tallo los puntos de anclaje de las hojas.",
-                                 "7. m. La estructura molecular en forma de anillo.",
-                                 "8. m. Bicicleta.",
-                                 "9. m. Un tik tok." ] , imagen: "images/ciclo.jpg" },
-    agujero:{ definiciones:  [ 
-                                 "1.Abertura o hueco en una superficie o en un sólido.",
-                                 "2.De las agujas.",
-                                 "3.Falta inmotivada de plata en una empresa." ] },
-    negro:{ definiciones:  [ 
-                                 "1.Ausencia total o casi de reflejo luminoso.",
-                                 "2.De color negro.",
-                                 "3.Perteneciente a la raza negra.",
-                                 "4.Ritual en que se invoca al demonio.",
-                                 "5.Del color de carbón, de oscuridad total o la boca de un túnel",
-                                 "6.Muy bronceado.",
-                                 "7.Modo de tratamiento de quienes se quieren.",
-                                 "8.Persona que hace un trabajo intelectual por encargo de otra haciendo todo el esfuerzo.",
-                                 "9.Estado de ánimo triste o pesimista.",
-                                 "10.Género de cine que de trama policiaca en entorno violento." ] }, 
-    vestir:{ definiciones:  [ 
-                                 "1.Cubrir el cuerpo de una persona con ropajes.",
-                                 "2.Costear las vestiduras un padre al hijo.",
-                                 "3.Guarnecer un vestido para adorno.",
-                                 "4.Emplear la retórica para embellecer el lenguaje.",
-                                 "5.Tapizar de hierba los campos.",
-                                 "6.Cubrir de pelo o pluma a los animales.",
-                                 "7.Hacer el sastre los vestidos para un cliente.",
-                                 "8.Llevar un ropaje de forma, color o distintivo especial para ocasión.",
-                                 "9.Alzarse de la cama habiendo estado enfermo." ] , video: "videos/vestir.webm" },
-    de:{ definiciones:  [ 
-                                 "1.Indica pertenencia. La paciencia de job.",
-                                 "2.Para hacer diferentes locuciones adverbiales de modo. Almorzó de pie.",
-                                 "3.Indica de dónde procede alguien. Vengo de Aranjuez.",
-                                 "4.Indica el material del que está creado algo. El vestido de seda.",
-                                 "5.Para indicar lo que tiene algo. Un vaso de agua.",
-                                 "6.Indica asunto. Este libro trata de la última guerra.",
-                                 "7.Indica la causa de algo. Murió de viruelas.",
-                                 "8.Usado para expresar la naturaleza de algo. Hombre de valor.",
-                                 "9.Desde. De Madrid a Toledo.",
-                                 "10.Precedida de adverbio y seguida de infinitivo. Lejos de pensar.",
-                                 "11.Seguido de infinitivo con peso de hipótesis. De saberlo antes, habría venido.",
-                                 "12.Llenado de verbos. Acaba de pasar.",
-                                 "13.Usado con ciertos nombres para indicar el tiempo en que sucede. Lo hizo de madrugada.",
-                                 "14.Para refortalecer un calificativo. El bueno de juan.",
-                                 "15.Usado como indicación de ilacion. De esto se sigue.",
-                                 "16.Indica la veloz ejecución de algo. Se bebió de un trago la tisana.",
-                                 "17.Expresion de lástima. Ay de los vencidos.",
-                                 "18.Llenado de preposiciones. A por la 16.",
-                                 "19.Para introducir una comparación. He comido más de lo debido.",
-                                 "20.Para. Gorro de dormir.",
-                                 "21.Por. Lo hice de miedo." ] },
-    amanecer:{ definiciones:  [
-                                 "1.Comenzar a verse la luz del día.",
-                                 "2.Estar en un lugar o situacion al verse la luz del día.",
-                                 "3.Nacer en figurado.",
-                                 "4.Recorrer la noche insomne.",
-                                 "5.Alumbre." ] },
-    manana:{ definiciones:   [
-                                 "1.Parte del día entre el amanecer y el mediodía.",
-                                 "2.Parte del día entre la medianoche y el mediodía.",
-                                 "3.Tiempo que viene.",
-                                 "4.El día inmediatamente posterior al de hoy." ] },
-    en:{ definiciones:   [
-                                 "1.Indica en qué tiempo, lugar o modo se realiza lo que habla el verbo. Pedro está en madrid.",
-                                 "2.Sobre. El rey le ha dado una pensión en la renta del tabaco.",
-                                 "3.Indica la ocupación de alguien. Trabajar en bioquímica.",
-                                 "4.Indica situación de tránsito.",
-                                 "5.Tan pronto como.",
-                                 "6.Denota el límite de algún verbo de movimiento. Entrar en casa." ] },
-    ese:{ definiciones:  [
-                                 "1.Que está cercano del individuo con el que se conversa.",
-                                 "2.Que se menciona o se mencionara.",
-                                 "3.Señala menosprecio por algo o por persona.",
-                                 "4.Señala una persona que está lejana o que se marchó." ] },
-    campo:{ definiciones:  [ 
-                                 "1.Terreno extenso a las afueras de pueblo.",
-                                 "2.Terreno que puede trabajarse.",
-                                 "3.En oposición a sierra, campiña.",
-                                 "4.Terreno de juego donde se práctica deportes como el fútbol.",
-                                 "5.Mitad de terreno de fútbol que se defiende.",
-                                 "6.Término de municipio.",
-                                 "7.Reino que puede ser imaginario sobre determinado conocimiento.",
-                                 "8.Region del espacio en que está definida una magnitud, como el campo eléctrico.",
-                                 "9.En una base de datos, espacio para almacenar información.",
-                                 "10.Comarca ocupada por ejércitos durante actos de guerra.",
-                                 "11.Ejército.",
-                                 "12.Redondel visual del ojo." ] }, 
-    hipotetico: { definicion:    "Perteneciente a la hipótesis." },
-    vencer:{ definiciones:     [ 
-                                 "1.Batir al enemigo.",
-                                 "2.Ser superior en comparación.",
-                                 "3.Sujetar las emociones reduciendolos a la razón.",
-                                 "4.Superar estorbos.",
-                                 "5.Atraer a otra persona a que siga su deseo.",
-                                 "6.Lograr subir a una altura áspera.",
-                                 "7.Cumplirse un plazo.",
-                                 "8.Triunfar en pelea física." ] },
-    supervitaminar:{ definiciones: [ 
-      "1.Potenciar algo por un agente.",
-      "2.Hipertrofiar algo hasta lo grotesco.",
-      "3.Dopar por trampa."
-    ] },
+      // HACER
+      "hago": "hacer", "haces": "hacer", "hace": "hacer", "hacemos": "hacer",
+      "hacen": "hacer", "hacia": "hacer", "hacian": "hacer",
+      "hice": "hacer", "hizo": "hacer", "hicieron": "hacer",
 
-    poder-verbo:{
-      definiciones: [
-        
-        "1.Tener vía libre para hacer a lo quiera.",
-        "2.Expresa posibilidad de que ocurra algo.",
-        "3.Ser capaz de vencer a otro.",
-        "4.Ocupado de manera negativa: Sufrir las impertinencias de alguien." ]
-    },
-    poder-sustantivo: { definiciones:  [ 
-        "1.Facultad para hacer.",
-        "2.Gobierno en un Estado.",
-        "3.Capacidad física de las bestias.",
-        "4.Permiso que se cede de alguien a alguien." ] }  };
-    
-    // Índice auxiliar: mismas entradas pero con clave normalizada (sin tildes, con ñ)
-const diccionarioIdx = {};
-for (const [k, v] of Object.entries(diccionario)) {
-  diccionarioIdx[normalizarPalabra(k)] = v;
-}
-        
+      // PODER
+      "puedo": "poder", "puedes": "poder", "puede": "poder", "podemos": "poder",
+      "pueden": "poder",
+      "podia": "poder", "podias": "poder", "podiamos": "poder", "podian": "poder",
+      "podra": "poder", "podras": "poder", "podremos": "poder", "podran": "poder",
+      "podria": "poder", "podrias": "poder", "podriamos": "poder", "podrian": "poder",
+      "pude": "poder", "pudiste": "poder", "pudo": "poder", "pudimos": "poder", "pudieron": "poder",
+      "pueda": "poder", "puedas": "poder", "podamos": "poder", "puedan": "poder",
+      "pudiera": "poder", "pudieras": "poder", "pudieramos": "poder", "pudieran": "poder",
+      "pudiese": "poder", "pudieses": "poder", "pudiesemos": "poder", "pudiesen": "poder",
 
+      // DECIR
+      "digo": "decir", "dices": "decir", "dice": "decir", "dicen": "decir",
+      "decia": "decir", "decian": "decir",
+      "dije": "decir", "dijo": "decir", "dijeron": "decir",
 
-  
-    
+      // VENIR
+      "vengo": "venir", "vienes": "venir", "viene": "venir", "vienen": "venir",
+      "venia": "venir", "venian": "venir",
+      "vine": "venir", "vino": "venir", "vinieron": "venir",
 
-    
+      // PONER
+      "pongo": "poner", "pones": "poner", "pone": "poner", "ponen": "poner",
+      "ponia": "poner", "ponian": "poner",
+      "puse": "poner", "puso": "poner", "pusieron": "poner",
 
-  // Guardaremos aquí las palabras (sin espacios) del libro en orden
-  let tokensLibro = [];
+      // VER
+      "veo": "ver", "ves": "ver", "ve": "ver", "ven": "ver",
+      "veia": "ver", "veian": "ver",
+      "vi": "ver", "vio": "ver", "vieron": "ver",
 
-  // Obtener un contexto alrededor del índice del token (ventana de ±15 palabras)
-  function obtenerContexto(idx) {
-  // Tomamos los tokens de una misma "frase",
-  // delimitada por punto, interrogación o exclamación.
-  let inicio = idx;
-  let fin = idx;
+      // DAR
+      "doy": "dar", "das": "dar", "da": "dar", "dan": "dar",
+      "daba": "dar", "daban": "dar",
+      "di": "dar", "dio": "dar", "dieron": "dar",
 
-  // Hacia la izquierda hasta encontrar un separador de frase
-  while (inicio > 0) {
-    const t = tokensLibro[inicio];
-    if (/[.!?]/.test(t)) {
-      // empezamos DESPUÉS de ese signo
-      inicio++;
-      break;
-    }
-    inicio--;
-  }
+      // QUERER
+      "quiero": "querer", "quieres": "querer", "quiere": "querer",
+      "queremos": "querer", "quieren": "querer",
+      "queria": "querer", "querian": "querer",
+      "quise": "querer", "quiso": "querer", "quisieron": "querer",
 
-  // Hacia la derecha hasta encontrar un separador de frase
-  while (fin < tokensLibro.length - 1) {
-    const t = tokensLibro[fin];
-    if (/[.!?]/.test(t)) {
-      break;
-    }
-    fin++;
-  }
+      // SER
+      "soy": "ser", "eres": "ser", "es": "ser", "somos": "ser", "son": "ser",
+      "era": "ser", "eran": "ser",
+      "fui": "ser", "fuiste": "ser", "fue": "ser", "fueron": "ser",
+      "sera": "ser", "seran": "ser",
 
-  return tokensLibro.slice(inicio, fin + 1).join(" ");
-  }
+      // HABER
+      "has": "haber", "ha": "haber", "hemos": "haber", "han": "haber",
+      "habia": "haber", "habian": "haber",
+      "hube": "haber", "hubo": "haber", "hubieron": "haber",
 
-  // Limpiar texto para comparar: minúsculas, sin tildes, solo letras/números
-  function limpiarTexto(texto) {
-    return texto
-      .toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9ñáéíóúü\s]/gi, " ");
-  }
+      // ESTAR
+      "estoy": "estar", "estas": "estar", "esta": "estar",
+      "estamos": "estar", "estan": "estar",
+      "estaba": "estar", "estaban": "estar",
+      "estuve": "estar", "estuvo": "estar", "estuvieron": "estar",
+      "estara": "estar",
 
-  // Convertir texto en lista de palabras “clave”
-  // Lista de palabras funcionales que NO queremos usar para decidir acepción
-const stopwords = new Set([
-  "el","la","los","las","un","una","unos","unas",
-  "lo","al","del",
-  "de","a","en","por","para","con","sin","sobre",
-  "y","o","u","ni",
-  "que","se","su","sus","mi","mis","tu","tus","su","sus",
-  "este","esta","estos","estas","ese","esa","esos","esas","aquel","aquella","aquellos","aquellas"
-]);
+      // IR
+      "voy": "ir", "vas": "ir", "va": "ir", "vamos": "ir", "van": "ir",
+      "iba": "ir", "iban": "ir",
+      "ira": "ir",
 
-// Convertir texto en lista de palabras “clave”
-function palabrasClave(texto) {
-  return limpiarTexto(texto)
-    .split(/\s+/)
-    .filter(w => w.length > 2 && !stopwords.has(w));
-}
+      // SABER (no "se" para no chocar con pronombre)
+      "sabes": "saber", "sabe": "saber", "sabemos": "saber", "saben": "saber",
+      "sabia": "saber", "sabian": "saber",
+      "supe": "saber", "supo": "saber", "supieron": "saber",
 
-    // ── SINÓNIMOS AUTOMÁTICOS PARA EL ENRUTADOR ──
-const sinonimos = {
-  // poder vencer a otro (definición 3)
-  vencer: ["ganar", "derrotar", "triunfar", "vencer"],
+      // CREER  (sin "creo", que en tu libro lo usas para CREAR)
+      "crees": "creer", "cree": "creer", "creemos": "creer", "creen": "creer",
+      "creia": "creer", "creian": "creer",
+      "crei": "creer", "creyo": "creer", "creyeron": "creer",
 
-  // sufrir impertinencias (definición 4)
-  sufrir: ["aguantar", "soportar", "tolerar", "padecer", "sufrir"],
-  impertinencias: ["vejaciones", "abusos", "humillaciones", "maltratos"],
+      // PENSAR
+      "pienso": "pensar", "piensas": "pensar", "piensa": "pensar",
+      "pensamos": "pensar", "piensan": "pensar",
+      "pensaba": "pensar", "pensaban": "pensar",
+      "pense": "pensar", "penso": "pensar", "pensaron": "pensar",
 
-  // expresar posibilidad (definición 2)
-  // ¡OJO! todo sin tilde porque luego normalizamos.
-  posibilidad: [
-    "posibilidad",
-    "quizas",
-    "talvez",
-    "acaso",
-    "hipotetico",
-    "probable",
-    "eventual"
-  ]
-};
+      // LLEGAR
+      "llego": "llegar", "llegas": "llegar", "llega": "llegar",
+      "llegamos": "llegar", "llegan": "llegar",
+      "llegaba": "llegar", "llegaban": "llegar",
+      "llegue": "llegar", "llegaron": "llegar",
 
-const pesosCategoria = { 
-   verbo: 2,
-   sustantivo: 1,
-   adjetivo: 0,
-   adverbio: -1,
-   pronombre: -2,
-   determinante: -3,
-   preposicion: -4,
-   conjuncion: -5,
-   interjeccion: -6
-};
-const categorias = {
-  infinito: ["sustantivo", "adjetivo"],
-  poder: ["sustantivo", "verbo"],
-  amanecer: ["verbo"],
-  manana: ["adverbio", "sustantivo"],
-  campo: ["sustantivo"],
-  hipotetico: ["adjetivo"],
-  vencer: ["verbo"],
-  dios: ["sustantivo"],
-  propio: ["adjetivo"],
-  juego: ["sustantivo"],
-  fin: ["sustantivo"],
-  aguantar: ["verbo"],
-  vejaciones: ["sustantivo"],
-  traer: ["verbo"],
-  tener: ["verbo"],
-  estar: ["verbo"],
-  orillas: ["sustantivo"],
-  agujero: ["sustantivo"],
-  negro: ["adjetivo"],
-  engullir: ["verbo"],
-  absolutamente: ["adverbio"],
+      // PASAR
+      "paso": "pasar", "pasas": "pasar", "pasa": "pasar",
+      "pasamos": "pasar", "pasan": "pasar",
+      "pasaba": "pasar", "pasaban": "pasar",
+      "pase": "pasar", "pasaron": "pasar",
 
-  buscar: ["verbo"],
-  palabra: ["sustantivo"],
-  contener: ["verbo"],
-  algo: ["pronombre", "adverbio"],
-  siempre: ["adverbio"],
-  caer: ["verbo"],
-  hacer: ["verbo"],
-  todo: ["determinante"],
-  pensamiento: ["sustantivo"],
-  transformar: ["verbo"],
-  idea: ["sustantivo"],
-  problema: ["sustantivo"],
-  carente: ["adjetivo"],
-  aqui: ["adverbio"],
-  veces: ["sustantivo"],
-  cantar: ["verbo"],
-  locura: ["sustantivo"],
-  matematica: ["adjetivo"],
-  querer: ["verbo"],
-  saber: ["verbo"],
-  siguiente: ["adjetivo"],
-  nivel: ["sustantivo"],
-  loca: ["adjetivo"],
-  no: ["adverbio"],
-  tonto: ["adjetivo"],
-  sino: ["conjuncion"],
-  alguno: ["determinante"],
-  muy: ["adverbio"],
-  cautela: ["sustantivo"],
-  ir: ["verbo"],
-  astuto: ["adjetivo"],
-  alla: ["adverbio"],
-  bestias: ["sustantivo"],
-  contentar: ["verbo"],
-  mil: ["determinante"],
-  palabras: ["sustantivo"],
-  anorar: ["verbo"]
-};
-    
-// Dada una palabra de la definición, devuelve esa palabra + sus sinónimos
-function expandirConSinonimos(palabra) {
-  const base = palabra.toLowerCase();
-  const lista = [base];
-  if (sinonimos[base]) {
-    lista.push(...sinonimos[base]);
-  }
-  return lista;
-}
+      // PARECER
+      "parezco": "parecer", "pareces": "parecer", "parece": "parecer",
+      "parecemos": "parecer", "parecen": "parecer",
+      "parecia": "parecer", "parecian": "parecer",
+      "parecio": "parecer", "parecieron": "parecer",
 
-// -----------------------------------------------------------
-// ELEGIR DEFINICIÓN + EXPLICACIÓN DEL PORQUÉ (MOTOR DE PESOS)
-// -----------------------------------------------------------
-function elegirDefinicionConExplicacion(definiciones, contexto) {
-  const ctxWords = palabrasClave(contexto);
-  const setCtx   = new Set(ctxWords);
+      // EXISTIR
+      "existo": "existir", "existes": "existir", "existe": "existir",
+      "existimos": "existir", "existen": "existir",
+      "existia": "existir", "existian": "existir",
+      "existio": "existir", "existieron": "existir",
 
-  let mejorIndice = 0;
-  let mejorScore  = -Infinity;
-  let mejorExplicacion = {
-    exactas: [],
-    sinonimos: [],
-    categorias: [],
-    score: 0
-  };
+      // DEFINIR
+      "defino": "definir", "defines": "definir", "define": "definir",
+      "definimos": "definir", "definen": "definir",
+      "definia": "definir", "definian": "definir",
+      "defini": "definir", "definio": "definir", "definieron": "definir",
 
-  definiciones.forEach((def, idx) => {
-    const palabrasDef = palabrasClave(def);
-    let score = 0;
-    let exactas    = [];
-    let sinos      = [];
-    let catsUsadas = [];
+      // QUEDAR
+      "quedo": "quedar", "quedas": "quedar", "queda": "quedar",
+      "quedamos": "quedar", "quedan": "quedar",
+      "quedaba": "quedar", "quedaban": "quedar",
+      "quede": "quedar", "quedaron": "quedar",
 
-    palabrasDef.forEach(p => {
-      const base = p.toLowerCase();
-      let tipo = null;
-      let coincid = null;
+      // DEJAR
+      "dejo": "dejar", "dejas": "dejar", "deja": "dejar",
+      "dejamos": "dejar", "dejan": "dejar",
+      "dejaba": "dejar", "dejaban": "dejar",
+      "deje": "dejar", "dejaron": "dejar",
 
-      // — COINCIDENCIA EXACTA —
-      if (setCtx.has(base)) {
-        tipo = "exacta";
-        coincid = base;
-        score += 2;
-        exactas.push(base);
+      // TOMAR
+      "tomo": "tomar", "tomas": "tomar", "toma": "tomar",
+      "tomamos": "tomar", "toman": "tomar",
+      "tomaba": "tomar", "tomaban": "tomar",
+      "tome": "tomar", "tomaron": "tomar",
 
-      } else {
-        // — COINCIDENCIA POR SINÓNIMO —
-        const variantes = expandirConSinonimos(base);
-        for (const v of variantes) {
-          if (setCtx.has(v)) {
-            tipo = "sinonimo";
-            coincid = v;
-            score += 1;
-            sinos.push({ palabraDef: base, coincidencia: v });
+      // ENCONTRAR
+      "encuentro": "encontrar", "encuentras": "encontrar", "encuentra": "encontrar",
+      "encontramos": "encontrar", "encuentran": "encontrar",
+      "encontraba": "encontrar", "encontraban": "encontrar",
+      "encontre": "encontrar", "encontro": "encontrar", "encontraron": "encontrar",
+
+      // SEGUIR
+      "sigo": "seguir", "sigues": "seguir", "sigue": "seguir",
+      "seguimos": "seguir", "siguen": "seguir",
+      "seguia": "seguir", "seguian": "seguir",
+      "segui": "seguir", "siguio": "seguir", "siguieron": "seguir",
+
+      // VOLVER
+      "vuelvo": "volver", "vuelves": "volver", "vuelve": "volver",
+      "volvemos": "volver", "vuelven": "volver",
+      "volvia": "volver", "volvian": "volver",
+      "volvi": "volver", "volvio": "volver", "volvieron": "volver",
+
+      // MIRAR
+      "miro": "mirar", "miras": "mirar", "mira": "mirar",
+      "miramos": "mirar", "miran": "mirar",
+      "miraba": "mirar", "miraban": "mirar",
+      "mire": "mirar", "miraron": "mirar",
+
+      // HABLAR
+      "hablo": "hablar", "hablas": "hablar", "habla": "hablar",
+      "hablamos": "hablar", "hablan": "hablar",
+      "hablaba": "hablar", "hablaban": "hablar",
+      "hable": "hablar", "hablaron": "hablar",
+
+      // ENTENDER
+      "entiendo": "entender", "entiendes": "entender", "entiende": "entender",
+      "entendemos": "entender", "entienden": "entender",
+      "entendia": "entender", "entendian": "entender",
+      "entendi": "entender", "entendio": "entender", "entendieron": "entender",
+
+      // ESCRIBIR
+      "escribo": "escribir", "escribes": "escribir", "escribe": "escribir",
+      "escribimos": "escribir", "escriben": "escribir",
+      "escribia": "escribir", "escribian": "escribir",
+      "escribi": "escribir", "escribio": "escribir", "escribieron": "escribir",
+
+      // TERMINAR
+      "termino": "terminar", "terminas": "terminar", "termina": "terminar",
+      "terminamos": "terminar", "terminan": "terminar",
+      "terminaba": "terminar", "terminaban": "terminar",
+      "termine": "terminar", "terminaron": "terminar",
+
+      // ACABAR
+      "acabo": "acabar", "acabas": "acabar", "acaba": "acabar",
+      "acabamos": "acabar", "acaban": "acabar",
+      "acababa": "acabar", "acababan": "acabar",
+      "acabe": "acabar", "acabaron": "acabar",
+
+      // NEGAR
+      "niego": "negar", "niegas": "negar", "niega": "negar",
+      "negamos": "negar", "niegan": "negar",
+      "negaba": "negar", "negaban": "negar",
+      "negue": "negar", "nego": "negar", "negaron": "negar",
+
+      // CONTAR
+      "cuento": "contar", "cuentas": "contar", "cuenta": "contar",
+      "contamos": "contar", "cuentan": "contar",
+      "contaba": "contar", "contaban": "contar",
+      "conte": "contar", "conto": "contar", "contaron": "contar",
+
+      // BUSCAR
+      "busco": "buscar", "buscas": "buscar", "busca": "buscar",
+      "buscamos": "buscar", "buscan": "buscar",
+      "buscaba": "buscar", "buscaban": "buscar",
+      "busque": "buscar", "busco": "buscar", "buscaron": "buscar",
+
+      // SALIR
+      "salgo": "salir", "sales": "salir", "sale": "salir",
+      "salimos": "salir", "salen": "salir",
+      "salia": "salir", "salian": "salir",
+      "sali": "salir", "salio": "salir", "salieron": "salir",
+
+      // LLEVAR
+      "llevo": "llevar", "llevas": "llevar", "lleva": "llevar",
+      "llevamos": "llevar", "llevan": "llevar",
+      "llevaba": "llevar", "llevaban": "llevar",
+      "lleve": "llevar", "llevaron": "llevar",
+
+      // LLAMAR
+      "llamo": "llamar", "llamas": "llamar", "llama": "llamar",
+      "llamamos": "llamar", "llaman": "llamar",
+      "llamaba": "llamar", "llamaban": "llamar",
+      "llame": "llamar", "llamaron": "llamar",
+
+      // CONOCER
+      "conozco": "conocer", "conoces": "conocer", "conoce": "conocer",
+      "conocemos": "conocer", "conocen": "conocer",
+      "conocia": "conocer", "conocian": "conocer",
+      "conoci": "conocer", "conocio": "conocer", "conocieron": "conocer",
+
+      // USAR
+      "uso": "usar", "usas": "usar", "usa": "usar",
+      "usamos": "usar", "usan": "usar",
+      "usaba": "usar", "usaban": "usar",
+      "use": "usar", "usaron": "usar",
+
+      // MORIR
+      "muero": "morir", "mueres": "morir", "muere": "morir",
+      "morimos": "morir", "mueren": "morir",
+      "moria": "morir", "morian": "morir",
+      "mori": "morir", "murio": "morir", "murieron": "morir",
+
+      // NACER
+      "nazco": "nacer", "naces": "nacer", "nace": "nacer",
+      "nacemos": "nacer", "nacen": "nacer",
+      "nacia": "nacer", "nacian": "nacer",
+      "naci": "nacer", "nacio": "nacer", "nacieron": "nacer",
+
+      // IMAGINAR
+      "imagino": "imaginar", "imaginas": "imaginar", "imagina": "imaginar",
+      "imaginamos": "imaginar", "imaginan": "imaginar",
+      "imaginaba": "imaginar", "imaginaban": "imaginar",
+      "imagine": "imaginar", "imaginaron": "imaginar",
+
+      // SIGNIFICAR
+      "significo": "significar", "significas": "significar", "significa": "significar",
+      "significamos": "significar", "significan": "significar",
+      "significaba": "significar", "significaban": "significar",
+      "signifique": "significar", "significaron": "significar",
+
+      // TOCAR
+      "toco": "tocar", "tocas": "tocar", "toca": "tocar",
+      "tocamos": "tocar", "tocan": "tocar",
+      "tocaba": "tocar", "tocaban": "tocar",
+      "toque": "tocar", "tocaron": "tocar",
+
+      // MOVER
+      "muevo": "mover", "mueves": "mover", "mueve": "mover",
+      "movemos": "mover", "mueven": "mover",
+      "movia": "mover", "movian": "mover",
+      "movi": "mover", "movio": "mover", "movieron": "mover",
+
+      // CAMBIAR
+      "cambio": "cambiar", "cambias": "cambiar", "cambia": "cambiar",
+      "cambiamos": "cambiar", "cambian": "cambiar",
+      "cambiaba": "cambiar", "cambiaban": "cambiar",
+      "cambie": "cambiar", "cambiaron": "cambiar",
+
+      // NECESITAR
+      "necesito": "necesitar", "necesitas": "necesitar", "necesita": "necesitar",
+      "necesitamos": "necesitar", "necesitan": "necesitar",
+      "necesitaba": "necesitar", "necesitaban": "necesitar",
+      "necesite": "necesitar", "necesitaron": "necesitar",
+
+      // PEDIR
+      "pido": "pedir", "pides": "pedir", "pide": "pedir",
+      "pedimos": "pedir", "piden": "pedir",
+      "pedia": "pedir", "pedian": "pedir",
+      "pedi": "pedir", "pidio": "pedir", "pidieron": "pedir",
+
+      // SENTIR
+      "siento": "sentir", "sientes": "sentir", "siente": "sentir",
+      "sentimos": "sentir", "sienten": "sentir",
+      "sentia": "sentir", "sentian": "sentir",
+      "senti": "sentir", "sintio": "sentir", "sintieron": "sentir",
+
+      // DEMOSTRAR
+      "demuestro": "demostrar", "demuestras": "demostrar", "demuestra": "demostrar",
+      "demostramos": "demostrar", "demuestran": "demostrar",
+      "demostraba": "demostrar", "demostraban": "demostrar",
+      "demostre": "demostrar", "demostro": "demostrar", "demostraron": "demostrar",
+
+      // GUSTAR
+      "gusto": "gustar", "gustas": "gustar", "gusta": "gustar",
+      "gustamos": "gustar", "gustan": "gustar",
+      "gustaba": "gustar", "gustaban": "gustar",
+      "guste": "gustar", "gustaron": "gustar",
+
+      // PARTIR
+      "parto": "partir", "partes": "partir", "parte": "partir",
+      "partimos": "partir", "parten": "partir",
+      "partia": "partir", "partian": "partir",
+      "parti": "partir", "partio": "partir", "partieron": "partir",
+
+      // INTENTAR
+      "intento": "intentar", "intentas": "intentar", "intenta": "intentar",
+      "intentamos": "intentar", "intentan": "intentar",
+      "intentaba": "intentar", "intentaban": "intentar",
+      "intente": "intentar", "intentaron": "intentar",
+
+      // OLVIDAR
+      "olvido": "olvidar", "olvidas": "olvidar", "olvida": "olvidar",
+      "olvidamos": "olvidar", "olvidan": "olvidar",
+      "olvidaba": "olvidar", "olvidaban": "olvidar",
+      "olvide": "olvidar", "olvidaron": "olvidar",
+
+      // REPETIR
+      "repito": "repetir", "repites": "repetir", "repite": "repetir",
+      "repetimos": "repetir", "repiten": "repetir",
+      "repetia": "repetir", "repetian": "repetir",
+      "repeti": "repetir", "repitio": "repetir", "repitieron": "repetir",
+
+      // GENERAR
+      "genero": "generar", "generas": "generar", "genera": "generar",
+      "generamos": "generar", "generan": "generar",
+      "generaba": "generar", "generaban": "generar",
+      "genere": "generar", "generaron": "generar",
+
+      // FORMAR
+      "formo": "formar", "formas": "formar", "forma": "formar",
+      "formamos": "formar", "forman": "formar",
+      "formaba": "formar", "formaban": "formar",
+      "forme": "formar", "formaron": "formar",
+
+      // CREAR (caso especial)
+      "creo": "crear"
+    };
+
+    // Pronombres enclíticos al final de verbos, para cosas tipo "decirmelo".
+    const cliticEndings = [
+      "melo","mela","melos","melas",
+      "telo","tela","telos","telas",
+      "selo","sela","selos","selas",
+      "noslo","nosla","noslos","noslas",
+      "oslo","osla","oslos","oslas",
+      "me","te","se","lo","la","los","las","le","les","nos","os"
+    ];
+
+    function stripClitics(word) {
+      let w = word;
+      let changed = true;
+      while (changed) {
+        changed = false;
+        for (const cl of cliticEndings) {
+          if (w.endsWith(cl) && w.length > cl.length + 1) {
+            w = w.slice(0, -cl.length);
+            changed = true;
             break;
           }
         }
       }
+      return w;
+    }
 
-      // — PESOS POR CATEGORÍA —
-      if (coincid) {
-        const catList = categorias[coincid];
-        if (catList) {
-          for (const cat of catList) {
-            if (pesosCategoria[cat] !== undefined) {
-              const peso = pesosCategoria[cat];
-              score += peso;
-              catsUsadas.push({ palabra: coincid, categoria: cat, peso });
-            }
+    function guessInfinitive(w) {
+      // 1) Tabla de verbos irregulares frecuentes
+      if (verbLemmaMap[w]) return verbLemmaMap[w];
+
+      // 2) Infinitivo pronominal: vestirse -> vestir
+      if (w.endsWith("se")) {
+        const base = w.slice(0, -2);
+        if (diccionario[base]) return base;
+      }
+
+      // 3) Formas en -o (hablo/creo) -> hablar/crear
+      if (w.endsWith("o")) {
+        const stem = w.slice(0, -1);
+        const candAr = stem + "ar";
+        if (diccionario[candAr]) return candAr;
+      }
+
+      // 4) Formas en -aba/-abas/-aban
+      if (w.endsWith("aba") || w.endsWith("abas") || w.endsWith("aban")) {
+        const stem = w.replace(/aba(s|n)?$/, "");
+        const candAr = stem + "ar";
+        if (diccionario[candAr]) return candAr;
+      }
+
+      // 5) Gerundios: creando -> crear, comiendo -> comer, viviendo -> vivir
+      if (w.endsWith("ando")) {
+        const stem = w.slice(0, -4);
+        const cand = stem + "ar";
+        if (diccionario[cand]) return cand;
+      }
+      if (w.endsWith("iendo")) {
+        const stem = w.slice(0, -5);
+        const candEr = stem + "er";
+        const candIr = stem + "ir";
+        if (diccionario[candEr]) return candEr;
+        if (diccionario[candIr]) return candIr;
+      }
+
+      // 6) Si ya termina en -ar / -er / -ir, lo tomamos como infinitivo
+      if (w.endsWith("ar") || w.endsWith("er") || w.endsWith("ir")) {
+        return w;
+      }
+
+      return w;
+    }
+
+    // -----------------------------
+    // TOKENS DEL LIBRO EN PANTALLA
+    // -----------------------------
+    let tokensLibro = [];
+
+    // Obtiene la clave real del diccionario a partir de la palabra del libro
+    function obtenerClaveVerbal(rawWord, indiceTokenReal = null) {
+      const original = rawWord.trim();
+
+      // Protección: "dios" NO es un verbo
+      if (original.toLowerCase().startsWith("dios")) {
+        return "dios";
+      }
+
+      // Caso especial: "creó" con tilde → CREAR
+      if (original === "creó" || original === "Creó") {
+        if (diccionario["crear"]) return "crear";
+      }
+
+      // Normalización estándar
+      let w = normalizarPalabra(original);
+      w = stripClitics(w);
+      const lemma = guessInfinitive(w);
+
+      // PODER con tratamiento especial
+      if (lemma === "poder") {
+        // Si viene el índice real del click, úsalo
+        let idx = indiceTokenReal;
+
+        // Si no, busca por forma normalizada
+        if (idx == null) {
+          idx = tokensLibro.findIndex(t => normalizarPalabra(t) === "poder");
+        }
+
+        if (idx >= 0) {
+          const tipoPod = tipoPoder(tokensLibro, idx);
+
+          if (tipoPod === "verbo" && diccionario["poder-verbo"]) {
+            return "poder-verbo";
+          }
+          if (tipoPod === "sustantivo" && diccionario["poder-sustantivo"]) {
+            return "poder-sustantivo";
           }
         }
+
+        // Fallback
+        return "poder-verbo";
       }
-    });
 
-    // — ACTUALIZAR GANADOR —
-    if (score > mejorScore) {
-      mejorScore = score;
-      mejorIndice = idx;
-      mejorExplicacion = {
-        exactas,
-        sinonimos: sinos,
-        categorias: catsUsadas,
-        score
-      };
-    }
-  });
-
-  return {
-    indice: mejorIndice,
-    explicacion: mejorExplicacion
-  };
+      return lemma;
     }
 
-// Quita el resaltado azul de todas las palabras
-function limpiarResaltado() {
-  document.querySelectorAll('#libro .palabra.resaltada').forEach(span => {
-    span.classList.remove('resaltada');
-  });
-}
+    // -----------------------
+    // MOTOR DE CONTEXTO
+    // -----------------------
+    function obtenerContexto(idx) {
+      let inicio = idx;
+      let fin = idx;
 
-// Resalta todas las ocurrencias de la palabra clicada
-function resaltarCoincidencias(rawWord) {
-  const objetivo = normalizarPalabra(rawWord);
+      // Hacia la izquierda hasta encontrar separador de frase
+      while (inicio > 0) {
+        const t = tokensLibro[inicio];
+        if (/[.!?]/.test(t)) {
+          inicio++;
+          break;
+        }
+        inicio--;
+      }
 
-  document.querySelectorAll('#libro .palabra').forEach(span => {
-    const textoSpan = span.textContent || "";
-    if (normalizarPalabra(textoSpan) === objetivo) {
-      span.classList.add('resaltada');
+      // Hacia la derecha
+      while (fin < tokensLibro.length - 1) {
+        const t = tokensLibro[fin];
+        if (/[.!?]/.test(t)) {
+          break;
+        }
+        fin++;
+      }
+
+      return tokensLibro.slice(inicio, fin + 1).join(" ");
     }
-  });
-}
-    
-function mostrarDefinicion(rawWord, tokenIndex) {
-  const clave = obtenerClaveVerbal(rawWord, tokenIndex);
-  const entrada =
-  diccionario[clave] ||
-  diccionarioIdx[normalizarPalabra(clave)];
-  const panel = document.getElementById("definicion");
 
-  // 1) Resaltado visual en el texto del libro
-  limpiarResaltado();
-  resaltarCoincidencias(rawWord);
+    function limpiarTexto(texto) {
+      return texto
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9ñ\s]/gi, " ");
+    }
 
-  // 2) Si no hay entrada en el diccionario
-  if (!entrada) {
-    panel.innerHTML = `
-      <h2>${rawWord}</h2>
-      <p class="sin-def">
-        Esta palabra aún no tiene definición en tu diccionario.
-        <br><small>(clave interna: ${clave})</small>
-      </p>
-    `;
-    return;
-  }
+    const stopwords = new Set([
+      "el","la","los","las","un","una","unos","unas",
+      "lo","al","del",
+      "de","a","en","por","para","con","sin","sobre",
+      "y","o","u","ni",
+      "que","se","su","sus","mi","mis","tu","tus",
+      "este","esta","estos","estas","ese","esa","esos","esas",
+      "aquel","aquella","aquellos","aquellas"
+    ]);
 
-  // 3) Reunimos todas las definiciones en una sola lista
-  let definiciones = [];
-  if (entrada.definicion) definiciones.push(entrada.definicion);
-  if (Array.isArray(entrada.definiciones)) {
-    definiciones = definiciones.concat(entrada.definiciones);
-  }
+    function palabrasClave(texto) {
+      return limpiarTexto(texto)
+        .split(/\s+/)
+        .filter(w => w.length > 2 && !stopwords.has(w));
+    }
 
-  if (definiciones.length === 0) {
-    panel.innerHTML = `
-      <h2>${rawWord}</h2>
-      <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
-    `;
-    return;
-  }
+    const sinonimos = {
+      // poder vencer a otro (def 3)
+      vencer: ["ganar", "derrotar", "triunfar", "vencer"],
 
-  // 4) Contexto
-  const contexto = obtenerContexto(tokenIndex);
+      // sufrir impertinencias (def 4)
+      sufrir: ["aguantar", "soportar", "tolerar", "padecer", "sufrir"],
+      impertinencias: ["vejaciones", "abusos", "humillaciones", "maltratos"],
 
-  // 5) Elegimos definición según contexto
-  let { indice: indiceElegido, explicacion } =
-    elegirDefinicionConExplicacion(definiciones, contexto);
+      // expresar posibilidad (def 2)
+      posibilidad: [
+        "posibilidad",
+        "quizas",
+        "talvez",
+        "acaso",
+        "hipotetico",
+        "probable",
+        "eventual"
+      ]
+    };
 
-  // ✅ Arreglo 2 abajo (clave de poder)
-  const esPoderVerbal = (clave === "poder-verbo" || clave === "poder");
+    const pesosCategoria = {
+      verbo: 2,
+      sustantivo: 1,
+      adjetivo: 0,
+      adverbio: -1,
+      pronombre: -2,
+      determinante: -3,
+      preposicion: -4,
+      conjuncion: -5,
+      interjeccion: -6
+    };
 
-  // Regla especial para PODER: “puede que / pueda que…”
-  if (esPoderVerbal) {
-    const norm = normalizarPalabra(rawWord); // puede, pueda, podria, etc.
-    const prevTok  = tokensLibro[tokenIndex - 1] || "";
-    const nextTok  = tokensLibro[tokenIndex + 1] || "";
-    const prevNorm = normalizarPalabra(prevTok);
-    const nextNorm = normalizarPalabra(nextTok);
+    const categorias = {
+      infinito: ["sustantivo", "adjetivo"],
+      poder: ["sustantivo", "verbo"],
+      amanecer: ["verbo"],
+      manana: ["adverbio", "sustantivo"],
+      campo: ["sustantivo"],
+      hipotetico: ["adjetivo"],
+      vencer: ["verbo"],
+      dios: ["sustantivo"],
+      propio: ["adjetivo"],
+      juego: ["sustantivo"],
+      fin: ["sustantivo"],
+      aguantar: ["verbo"],
+      vejaciones: ["sustantivo"],
+      traer: ["verbo"],
+      tener: ["verbo"],
+      estar: ["verbo"],
+      orillas: ["sustantivo"],
+      agujero: ["sustantivo"],
+      negro: ["adjetivo"],
+      engullir: ["verbo"],
+      absolutamente: ["adverbio"],
 
-    const esConstruccionPosibilidad =
-      (norm === "puede" || norm === "pueda" || norm === "podria") &&
-      (nextNorm === "que" || prevNorm === "que");
+      buscar: ["verbo"],
+      palabra: ["sustantivo"],
+      contener: ["verbo"],
+      algo: ["pronombre", "adverbio"],
+      siempre: ["adverbio"],
+      caer: ["verbo"],
+      hacer: ["verbo"],
+      todo: ["determinante"],
+      pensamiento: ["sustantivo"],
+      transformar: ["verbo"],
+      idea: ["sustantivo"],
+      problema: ["sustantivo"],
+      carente: ["adjetivo"],
+      aqui: ["adverbio"],
+      veces: ["sustantivo"],
+      cantar: ["verbo"],
+      locura: ["sustantivo"],
+      matematica: ["adjetivo"],
+      querer: ["verbo"],
+      saber: ["verbo"],
+      siguiente: ["adjetivo"],
+      nivel: ["sustantivo"],
+      loca: ["adjetivo"],
+      no: ["adverbio"],
+      tonto: ["adjetivo"],
+      sino: ["conjuncion"],
+      alguno: ["determinante"],
+      muy: ["adverbio"],
+      cautela: ["sustantivo"],
+      ir: ["verbo"],
+      astuto: ["adjetivo"],
+      alla: ["adverbio"],
+      bestias: ["sustantivo"],
+      contentar: ["verbo"],
+      mil: ["determinante"],
+      palabras: ["sustantivo"],
+      anorar: ["verbo"]
+    };
 
-    if (esConstruccionPosibilidad && definiciones.length >= 2) {
-      indiceElegido = 1; // acepción 2
-      explicacion = {
+    function expandirConSinonimos(palabra) {
+      const base = palabra.toLowerCase();
+      const lista = [base];
+      if (sinonimos[base]) {
+        lista.push(...sinonimos[base]);
+      }
+      return lista;
+    }
+
+    function elegirDefinicionConExplicacion(definiciones, contexto) {
+      const ctxWords = palabrasClave(contexto);
+      const setCtx   = new Set(ctxWords);
+
+      let mejorIndice = 0;
+      let mejorScore  = -Infinity;
+      let mejorExplicacion = {
         exactas: [],
         sinonimos: [],
-        reglaEspecial:
-          "Se detectó la construcción «puede que / pueda que», que marca la acepción de posibilidad."
+        categorias: [],
+        score: 0
       };
-    }
-  }
 
-  // 6) HTML definiciones
-  const htmlDefs = definiciones
-    .map((texto, i) => {
-      const style = i === indiceElegido ? ' style="color: blue;"' : '';
-      return `<p${style}>${texto}</p>`;
-    })
-    .join("");
+      definiciones.forEach((def, idx) => {
+        const palabrasDef = palabrasClave(def);
+        let score = 0;
+        let exactas    = [];
+        let sinos      = [];
+        let catsUsadas = [];
 
-  // 7) Explicación corta
-  let htmlExp = "";
-  if (definiciones.length > 1) {
-    const partes = [];
+        palabrasDef.forEach(p => {
+          const base = p.toLowerCase();
+          let coincid = null;
 
-    if (explicacion.exactas && explicacion.exactas.length) {
-      const únicas = [...new Set(explicacion.exactas)];
-      partes.push(`Coincidencias exactas en el contexto: <b>${únicas.join(", ")}</b>.`);
-    }
+          // Coincidencia exacta
+          if (setCtx.has(base)) {
+            coincid = base;
+            score += 2;
+            exactas.push(base);
+          } else {
+            // Coincidencia por sinónimos
+            const variantes = expandirConSinonimos(base);
+            for (const v of variantes) {
+              if (setCtx.has(v)) {
+                coincid = v;
+                score += 1;
+                sinos.push({ palabraDef: base, coincidencia: v });
+                break;
+              }
+            }
+          }
 
-    if (explicacion.sinonimos && explicacion.sinonimos.length) {
-      const lista = explicacion.sinonimos
-        .map(p => `${p.palabraDef} ↔ ${p.coincidencia}`)
-        .join(", ");
-      partes.push(`Coincidencias por sinónimos: <b>${lista}</b>.`);
-    }
-
-    if (explicacion.reglaEspecial) {
-      partes.push(explicacion.reglaEspecial);
-    }
-
-    if (partes.length) {
-      htmlExp = `
-        <hr>
-        <p style="font-size:0.9em;">
-          <strong>Por qué escogí esta acepción:</strong>
-          ${partes.join(" ")}
-        </p>
-      `;
-    }
-  }
-
-  // 8) Pintar panel
-  panel.innerHTML = `
-    <h2>${rawWord}</h2>
-    ${htmlDefs}
-    ${htmlExp}
-  `;
-}
-        
-      
-
-  // Preparar el libro: convertir texto en spans clicables y rellenar tokensLibro
-  function prepararLibro() {
-    const fuente = document.getElementById("texto-libro").innerText;
-    const contenedorLibro = document.getElementById("libro");
-
-    const tokens = fuente.split(/(\s+)/);
-    tokensLibro = []; // reiniciamos
-
-    contenedorLibro.innerHTML = "";
-    let indiceToken = 0;
-
-    tokens.forEach(token => {
-      if (/^\s+$/.test(token)) {
-        // Es solo espacio: lo añadimos tal cual
-        contenedorLibro.appendChild(document.createTextNode(token));
-      } else {
-        // Palabra/token real: span clicable
-        const span = document.createElement("span");
-        span.textContent = token;
-        span.className = "palabra";
-
-        const idx = indiceToken;
-        span.addEventListener("click", () => {
-          mostrarDefinicion(token, idx);
+          // Pesos por categoría
+          if (coincid) {
+            const catList = categorias[coincid];
+            if (catList) {
+              for (const cat of catList) {
+                if (pesosCategoria[cat] !== undefined) {
+                  const peso = pesosCategoria[cat];
+                  score += peso;
+                  catsUsadas.push({ palabra: coincid, categoria: cat, peso });
+                }
+              }
+            }
+          }
         });
 
-        tokensLibro.push(token);
-        indiceToken++;
+        if (score > mejorScore) {
+          mejorScore = score;
+          mejorIndice = idx;
+          mejorExplicacion = {
+            exactas,
+            sinonimos: sinos,
+            categorias: catsUsadas,
+            score
+          };
+        }
+      });
 
-        contenedorLibro.appendChild(span);
+      return {
+        indice: mejorIndice,
+        explicacion: mejorExplicacion
+      };
+    }
+
+    // -----------------------
+    // RESALTADO EN EL LIBRO
+    // -----------------------
+    function limpiarResaltado() {
+      document.querySelectorAll('#libro .palabra.resaltada').forEach(span => {
+        span.classList.remove('resaltada');
+      });
+    }
+
+    function resaltarCoincidencias(rawWord) {
+      const objetivo = normalizarPalabra(rawWord);
+
+      document.querySelectorAll('#libro .palabra').forEach(span => {
+        const textoSpan = span.textContent || "";
+        if (normalizarPalabra(textoSpan) === objetivo) {
+          span.classList.add('resaltada');
+        }
+      });
+    }
+
+    // ---------------------------
+    // MOSTRAR DEFINICIÓN AL CLICK
+    // ---------------------------
+    function mostrarDefinicion(rawWord, tokenIndex) {
+      const clave = obtenerClaveVerbal(rawWord, tokenIndex);
+      const entrada =
+        diccionario[clave] ||
+        diccionarioIdx[normalizarPalabra(clave)];
+      const panel = document.getElementById("definicion");
+
+      // 1) Resaltado visual en el texto del libro
+      limpiarResaltado();
+      resaltarCoincidencias(rawWord);
+
+      // 2) Si no hay entrada en el diccionario
+      if (!entrada) {
+        panel.innerHTML = `
+          <h2>${rawWord}</h2>
+          <p class="sin-def">
+            Esta palabra aún no tiene definición en tu diccionario.
+            <br><small>(clave interna: ${clave})</small>
+          </p>
+        `;
+        return;
       }
-    });
-  }
 
-  // Inicializamos
-  prepararLibro();
+      // 3) Reunir definiciones
+      let definiciones = [];
+      if (entrada.definicion) definiciones.push(entrada.definicion);
+      if (Array.isArray(entrada.definiciones)) {
+        definiciones = definiciones.concat(entrada.definiciones);
+      }
+
+      if (definiciones.length === 0) {
+        panel.innerHTML = `
+          <h2>${rawWord}</h2>
+          <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
+        `;
+        return;
+      }
+
+      // 4) Contexto local
+      const contexto = obtenerContexto(tokenIndex);
+
+      // 5) Elegir acepción según contexto
+      let { indice: indiceElegido, explicacion } =
+        elegirDefinicionConExplicacion(definiciones, contexto);
+
+      const esPoderVerbal = (clave === "poder-verbo" || clave === "poder");
+
+      // Regla especial para PODER: “puede que / pueda que”
+      if (esPoderVerbal) {
+        const norm = normalizarPalabra(rawWord); // puede, pueda, podria, etc.
+        const prevTok  = tokensLibro[tokenIndex - 1] || "";
+        const nextTok  = tokensLibro[tokenIndex + 1] || "";
+        const prevNorm = normalizarPalabra(prevTok);
+        const nextNorm = normalizarPalabra(nextTok);
+
+        const esConstruccionPosibilidad =
+          (norm === "puede" || norm === "pueda" || norm === "podria") &&
+          (nextNorm === "que" || prevNorm === "que");
+
+        if (esConstruccionPosibilidad && definiciones.length >= 2) {
+          indiceElegido = 1; // acepción 2
+          explicacion = {
+            exactas: [],
+            sinonimos: [],
+            categorias: [],
+            score: 0,
+            reglaEspecial:
+              "Se detectó la construcción «puede que / pueda que», que marca la acepción de posibilidad."
+          };
+        }
+      }
+
+      // 6) HTML de definiciones
+      const htmlDefs = definiciones
+        .map((texto, i) => {
+          const style = i === indiceElegido ? ' style="color: blue;"' : "";
+          return `<p${style}>${texto}</p>`;
+        })
+        .join("");
+
+      // 7) Explicación textual
+      let htmlExp = "";
+      if (definiciones.length > 1) {
+        const partes = [];
+
+        if (explicacion.exactas && explicacion.exactas.length) {
+          const únicas = [...new Set(explicacion.exactas)];
+          partes.push(`Coincidencias exactas en el contexto: <b>${únicas.join(", ")}</b>.`);
+        }
+
+        if (explicacion.sinonimos && explicacion.sinonimos.length) {
+          const lista = explicacion.sinonimos
+            .map(p => `${p.palabraDef} ↔ ${p.coincidencia}`)
+            .join(", ");
+          partes.push(`Coincidencias por sinónimos: <b>${lista}</b>.`);
+        }
+
+        if (explicacion.reglaEspecial) {
+          partes.push(explicacion.reglaEspecial);
+        }
+
+        if (partes.length) {
+          htmlExp = `
+            <hr>
+            <p style="font-size:0.9em;">
+              <strong>Por qué escogí esta acepción:</strong>
+              ${partes.join(" ")}
+            </p>
+          `;
+        }
+      }
+
+      // 8) Pintar panel
+      panel.innerHTML = `
+        <h2>${rawWord}</h2>
+        ${htmlDefs}
+        ${htmlExp}
+      `;
+    }
+
+    // -----------------------
+    // PREPARAR TEXTO DEL LIBRO
+    // -----------------------
+    function prepararLibro() {
+      const fuente = document.getElementById("texto-libro").innerText;
+      const contenedorLibro = document.getElementById("libro");
+
+      const tokens = fuente.split(/(\s+)/);
+      tokensLibro = [];
+
+      contenedorLibro.innerHTML = "";
+      let indiceToken = 0;
+
+      tokens.forEach(token => {
+        if (/^\s+$/.test(token)) {
+          contenedorLibro.appendChild(document.createTextNode(token));
+        } else {
+          const span = document.createElement("span");
+          span.textContent = token;
+          span.className = "palabra";
+
+          const idx = indiceToken;
+          span.addEventListener("click", () => {
+            mostrarDefinicion(token, idx);
+          });
+
+          tokensLibro.push(token);
+          indiceToken++;
+
+          contenedorLibro.appendChild(span);
+        }
+      });
+    }
+
+    // Inicializamos al cargar la página
+    prepararLibro();
   </script>
 </body>
   </html>
