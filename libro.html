@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Libro + Diccionario</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -36,15 +37,9 @@
       overflow-y: auto;
     }
 
-    .palabra {
-      cursor: pointer;
-    }
+    .palabra { cursor: pointer; }
+    .palabra:hover { text-decoration: underline; }
 
-    .palabra:hover {
-      text-decoration: underline;
-    }
-
-    /* Cuando una palabra está resaltada por el diccionario */
     .palabra.resaltada {
       color: blue;
       font-weight: bold;
@@ -55,792 +50,663 @@
       margin-top: 0;
     }
 
-    h2 {
-      margin-top: 0;
-    }
-
     .sin-def {
       color: #999;
       font-style: italic;
     }
   </style>
 </head>
+
 <body>
-  <div id="contenedor">
-    <h1>Libro del Infinito</h1>
+<div id="contenedor">
 
-    <!-- Texto del libro (oculto, se procesa con JS) -->
-    <pre id="texto-libro" style="display:none;">
-      4296 El poder del estado en infinito no tiene sentido. 
-4297 El infinito de poder puede. 4298 El infinito puede que amanezca mañana en ese campo hipotético. 4299 El infinito podrá vencer a dios en su propio juego, el fin. 4300 No puedo aguantar las vejaciones que trae tener un fin.
-    </pre>
+  <h1>Libro del Infinito</h1>
 
-    <!-- Zona visible del libro con palabras clicables -->
-    <div id="libro"></div>
+  <!-- Texto original del libro -->
+  <pre id="texto-libro" style="display:none;">
+4296 El poder del estado en infinito no tiene sentido.
+4297 El infinito de poder puede.
+4298 El infinito puede que amanezca mañana en ese campo hipotético.
+4299 El infinito podrá vencer a dios en su propio juego, el fin.
+4300 No puedo aguantar las vejaciones que trae tener un fin.
+  </pre>
 
-    <!-- Zona donde se mostrará la definición -->
-    <div id="definicion">
-      <h2>Definición</h2>
-      <p>Haz clic en una palabra del libro para ver su definición de tu diccionario web.</p>
-    </div>
+  <!-- Libro renderizado -->
+  <div id="libro"></div>
+
+  <!-- Panel de definición -->
+  <div id="definicion">
+    <h2>Definición</h2>
+    <p>Haz clic en una palabra del libro para ver su definición.</p>
   </div>
 
-  <script>
-    // 🔤 Normalizar palabra: minúsculas, sin tildes, sin puntuación
-    function normalizarPalabra(raw = "") {
-      return raw
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
-        .replace(/[^a-z0-9ñ]/gi, "");                    // deja solo letras y números básicos + ñ
+</div>
+
+<script>
+/* ------------------------------
+   Funciones base
+------------------------------ */
+
+function normalizarPalabra(raw = "") {
+  return raw
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9ñ]/gi, "");
+}
+
+/* ------------------------------
+   Diccionario del usuario
+------------------------------ */
+
+const diccionario = {
+
+  agujero: {
+    definiciones: [
+      "1.Abertura o hueco en una superficie o en un sólido.",
+      "2.De las agujas.",
+      "3.Falta inmotivada de plata en una empresa."
+    ]
+  },
+
+  negro: {
+    definiciones: [
+      "1.Ausencia total o casi de reflejo luminoso.",
+      "2.De color negro.",
+      "3.Perteneciente a la raza negra.",
+      "4.Ritual en que se invoca al demonio.",
+      "5.Del color de carbón, de oscuridad total o la boca de un túnel",
+      "6.Muy bronceado.",
+      "7.Modo de tratamiento de quienes se quieren.",
+      "8.Persona que hace un trabajo intelectual por encargo de otra haciendo todo el esfuerzo.",
+      "9.Estado de ánimo triste o pesimista.",
+      "10.Género de cine que de trama policiaca en entorno violento."
+    ]
+  },
+
+  de: {
+    definiciones: [
+      "1.Indica pertenencia. La paciencia de job.",
+      "2.Para hacer diferentes locuciones adverbiales de modo. Almorzó de pie.",
+      "3.Indica de dónde procede alguien. Vengo de Aranjuez.",
+      "4.Indica el material del que está creado algo. El vestido de seda.",
+      "5.Para indicar lo que tiene algo. Un vaso de agua.",
+      "6.Indica asunto. Este libro trata de la última guerra.",
+      "7.Indica la causa de algo. Murió de viruelas.",
+      "8.Usado para expresar la naturaleza de algo. Hombre de valor.",
+      "9.Desde. De Madrid a Toledo.",
+      "10.Precedida de adverbio y seguida de infinitivo. Lejos de pensar.",
+      "11.Seguido de infinitivo con peso de hipótesis. De saberlo antes, habría venido.",
+      "12.Llenado de verbos. Acaba de pasar.",
+      "13.Usado con ciertos nombres para indicar el tiempo en que sucede. Lo hizo de madrugada.",
+      "14.Para refortalecer un calificativo. El bueno de juan.",
+      "15.Usado como indicación de ilacion. De esto se sigue.",
+      "16.Indica la veloz ejecución de algo. Se bebió de un trago la tisana.",
+      "17.Expresion de lástima. Ay de los vencidos.",
+      "18.Llenado de preposiciones. A por la 16.",
+      "19.Para introducir una comparación. He comido más de lo debido.",
+      "20.Para. Gorro de dormir.",
+      "21.Por. Lo hice de miedo."
+    ]
+  },
+
+  amanecer: {
+    definiciones: [
+      "1.Comenzar a verse la luz del día.",
+      "2.Estar en un lugar o situacion al verse la luz del día.",
+      "3.Nacer en figurado.",
+      "4.Recorrer la noche insomne.",
+      "5.Alumbre."
+    ]
+  },
+
+  manana: {
+    definiciones: [
+      "1.Parte del día entre el amanecer y el mediodía.",
+      "2.Parte del día entre la medianoche y el mediodía.",
+      "3.Tiempo que viene.",
+      "4.El día inmediatamente posterior al de hoy."
+    ]
+  },
+
+  en: {
+    definiciones: [
+      "1.Indica en qué tiempo, lugar o modo se realiza lo que habla el verbo.",
+      "2.Sobre.",
+      "3.Indica la ocupación de alguien.",
+      "4.Indica situación de tránsito.",
+      "5.Tan pronto como.",
+      "6.Denota el límite de algún verbo de movimiento."
+    ]
+  },
+
+  ese: {
+    definiciones: [
+      "1.Que está cercano del individuo con el que se conversa.",
+      "2.Que se menciona o se mencionara.",
+      "3.Señala menosprecio por algo o por persona.",
+      "4.Señala una persona que está lejana o que se marchó."
+    ]
+  },
+
+  campo: {
+    definiciones: [
+      "1.Terreno extenso.",
+      "2.Terreno que puede trabajarse.",
+      "3.En oposición a sierra.",
+      "4.Terreno de juego.",
+      "5.Mitad del terreno que se defiende.",
+      "6.Término de municipio.",
+      "7.Reino imaginario de conocimiento.",
+      "8.Región del espacio donde está definida una magnitud.",
+      "9.Campo de base de datos.",
+      "10.Comarca ocupada por ejércitos.",
+      "11.Ejército.",
+      "12.Redondel visual del ojo."
+    ]
+  },
+
+  hipotetico: { definicion: "Perteneciente a la hipótesis." },
+
+  supervitaminar: {
+    definiciones: [
+      "1.Potenciar algo por un agente.",
+      "2.Hipertrofiar algo hasta lo grotesco.",
+      "3.Dopar por trampa."
+    ]
+  },
+
+  poder-verbo: {
+    definiciones: [
+      "1.Tener vía libre para hacer a lo quiera.",
+      "2.Expresa posibilidad de que ocurra algo.",
+      "3.Ser capaz de vencer a otro.",
+      "4.Ocupado de manera negativa: Sufrir las impertinencias de alguien."
+    ]
+  },
+
+  poder-sustantivo: {
+    definiciones: [
+      "1.Facultad para hacer.",
+      "2.Gobierno en un Estado.",
+      "3.Capacidad física de las bestias.",
+      "4.Permiso que se cede de alguien a alguien."
+    ]
+  }
+
+};
+
+
+/* -------------------------------------------------------
+   Creación de índice normalizado (agujero = AGUJERO etc.)
+-------------------------------------------------------- */
+const diccionarioIdx = {};
+for (const [k, v] of Object.entries(diccionario)) {
+  diccionarioIdx[normalizarPalabra(k)] = v;
+}
+
+
+/* -------------------------------------------------------
+   Detección especial de PODER
+-------------------------------------------------------- */
+
+function tipoPoder(tokens, idx) {
+  const palabra = normalizarPalabra(tokens[idx] || "");
+  const prev = normalizarPalabra(tokens[idx - 1] || "");
+  const next = normalizarPalabra(tokens[idx + 1] || "");
+
+  const conjugaciones = [
+    "puedo","puedes","puede","podemos","pueden",
+    "podia","podias","podiamos","podian",
+    "podra","podras","podremos","podran",
+    "podria","podrias","podriamos","podrian",
+    "pude","pudiste","pudo","pudimos","pudieron",
+    "pueda","puedas","podamos","puedan",
+    "pudiera","pudieras","pudieramos","pudieran",
+    "pudiese","pudieses","pudiesemos","pudiesen"
+  ];
+  if (conjugaciones.includes(palabra)) return "verbo";
+
+  const determinantes = [
+    "el","la","los","las","un","una","unos","unas",
+    "mi","mis","tu","tus","su","sus",
+    "este","esta","estos","estas",
+    "ese","esa","esos","esas",
+    "aquel","aquella","aquellos","aquellas",
+    "del","al"
+  ];
+  if (palabra === "poder" && determinantes.includes(prev)) return "sustantivo";
+
+  if (palabra === "poder" && prev === "de") {
+    if (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir"))
+      return "verbo";
+    return "sustantivo";
+  }
+
+  if (
+    palabra === "poder" &&
+    (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir"))
+  ) return "verbo";
+
+  return null;
+}
+
+
+/* -------------------------------------------------------
+   Lematizador simple
+-------------------------------------------------------- */
+
+const verbLemmaMap = {
+  "puedo": "poder", "puedes": "poder", "puede": "poder",
+  "podemos": "poder", "pueden": "poder",
+  "podia": "poder", "podias": "poder", "podiamos": "poder", "podian": "poder",
+  "podra": "poder", "podras": "poder", "podremos": "poder", "podran": "poder",
+  "podria": "poder", "podrias": "poder", "podriamos": "poder", "podrian": "poder",
+  "pude": "poder", "pudiste": "poder", "pudo": "poder", "pudimos": "poder", "pudieron": "poder",
+  "pueda": "poder", "puedas": "poder", "podamos": "poder", "puedan": "poder",
+  "pudiera": "poder", "pudieras": "poder", "pudieramos": "poder", "pudieran": "poder",
+  "pudiese": "poder", "pudieses": "poder", "pudiesemos": "poder", "pudiesen": "poder",
+  "creo": "crear"
+};
+
+const cliticEndings = [
+  "melo","mela","melos","melas",
+  "telo","tela","telos","telas",
+  "selo","sela","selos","selas",
+  "noslo","nosla","noslos","noslas",
+  "oslo","osla","oslos","oslas",
+  "me","te","se","lo","la","los","las","le","les","nos","os"
+];
+
+function stripClitics(word) {
+  let w = word;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const cl of cliticEndings) {
+      if (w.endsWith(cl) && w.length > cl.length + 1) {
+        w = w.slice(0, -cl.length);
+        changed = true;
+        break;
+      }
+    }
+  }
+  return w;
+}
+
+function guessInfinitive(w) {
+  if (verbLemmaMap[w]) return verbLemmaMap[w];
+
+  if (w.endsWith("se")) {
+    const base = w.slice(0, -2);
+    if (diccionario[base]) return base;
+  }
+
+  if (w.endsWith("o")) {
+    const stem = w.slice(0, -1);
+    const candAr = stem + "ar";
+    if (diccionario[candAr]) return candAr;
+  }
+
+  if (w.endsWith("aba") || w.endsWith("abas") || w.endsWith("aban")) {
+    const stem = w.replace(/aba(s|n)?$/, "");
+    const candAr = stem + "ar";
+    if (diccionario[candAr]) return candAr;
+  }
+
+  if (w.endsWith("ando")) {
+    const stem = w.slice(0, -4);
+    const cand = stem + "ar";
+    if (diccionario[cand]) return cand;
+  }
+
+  if (w.endsWith("iendo")) {
+    const stem = w.slice(0, -5);
+    const candEr = stem + "er";
+    const candIr = stem + "ir";
+    if (diccionario[candEr]) return candEr;
+    if (diccionario[candIr]) return candIr;
+  }
+
+  if (w.endsWith("ar") || w.endsWith("er") || w.endsWith("ir")) return w;
+
+  return w;
+}
+
+/* -------------------------------------------------------
+   Construcción del texto interactivo
+-------------------------------------------------------- */
+
+let tokensLibro = [];
+
+function obtenerClaveVerbal(rawWord, indiceTokenReal = null) {
+  const original = rawWord.trim();
+
+  if (original.toLowerCase().startsWith("dios")) return "dios";
+
+  if (original === "creó" || original === "Creó") {
+    if (diccionario["crear"]) return "crear";
+  }
+
+  let w = normalizarPalabra(original);
+  w = stripClitics(w);
+  const lemma = guessInfinitive(w);
+
+  if (lemma === "poder") {
+    let idx = indiceTokenReal;
+
+    if (idx == null) {
+      idx = tokensLibro.findIndex(t => normalizarPalabra(t) === "poder");
     }
 
-    // -----------------------
-    // MINI DICCIONARIO BASE
-    // -----------------------
-    const diccionario = {
+    if (idx >= 0) {
+      const tipoPod = tipoPoder(tokensLibro, idx);
 
-        agujero: {
-        definiciones: [
-          "1.Abertura o hueco en una superficie o en un sólido.",
-          "2.De las agujas.",
-          "3.Falta inmotivada de plata en una empresa."
-        ]
-      },
-
-      negro: {
-        definiciones: [
-          "1.Ausencia total o casi de reflejo luminoso.",
-          "2.De color negro.",
-          "3.Perteneciente a la raza negra.",
-          "4.Ritual en que se invoca al demonio.",
-          "5.Del color de carbón, de oscuridad total o la boca de un túnel",
-          "6.Muy bronceado.",
-          "7.Modo de tratamiento de quienes se quieren.",
-          "8.Persona que hace un trabajo intelectual por encargo de otra haciendo todo el esfuerzo.",
-          "9.Estado de ánimo triste o pesimista.",
-          "10.Género de cine que de trama policiaca en entorno violento."
-        ]
-      },
-
-      de: {
-        definiciones: [
-          "1.Indica pertenencia. La paciencia de job.",
-          "2.Para hacer diferentes locuciones adverbiales de modo. Almorzó de pie.",
-          "3.Indica de dónde procede alguien. Vengo de Aranjuez.",
-          "4.Indica el material del que está creado algo. El vestido de seda.",
-          "5.Para indicar lo que tiene algo. Un vaso de agua.",
-          "6.Indica asunto. Este libro trata de la última guerra.",
-          "7.Indica la causa de algo. Murió de viruelas.",
-          "8.Usado para expresar la naturaleza de algo. Hombre de valor.",
-          "9.Desde. De Madrid a Toledo.",
-          "10.Precedida de adverbio y seguida de infinitivo. Lejos de pensar.",
-          "11.Seguido de infinitivo con peso de hipótesis. De saberlo antes, habría venido.",
-          "12.Llenado de verbos. Acaba de pasar.",
-          "13.Usado con ciertos nombres para indicar el tiempo en que sucede. Lo hizo de madrugada.",
-          "14.Para refortalecer un calificativo. El bueno de juan.",
-          "15.Usado como indicación de ilacion. De esto se sigue.",
-          "16.Indica la veloz ejecución de algo. Se bebió de un trago la tisana.",
-          "17.Expresion de lástima. Ay de los vencidos.",
-          "18.Llenado de preposiciones. A por la 16.",
-          "19.Para introducir una comparación. He comido más de lo debido.",
-          "20.Para. Gorro de dormir.",
-          "21.Por. Lo hice de miedo."
-        ]
-      },
-
-      amanecer: {
-        definiciones: [
-          "1.Comenzar a verse la luz del día.",
-          "2.Estar en un lugar o situacion al verse la luz del día.",
-          "3.Nacer en figurado.",
-          "4.Recorrer la noche insomne.",
-          "5.Alumbre."
-        ]
-      },
-
-      manana: {
-        definiciones: [
-          "1.Parte del día entre el amanecer y el mediodía.",
-          "2.Parte del día entre la medianoche y el mediodía.",
-          "3.Tiempo que viene.",
-          "4.El día inmediatamente posterior al de hoy."
-        ]
-      },
-
-      en: {
-        definiciones: [
-          "1.Indica en qué tiempo, lugar o modo se realiza lo que habla el verbo. Pedro está en madrid.",
-          "2.Sobre. El rey le ha dado una pensión en la renta del tabaco.",
-          "3.Indica la ocupación de alguien. Trabajar en bioquímica.",
-          "4.Indica situación de tránsito.",
-          "5.Tan pronto como.",
-          "6.Denota el límite de algún verbo de movimiento. Entrar en casa."
-        ]
-      },
-
-      ese: {
-        definiciones: [
-          "1.Que está cercano del individuo con el que se conversa.",
-          "2.Que se menciona o se mencionara.",
-          "3.Señala menosprecio por algo o por persona.",
-          "4.Señala una persona que está lejana o que se marchó."
-        ]
-      },
-
-      campo: {
-        definiciones: [
-          "1.Terreno extenso a las afueras de pueblo.",
-          "2.Terreno que puede trabajarse.",
-          "3.En oposición a sierra, campiña.",
-          "4.Terreno de juego donde se práctica deportes como el fútbol.",
-          "5.Mitad de terreno de fútbol que se defiende.",
-          "6.Término de municipio.",
-          "7.Reino que puede ser imaginario sobre determinado conocimiento.",
-          "8.Region del espacio en que está definida una magnitud, como el campo eléctrico.",
-          "9.En una base de datos, espacio para almacenar información.",
-          "10.Comarca ocupada por ejércitos durante actos de guerra.",
-          "11.Ejército.",
-          "12.Redondel visual del ojo."
-        ]
-      },
-
-      hipotetico: { definicion: "Perteneciente a la hipótesis." },
-
-      supervitaminar: {
-        definiciones: [
-          "1.Potenciar algo por un agente.",
-          "2.Hipertrofiar algo hasta lo grotesco.",
-          "3.Dopar por trampa."
-        ]
-      },
-
-      poder-verbo: {
-        definiciones: [
-          "1.Tener vía libre para hacer a lo quiera.",
-          "2.Expresa posibilidad de que ocurra algo.",
-          "3.Ser capaz de vencer a otro.",
-          "4.Ocupado de manera negativa: Sufrir las impertinencias de alguien."
-        ]
-      },
-
-      poder-sustantivo: {
-        definiciones: [
-          "1.Facultad para hacer.",
-          "2.Gobierno en un Estado.",
-          "3.Capacidad física de las bestias.",
-          "4.Permiso que se cede de alguien a alguien."
-        ]
-      }
-    };
-
-    // Índice auxiliar: mismas entradas pero con clave normalizada
-    const diccionarioIdx = {};
-    for (const [k, v] of Object.entries(diccionario)) {
-      diccionarioIdx[normalizarPalabra(k)] = v;
+      if (tipoPod === "verbo") return "poder-verbo";
+      if (tipoPod === "sustantivo") return "poder-sustantivo";
     }
 
-    // -----------------------------------------
-    // DETECTAR SI "PODER" ES VERBO O SUSTANTIVO
-    // -----------------------------------------
-    function tipoPoder(tokens, idx) {
-      const palabra = normalizarPalabra(tokens[idx] || "");
-      const prev    = normalizarPalabra(tokens[idx - 1] || "");
-      const next    = normalizarPalabra(tokens[idx + 1] || ""); // ← AQUÍ ESTABA EL ERROR
+    return "poder-verbo";
+  }
 
-      // 1) Conjugaciones claras → verbo
-      const conjugaciones = [
-        "puedo","puedes","puede","podemos","pueden",
-        "podia","podias","podiamos","podian",
-        "podra","podras","podremos","podran",
-        "podria","podrias","podriamos","podrian",
-        "pude","pudiste","pudo","pudimos","pudieron",
-        "pueda","puedas","podamos","puedan",
-        "pudiera","pudieras","pudieramos","pudieran",
-        "pudiese","pudieses","pudiesemos","pudiesen"
-      ];
-      if (conjugaciones.includes(palabra)) return "verbo";
+  return lemma;
+}
 
-      // 2) Determinante/posesivo antes → sustantivo
-      const determinantes = [
-        "el","la","los","las","un","una","unos","unas",
-        "mi","mis","tu","tus","su","sus",
-        "este","esta","estos","estas",
-        "ese","esa","esos","esas",
-        "aquel","aquella","aquellos","aquellas",
-        "del","al"
-      ];
-      if (palabra === "poder" && determinantes.includes(prev)) return "sustantivo";
+/* -------------------------------------------------------
+   Contexto y extracción de palabras clave
+-------------------------------------------------------- */
 
-      // 3) "de poder" → sustantivo normalmente,
-      // salvo que vaya seguido de infinitivo (ha de poder hacer)
-      if (palabra === "poder" && prev === "de") {
-        if (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir")) {
-          return "verbo";
-        }
-        return "sustantivo";
-      }
+function obtenerContexto(idx) {
+  let inicio = idx;
+  let fin = idx;
 
-      // 4) "poder" seguido de infinitivo → verbo
-      if (palabra === "poder" &&
-          (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir"))) {
-        return "verbo";
-      }
-
-      return null;
+  while (inicio > 0) {
+    const t = tokensLibro[inicio];
+    if (/[.!?]/.test(t)) {
+      inicio++;
+      break;
     }
+    inicio--;
+  }
 
-    // ================================
-    // LEMATIZADOR MUY SIMPLE DE VERBOS
-    // ================================
-    const verbLemmaMap = {
-      // PODER
-      "puedo": "poder", "puedes": "poder", "puede": "poder", "podemos": "poder",
-      "pueden": "poder",
-      "podia": "poder", "podias": "poder", "podiamos": "poder", "podian": "poder",
-      "podra": "poder", "podras": "poder", "podremos": "poder", "podran": "poder",
-      "podria": "poder", "podrias": "poder", "podriamos": "poder", "podrian": "poder",
-      "pude": "poder", "pudiste": "poder", "pudo": "poder", "pudimos": "poder", "pudieron": "poder",
-      "pueda": "poder", "puedas": "poder", "podamos": "poder", "puedan": "poder",
-      "pudiera": "poder", "pudieras": "poder", "pudieramos": "poder", "pudieran": "poder",
-      "pudiese": "poder", "pudieses": "poder", "pudiesemos": "poder", "pudiesen": "poder",
+  while (fin < tokensLibro.length - 1) {
+    const t = tokensLibro[fin];
+    if (/[.!?]/.test(t)) {
+      break;
+    }
+    fin++;
+  }
 
-      // CREAR (caso especial)
-      "creo": "crear"
-    };
+  return tokensLibro.slice(inicio, fin + 1).join(" ");
+}
 
-    // Pronombres enclíticos al final de verbos, para cosas tipo "decirmelo".
-    const cliticEndings = [
-      "melo","mela","melos","melas",
-      "telo","tela","telos","telas",
-      "selo","sela","selos","selas",
-      "noslo","nosla","noslos","noslas",
-      "oslo","osla","oslos","oslas",
-      "me","te","se","lo","la","los","las","le","les","nos","os"
-    ];
+function limpiarTexto(texto) {
+  return texto
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9ñ\s]/gi, " ");
+}
 
-    function stripClitics(word) {
-      let w = word;
-      let changed = true;
-      while (changed) {
-        changed = false;
-        for (const cl of cliticEndings) {
-          if (w.endsWith(cl) && w.length > cl.length + 1) {
-            w = w.slice(0, -cl.length);
-            changed = true;
+const stopwords = new Set([
+  "el","la","los","las","un","una","unos","unas",
+  "lo","al","del",
+  "de","a","en","por","para","con","sin","sobre",
+  "y","o","u","ni",
+  "que","se","su","sus","mi","mis","tu","tus",
+  "este","esta","estos","estas","ese","esa","esos","esas",
+  "aquel","aquella","aquellos","aquellas"
+]);
+
+function palabrasClave(texto) {
+  return limpiarTexto(texto)
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !stopwords.has(w));
+}
+
+const sinonimos = {
+  vencer: ["ganar","derrotar","triunfar","vencer"],
+  sufrir: ["aguantar","soportar","tolerar","padecer","sufrir"],
+  impertinencias: ["vejaciones","abusos","humillaciones","maltratos"],
+  posibilidad: ["posibilidad","quizas","talvez","acaso","hipotetico","probable","eventual"]
+};
+
+const pesosCategoria = {
+  verbo: 2,
+  sustantivo: 1,
+  adjetivo: 0,
+  adverbio: -1,
+  pronombre: -2,
+  determinante: -3,
+  preposicion: -4,
+  conjuncion: -5,
+  interjeccion: -6
+};
+
+const categorias = {
+  infinito: ["sustantivo","adjetivo"],
+  poder: ["sustantivo","verbo"],
+  amanecer: ["verbo"],
+  manana: ["adverbio","sustantivo"],
+  campo: ["sustantivo"],
+  hipotetico: ["adjetivo"],
+  vencer: ["verbo"],
+  dios: ["sustantivo"],
+  propio: ["adjetivo"],
+  juego: ["sustantivo"],
+  fin: ["sustantivo"],
+  aguantar: ["verbo"],
+  vejaciones: ["sustantivo"],
+  traer: ["verbo"],
+  tener: ["verbo"],
+  estado: ["sustantivo"],
+  sentido: ["sustantivo"]
+};
+
+function expandirConSinonimos(p) {
+  const base = p.toLowerCase();
+  const lista = [base];
+  if (sinonimos[base]) lista.push(...sinonimos[base]);
+  return lista;
+}
+
+function elegirDefinicionConExplicacion(definiciones, contexto) {
+  const ctxWords = palabrasClave(contexto);
+  const setCtx = new Set(ctxWords);
+
+  let mejorIndice = 0;
+  let mejorScore = -Infinity;
+  let mejorExplicacion = { exactas: [], sinonimos: [], categorias: [], score: 0 };
+
+  definiciones.forEach((def, idx) => {
+    const palabrasDef = palabrasClave(def);
+    let score = 0;
+    let exactas = [];
+    let sinos = [];
+    let catsUsadas = [];
+
+    palabrasDef.forEach(p => {
+      const base = p.toLowerCase();
+      let coincid = null;
+
+      if (setCtx.has(base)) {
+        coincid = base;
+        score += 2;
+        exactas.push(base);
+      } else {
+        const variantes = expandirConSinonimos(base);
+        for (const v of variantes) {
+          if (setCtx.has(v)) {
+            coincid = v;
+            score += 1;
+            sinos.push({ palabraDef: base, coincidencia: v });
             break;
           }
         }
       }
-      return w;
-    }
 
-    function guessInfinitive(w) {
-      // 1) Tabla de verbos irregulares frecuentes
-      if (verbLemmaMap[w]) return verbLemmaMap[w];
-
-      // 2) Infinitivo pronominal: vestirse -> vestir
-      if (w.endsWith("se")) {
-        const base = w.slice(0, -2);
-        if (diccionario[base]) return base;
-      }
-
-      // 3) Formas en -o (hablo/creo) -> hablar/crear
-      if (w.endsWith("o")) {
-        const stem = w.slice(0, -1);
-        const candAr = stem + "ar";
-        if (diccionario[candAr]) return candAr;
-      }
-
-      // 4) Formas en -aba/-abas/-aban
-      if (w.endsWith("aba") || w.endsWith("abas") || w.endsWith("aban")) {
-        const stem = w.replace(/aba(s|n)?$/, "");
-        const candAr = stem + "ar";
-        if (diccionario[candAr]) return candAr;
-      }
-
-      // 5) Gerundios: creando -> crear, comiendo -> comer, viviendo -> vivir
-      if (w.endsWith("ando")) {
-        const stem = w.slice(0, -4);
-        const cand = stem + "ar";
-        if (diccionario[cand]) return cand;
-      }
-      if (w.endsWith("iendo")) {
-        const stem = w.slice(0, -5);
-        const candEr = stem + "er";
-        const candIr = stem + "ir";
-        if (diccionario[candEr]) return candEr;
-        if (diccionario[candIr]) return candIr;
-      }
-
-      // 6) Si ya termina en -ar / -er / -ir, lo tomamos como infinitivo
-      if (w.endsWith("ar") || w.endsWith("er") || w.endsWith("ir")) {
-        return w;
-      }
-
-      return w;
-    }
-
-    // -----------------------------
-    // TOKENS DEL LIBRO EN PANTALLA
-    // -----------------------------
-    let tokensLibro = [];
-
-    // Obtiene la clave real del diccionario a partir de la palabra del libro
-    function obtenerClaveVerbal(rawWord, indiceTokenReal = null) {
-      const original = rawWord.trim();
-
-      // Protección: "dios" NO es un verbo
-      if (original.toLowerCase().startsWith("dios")) {
-        return "dios";
-      }
-
-      // Caso especial: "creó" con tilde → CREAR
-      if (original === "creó" || original === "Creó") {
-        if (diccionario["crear"]) return "crear";
-      }
-
-      // Normalización estándar
-      let w = normalizarPalabra(original);
-      w = stripClitics(w);
-      const lemma = guessInfinitive(w);
-
-      // PODER con tratamiento especial
-      if (lemma === "poder") {
-        // Si viene el índice real del click, úsalo
-        let idx = indiceTokenReal;
-
-        // Si no, busca por forma normalizada
-        if (idx == null) {
-          idx = tokensLibro.findIndex(t => normalizarPalabra(t) === "poder");
-        }
-
-        if (idx >= 0) {
-          const tipoPod = tipoPoder(tokensLibro, idx);
-
-          if (tipoPod === "verbo" && diccionario["poder-verbo"]) {
-            return "poder-verbo";
-          }
-          if (tipoPod === "sustantivo" && diccionario["poder-sustantivo"]) {
-            return "poder-sustantivo";
+      if (coincid) {
+        const catList = categorias[coincid];
+        if (catList) {
+          for (const cat of catList) {
+            if (pesosCategoria[cat] !== undefined) {
+              const peso = pesosCategoria[cat];
+              score += peso;
+              catsUsadas.push({ palabra: coincid, categoria: cat, peso });
+            }
           }
         }
-
-        // Fallback
-        return "poder-verbo";
       }
+    });
 
-      return lemma;
+    if (score > mejorScore) {
+      mejorScore = score;
+      mejorIndice = idx;
+      mejorExplicacion = { exactas, sinonimos: sinos, categorias: catsUsadas, score };
     }
+  });
 
-    // -----------------------
-    // MOTOR DE CONTEXTO
-    // -----------------------
-    function obtenerContexto(idx) {
-      let inicio = idx;
-      let fin = idx;
+  return { indice: mejorIndice, explicacion: mejorExplicacion };
+}
 
-      // Hacia la izquierda hasta encontrar separador de frase
-      while (inicio > 0) {
-        const t = tokensLibro[inicio];
-        if (/[.!?]/.test(t)) {
-          inicio++;
-          break;
-        }
-        inicio--;
-      }
+/* -------------------------------------------------------
+   Resaltado
+-------------------------------------------------------- */
 
-      // Hacia la derecha
-      while (fin < tokensLibro.length - 1) {
-        const t = tokensLibro[fin];
-        if (/[.!?]/.test(t)) {
-          break;
-        }
-        fin++;
-      }
+function limpiarResaltado() {
+  document.querySelectorAll("#libro .palabra.resaltada")
+    .forEach(e => e.classList.remove("resaltada"));
+}
 
-      return tokensLibro.slice(inicio, fin + 1).join(" ");
-    }
+function resaltarCoincidencias(rawWord) {
+  const objetivo = normalizarPalabra(rawWord);
+  document.querySelectorAll("#libro .palabra").forEach(span => {
+    const textoSpan = span.textContent || "";
+    if (normalizarPalabra(textoSpan) === objetivo)
+      span.classList.add("resaltada");
+  });
+}
 
-    function limpiarTexto(texto) {
-      return texto
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9ñ\s]/gi, " ");
-    }
+/* -------------------------------------------------------
+   Mostrar definición
+-------------------------------------------------------- */
 
-    const stopwords = new Set([
-      "el","la","los","las","un","una","unos","unas",
-      "lo","al","del",
-      "de","a","en","por","para","con","sin","sobre",
-      "y","o","u","ni",
-      "que","se","su","sus","mi","mis","tu","tus",
-      "este","esta","estos","estas","ese","esa","esos","esas",
-      "aquel","aquella","aquellos","aquellas"
-    ]);
+function mostrarDefinicion(rawWord, tokenIndex) {
+  const clave = obtenerClaveVerbal(rawWord, tokenIndex);
+  const entrada = diccionario[clave] || diccionarioIdx[normalizarPalabra(clave)];
 
-    function palabrasClave(texto) {
-      return limpiarTexto(texto)
-        .split(/\s+/)
-        .filter(w => w.length > 2 && !stopwords.has(w));
-    }
+  const panel = document.getElementById("definicion");
 
-    const sinonimos = {
-      // poder vencer a otro (def 3)
-      vencer: ["ganar", "derrotar", "triunfar", "vencer"],
+  limpiarResaltado();
+  resaltarCoincidencias(rawWord);
 
-      // sufrir impertinencias (def 4)
-      sufrir: ["aguantar", "soportar", "tolerar", "padecer", "sufrir"],
-      impertinencias: ["vejaciones", "abusos", "humillaciones", "maltratos"],
+  if (!entrada) {
+    panel.innerHTML = `
+      <h2>${rawWord}</h2>
+      <p class="sin-def">
+        Esta palabra aún no tiene definición en tu diccionario.
+        <br><small>(clave interna: ${clave})</small>
+      </p>`;
+    return;
+  }
 
-      // expresar posibilidad (def 2)
-      posibilidad: [
-        "posibilidad",
-        "quizas",
-        "talvez",
-        "acaso",
-        "hipotetico",
-        "probable",
-        "eventual"
-      ]
-    };
+  let definiciones = [];
+  if (entrada.definicion) definiciones.push(entrada.definicion);
+  if (Array.isArray(entrada.definiciones)) definiciones.push(...entrada.definiciones);
 
-    const pesosCategoria = {
-      verbo: 2,
-      sustantivo: 1,
-      adjetivo: 0,
-      adverbio: -1,
-      pronombre: -2,
-      determinante: -3,
-      preposicion: -4,
-      conjuncion: -5,
-      interjeccion: -6
-    };
+  if (definiciones.length === 0) {
+    panel.innerHTML = `
+      <h2>${rawWord}</h2>
+      <p class="sin-def">Esta palabra aún no tiene definición.</p>`;
+    return;
+  }
 
-    const categorias = {
-      infinito: ["sustantivo", "adjetivo"],
-      poder: ["sustantivo", "verbo"],
-      amanecer: ["verbo"],
-      manana: ["adverbio", "sustantivo"],
-      campo: ["sustantivo"],
-      hipotetico: ["adjetivo"],
-      vencer: ["verbo"],
-      dios: ["sustantivo"],
-      propio: ["adjetivo"],
-      juego: ["sustantivo"],
-      fin: ["sustantivo"],
-      aguantar: ["verbo"],
-      vejaciones: ["sustantivo"],
-      traer: ["verbo"],
-      tener: ["verbo"],
-      estar: ["verbo"],
-      orillas: ["sustantivo"],
-      agujero: ["sustantivo"],
-      negro: ["adjetivo"],
-      engullir: ["verbo"],
-      absolutamente: ["adverbio"],
+  const contexto = obtenerContexto(tokenIndex);
+  let { indice: indiceElegido, explicacion } =
+    elegirDefinicionConExplicacion(definiciones, contexto);
 
-      buscar: ["verbo"],
-      palabra: ["sustantivo"],
-      contener: ["verbo"],
-      algo: ["pronombre", "adverbio"],
-      siempre: ["adverbio"],
-      caer: ["verbo"],
-      hacer: ["verbo"],
-      todo: ["determinante"],
-      pensamiento: ["sustantivo"],
-      transformar: ["verbo"],
-      idea: ["sustantivo"],
-      problema: ["sustantivo"],
-      carente: ["adjetivo"],
-      aqui: ["adverbio"],
-      veces: ["sustantivo"],
-      cantar: ["verbo"],
-      locura: ["sustantivo"],
-      matematica: ["adjetivo"],
-      querer: ["verbo"],
-      saber: ["verbo"],
-      siguiente: ["adjetivo"],
-      nivel: ["sustantivo"],
-      loca: ["adjetivo"],
-      no: ["adverbio"],
-      tonto: ["adjetivo"],
-      sino: ["conjuncion"],
-      alguno: ["determinante"],
-      muy: ["adverbio"],
-      cautela: ["sustantivo"],
-      ir: ["verbo"],
-      astuto: ["adjetivo"],
-      alla: ["adverbio"],
-      bestias: ["sustantivo"],
-      contentar: ["verbo"],
-      mil: ["determinante"],
-      palabras: ["sustantivo"],
-      anorar: ["verbo"]
-    };
+  const esPoderVerbal = (clave === "poder-verbo" || clave === "poder");
 
-    function expandirConSinonimos(palabra) {
-      const base = palabra.toLowerCase();
-      const lista = [base];
-      if (sinonimos[base]) {
-        lista.push(...sinonimos[base]);
-      }
-      return lista;
-    }
+  if (esPoderVerbal) {
+    const norm = normalizarPalabra(rawWord);
+    const prevNorm = normalizarPalabra(tokensLibro[tokenIndex - 1] || "");
+    const nextNorm = normalizarPalabra(tokensLibro[tokenIndex + 1] || "");
 
-    function elegirDefinicionConExplicacion(definiciones, contexto) {
-      const ctxWords = palabrasClave(contexto);
-      const setCtx   = new Set(ctxWords);
+    const esPosibilidad =
+      (norm === "puede" || norm === "pueda" || norm === "podria") &&
+      (nextNorm === "que" || prevNorm === "que");
 
-      let mejorIndice = 0;
-      let mejorScore  = -Infinity;
-      let mejorExplicacion = {
+    if (esPosibilidad && definiciones.length >= 2) {
+      indiceElegido = 1;
+      explicacion = {
         exactas: [],
         sinonimos: [],
         categorias: [],
-        score: 0
-      };
-
-      definiciones.forEach((def, idx) => {
-        const palabrasDef = palabrasClave(def);
-        let score = 0;
-        let exactas    = [];
-        let sinos      = [];
-        let catsUsadas = [];
-
-        palabrasDef.forEach(p => {
-          const base = p.toLowerCase();
-          let coincid = null;
-
-          // Coincidencia exacta
-          if (setCtx.has(base)) {
-            coincid = base;
-            score += 2;
-            exactas.push(base);
-          } else {
-            // Coincidencia por sinónimos
-            const variantes = expandirConSinonimos(base);
-            for (const v of variantes) {
-              if (setCtx.has(v)) {
-                coincid = v;
-                score += 1;
-                sinos.push({ palabraDef: base, coincidencia: v });
-                break;
-              }
-            }
-          }
-
-          // Pesos por categoría
-          if (coincid) {
-            const catList = categorias[coincid];
-            if (catList) {
-              for (const cat of catList) {
-                if (pesosCategoria[cat] !== undefined) {
-                  const peso = pesosCategoria[cat];
-                  score += peso;
-                  catsUsadas.push({ palabra: coincid, categoria: cat, peso });
-                }
-              }
-            }
-          }
-        });
-
-        if (score > mejorScore) {
-          mejorScore = score;
-          mejorIndice = idx;
-          mejorExplicacion = {
-            exactas,
-            sinonimos: sinos,
-            categorias: catsUsadas,
-            score
-          };
-        }
-      });
-
-      return {
-        indice: mejorIndice,
-        explicacion: mejorExplicacion
+        score: 0,
+        reglaEspecial: "Construcción «puede que / pueda que» detectada → posibilidad."
       };
     }
+  }
 
-    // -----------------------
-    // RESALTADO EN EL LIBRO
-    // -----------------------
-    function limpiarResaltado() {
-      document.querySelectorAll('#libro .palabra.resaltada').forEach(span => {
-        span.classList.remove('resaltada');
-      });
+  const htmlDefs = definiciones
+    .map((texto, i) => `<p${i === indiceElegido ? ' style="color:blue;"' : ''}>${texto}</p>`)
+    .join("");
+
+  let htmlExp = "";
+  const partes = [];
+
+  if (explicacion.exactas.length)
+    partes.push("Coincidencias exactas: <b>" + explicacion.exactas.join(", ") + "</b>.");
+
+  if (explicacion.sinonimos.length)
+    partes.push("Sinónimos: <b>" +
+      explicacion.sinonimos.map(s => `${s.palabraDef} ↔ ${s.coincidencia}`).join(", ") +
+      "</b>.");
+
+  if (explicacion.reglaEspecial)
+    partes.push(explicacion.reglaEspecial);
+
+  if (partes.length) {
+    htmlExp = `<hr><p style="font-size:0.9em;"><strong>Razón:</strong> ${partes.join(" ")}</p>`;
+  }
+
+  panel.innerHTML = `<h2>${rawWord}</h2>${htmlDefs}${htmlExp}`;
+}
+
+/* -------------------------------------------------------
+   Construcción del libro
+-------------------------------------------------------- */
+
+function prepararLibro() {
+  const fuente = document.getElementById("texto-libro").innerText;
+  const contenedorLibro = document.getElementById("libro");
+
+  const tokens = fuente.split(/(\s+)/);
+  tokensLibro = [];
+
+  contenedorLibro.innerHTML = "";
+  let indiceToken = 0;
+
+  tokens.forEach(token => {
+    if (/^\s+$/.test(token)) {
+      contenedorLibro.appendChild(document.createTextNode(token));
+    } else {
+      const span = document.createElement("span");
+      span.textContent = token;
+      span.className = "palabra";
+
+      const idx = indiceToken;
+      span.addEventListener("click", () => mostrarDefinicion(token, idx));
+
+      tokensLibro.push(token);
+      indiceToken++;
+
+      contenedorLibro.appendChild(span);
     }
+  });
+}
 
-    function resaltarCoincidencias(rawWord) {
-      const objetivo = normalizarPalabra(rawWord);
+prepararLibro();
 
-      document.querySelectorAll('#libro .palabra').forEach(span => {
-        const textoSpan = span.textContent || "";
-        if (normalizarPalabra(textoSpan) === objetivo) {
-          span.classList.add('resaltada');
-        }
-      });
-    }
+</script>
 
-    // ---------------------------
-    // MOSTRAR DEFINICIÓN AL CLICK
-    // ---------------------------
-    function mostrarDefinicion(rawWord, tokenIndex) {
-      const clave = obtenerClaveVerbal(rawWord, tokenIndex);
-      const entrada =
-        diccionario[clave] ||
-        diccionarioIdx[normalizarPalabra(clave)];
-      const panel = document.getElementById("definicion");
-
-      // 1) Resaltado visual en el texto del libro
-      limpiarResaltado();
-      resaltarCoincidencias(rawWord);
-
-      // 2) Si no hay entrada en el diccionario
-      if (!entrada) {
-        panel.innerHTML = `
-          <h2>${rawWord}</h2>
-          <p class="sin-def">
-            Esta palabra aún no tiene definición en tu diccionario.
-            <br><small>(clave interna: ${clave})</small>
-          </p>
-        `;
-        return;
-      }
-
-      // 3) Reunir definiciones
-      let definiciones = [];
-      if (entrada.definicion) definiciones.push(entrada.definicion);
-      if (Array.isArray(entrada.definiciones)) {
-        definiciones = definiciones.concat(entrada.definiciones);
-      }
-
-      if (definiciones.length === 0) {
-        panel.innerHTML = `
-          <h2>${rawWord}</h2>
-          <p class="sin-def">Esta palabra aún no tiene definición en tu diccionario.</p>
-        `;
-        return;
-      }
-
-      // 4) Contexto local
-      const contexto = obtenerContexto(tokenIndex);
-
-      // 5) Elegir acepción según contexto
-      let { indice: indiceElegido, explicacion } =
-        elegirDefinicionConExplicacion(definiciones, contexto);
-
-      const esPoderVerbal = (clave === "poder-verbo" || clave === "poder");
-
-      // Regla especial para PODER: “puede que / pueda que”
-      if (esPoderVerbal) {
-        const norm = normalizarPalabra(rawWord); // puede, pueda, podria, etc.
-        const prevTok  = tokensLibro[tokenIndex - 1] || "";
-        const nextTok  = tokensLibro[tokenIndex + 1] || "";
-        const prevNorm = normalizarPalabra(prevTok);
-        const nextNorm = normalizarPalabra(nextTok);
-
-        const esConstruccionPosibilidad =
-          (norm === "puede" || norm === "pueda" || norm === "podria") &&
-          (nextNorm === "que" || prevNorm === "que");
-
-        if (esConstruccionPosibilidad && definiciones.length >= 2) {
-          indiceElegido = 1; // acepción 2
-          explicacion = {
-            exactas: [],
-            sinonimos: [],
-            categorias: [],
-            score: 0,
-            reglaEspecial:
-              "Se detectó la construcción «puede que / pueda que», que marca la acepción de posibilidad."
-          };
-        }
-      }
-
-      // 6) HTML de definiciones
-      const htmlDefs = definiciones
-        .map((texto, i) => {
-          const style = i === indiceElegido ? ' style="color: blue;"' : "";
-          return `<p${style}>${texto}</p>`;
-        })
-        .join("");
-
-      // 7) Explicación textual
-      let htmlExp = "";
-      if (definiciones.length > 1) {
-        const partes = [];
-
-        if (explicacion.exactas && explicacion.exactas.length) {
-          const unicas = [...new Set(explicacion.exactas)];
-          partes.push(`Coincidencias exactas en el contexto: <b>${unicas.join(", ")}</b>.`);
-        }
-
-        if (explicacion.sinonimos && explicacion.sinonimos.length) {
-          const lista = explicacion.sinonimos
-            .map(p => `${p.palabraDef} ↔ ${p.coincidencia}`)
-            .join(", ");
-          partes.push(`Coincidencias por sinónimos: <b>${lista}</b>.`);
-        }
-
-        if (explicacion.reglaEspecial) {
-          partes.push(explicacion.reglaEspecial);
-        }
-
-        if (partes.length) {
-          htmlExp = `
-            <hr>
-            <p style="font-size:0.9em;">
-              <strong>Por qué escogí esta acepción:</strong>
-              ${partes.join(" ")}
-            </p>
-          `;
-        }
-      }
-
-      // 8) Pintar panel
-      panel.innerHTML = `
-        <h2>${rawWord}</h2>
-        ${htmlDefs}
-        ${htmlExp}
-      `;
-    }
-
-    // -----------------------
-    // PREPARAR TEXTO DEL LIBRO
-    // -----------------------
-    function prepararLibro() {
-      const fuente = document.getElementById("texto-libro").innerText;
-      const contenedorLibro = document.getElementById("libro");
-
-      const tokens = fuente.split(/(\s+)/);
-      tokensLibro = [];
-
-      contenedorLibro.innerHTML = "";
-      let indiceToken = 0;
-
-      tokens.forEach(token => {
-        if (/^\s+$/.test(token)) {
-          contenedorLibro.appendChild(document.createTextNode(token));
-        } else {
-          const span = document.createElement("span");
-          span.textContent = token;
-          span.className = "palabra";
-
-          const idx = indiceToken;
-          span.addEventListener("click", () => {
-            mostrarDefinicion(token, idx);
-          });
-
-          tokensLibro.push(token);
-          indiceToken++;
-
-          contenedorLibro.appendChild(span);
-        }
-      });
-    }
-
-    // Inicializamos al cargar la página
-    prepararLibro();
-  </script>
 </body>
 </html>
