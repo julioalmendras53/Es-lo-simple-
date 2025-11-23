@@ -97,7 +97,6 @@
     // MINI DICCIONARIO BASE
     // -----------------------
     const diccionario = {
-    
 
       escobeta: {
         definiciones: [
@@ -335,7 +334,7 @@
     function tipoPoder(tokens, idx) {
       const palabra = normalizarPalabra(tokens[idx] || "");
       const prev    = normalizarPalabra(tokens[idx - 1] || "");
-      const next    = normalizarPalabra(tokens[idx + 1] || "");
+      const next    = normalizarPalabra(tokens[idx + 1] || "";
 
       // 1) Conjugaciones claras → verbo
       const conjugaciones = [
@@ -383,8 +382,6 @@
     // LEMATIZADOR MUY SIMPLE DE VERBOS
     // ================================
     const verbLemmaMap = {
-
-
       // PODER
       "puedo": "poder", "puedes": "poder", "puede": "poder", "podemos": "poder",
       "pueden": "poder",
@@ -396,9 +393,6 @@
       "pudiera": "poder", "pudieras": "poder", "pudieramos": "poder", "pudieran": "poder",
       "pudiese": "poder", "pudieses": "poder", "pudiesemos": "poder", "pudiesen": "poder",
 
-
-      
-      
       // CREAR (caso especial)
       "creo": "crear"
     };
@@ -629,7 +623,7 @@
       tener: ["verbo"],
       estar: ["verbo"],
       orillas: ["sustantivo"],
-      agujero: ["sustantivo"],
+      agujero: ["sустantivo"],
       negro: ["adjetivo"],
       engullir: ["verbo"],
       absolutamente: ["adverbio"],
@@ -649,11 +643,11 @@
       carente: ["adjetivo"],
       aqui: ["adverbio"],
       veces: ["sustantivo"],
-      cantar: ["verbo"],
+      cantar: ["verбо"],
       locura: ["sustantivo"],
       matematica: ["adjetivo"],
-      querer: ["verbo"],
-      saber: ["verbo"],
+      querer: ["verбо"],
+      saber: ["verбо"],
       siguiente: ["adjetivo"],
       nivel: ["sustantivo"],
       loca: ["adjetivo"],
@@ -663,7 +657,7 @@
       alguno: ["determinante"],
       muy: ["adverbio"],
       cautela: ["sustantivo"],
-      ir: ["verbo"],
+      ir: ["verво"],
       astuto: ["adjetivo"],
       alla: ["adverbio"],
       bestias: ["sustantivo"],
@@ -866,8 +860,8 @@
         const partes = [];
 
         if (explicacion.exactas && explicacion.exactas.length) {
-          const únicas = [...new Set(explicacion.exactas)];
-          partes.push(`Coincidencias exactas en el contexto: <b>${únicas.join(", ")}</b>.`);
+          const unicas = [...new Set(explicacion.exactas)];
+          partes.push(`Coincidencias exactas en el contexto: <b>${unicas.join(", ")}</b>.`);
         }
 
         if (explicacion.sinonimos && explicacion.sinonimos.length) {
@@ -938,4 +932,4 @@
     prepararLibro();
   </script>
 </body>
-  </html>
+</html>
