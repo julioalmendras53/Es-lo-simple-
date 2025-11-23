@@ -1016,60 +1016,7 @@ for (const [k, v] of Object.entries(diccionario)) {
         
 
 
-  // 🔤 Normalizar palabra: quitar signos, minúsculas, quitar tildes
-  function normalizarPalabra(raw) {
-    return raw
-      .toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
-      .replace(/[^a-z0-9ñ]/g, "");                      // quita todo lo que no sea letra o número
-  }
-// Detecta si "poder" es sustantivo o verbo según el contexto
-function tipoPoder(tokens, idx) {
-  const palabra = normalizarPalabra(tokens[idx] || "");
-  const prev    = normalizarPalabra(tokens[idx - 1] || "");
-  const next    = normalizarPalabra(tokens[idx + 1] || "");
-
-  // 1) Conjugaciones claras → verbo
-  const conjugaciones = [
-    "puedo","puedes","puede","podemos","pueden",
-    "podia","podias","podiamos","podian",
-    "podra","podras","podremos","podran",
-    "podria","podrias","podriamos","podrian",
-    "pude","pudiste","pudo","pudimos","pudieron",
-    "pueda","puedas","podamos","puedan",
-    "pudiera","pudieras","pudieramos","pudieran",
-    "pudiese","pudieses","pudiesemos","pudiesen"
-  ];
-  if (conjugaciones.includes(palabra)) return "verbo";
-
-  // 2) Determinante/posesivo antes → sustantivo
-  const determinantes = [
-    "el","la","los","las","un","una","unos","unas",
-    "mi","mis","tu","tus","su","sus",
-    "este","esta","estos","estas",
-    "ese","esa","esos","esas",
-    "aquel","aquella","aquellos","aquellas",
-    "del","al"
-  ];
-  if (palabra === "poder" && determinantes.includes(prev)) return "sustantivo";
-
-  // 3) "de poder" → sustantivo normalmente,
-  // salvo que vaya seguido de infinitivo (ha de poder hacer)
-  if (palabra === "poder" && prev === "de") {
-    if (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir")) {
-      return "verbo";
-    }
-    return "sustantivo";
-  }
-
-  // 4) "poder" seguido de infinitivo → verbo
-  if (palabra === "poder" &&
-      (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir"))) {
-    return "verbo";
-  }
-
-  return null;
-    }
+  
     
 
     
