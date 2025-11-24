@@ -76,7 +76,16 @@
   </div>
 
 </div>
+</div>  <!-- cierre del contenedor -->
 
+<button id="btnResumenIA" style="margin-top:20px;">
+  Generar resumen cada 200 palabras (IA)
+</button>
+
+<div id="resumen" style="margin-top:20px;"></div>
+
+<script>
+    /* tu código JavaScript */
 <script>
 /* -------------------------------------
    FUNCIONES DE NORMALIZACIÓN
@@ -697,7 +706,62 @@ function mostrarDefinicion(rawWord, idx) {
 ------------------------------------- */
 
 prepararLibro();
+// =====================================================
+// RESÚMENES AUTOMÁTICOS CON IA (Cloudflare Worker + OpenAI)
+// =====================================================
 
+// URL de tu Worker
+const URL_RESUMEN = "https://broad-river-a64a.diosydiosperobienomal.workers.dev";
+
+// Divide el libro en bloques de 200 palabras
+function dividirEnBloques(texto, tam = 200) {
+  const palabras = texto.split(/\s+/).filter(p => p.trim().length > 0);
+  const bloques = [];
+  for (let i = 0; i < palabras.length; i += tam) {
+    bloques.push(palabras.slice(i, i + tam).join(" "));
+  }
+  return bloques;
+}
+
+// Llama al Worker para resumir un bloque
+async function resumirConIA(bloque) {
+  const res = await fetch(URL_RESUMEN, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ texto: bloque })
+  });
+
+  if (!res.ok) return "Error al resumir";
+
+  const data = await res.json();
+  return data.resumen || "Sin resumen";
+}
+
+// Genera los resúmenes para todos los bloques
+async function generarResumenCada200ConIA() {
+  const texto = document.getElementById("texto-libro").innerText;
+  const salida = document.getElementById("resumen");
+  const bloques = dividirEnBloques(texto, 200);
+
+  salida.innerHTML = "<h2>Resúmenes automáticos generados por IA</h2>";
+
+  for (let i = 0; i < bloques.length; i++) {
+    const resumen = await resumirConIA(bloques[i]);
+    salida.innerHTML += `
+      <div style="margin-bottom:1rem; padding:0.5rem; border-left:3px solid #999;">
+        <h3>Bloque ${i + 1} (palabras ${i * 200} – ${(i + 1) * 200})</h3>
+        <p><em>Resumen generado automáticamente</em></p>
+        <p>${resumen}</p>
+      </div>
+    `;
+  }
+}
+
+// Conecta el botón al cargar la página
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("btnResumenIA");
+  if (btn) btn.addEventListener("click", generarResumenCada200ConIA);
+});
 </script>
 
 </body>
