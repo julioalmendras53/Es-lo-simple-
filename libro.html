@@ -78,9 +78,7 @@
 </div>
 </div>  <!-- cierre del contenedor -->
 
-<button id="btn-resumen-ia">
-  Resumen IA del Libro
-</button>
+
 
 <div id="resumen" style="margin-top:20px;"></div>
 
@@ -705,44 +703,7 @@ function mostrarDefinicion(rawWord, idx) {
 ------------------------------------- */
 
 prepararLibro();
-// --- Función para pedir resumen IA a tu Worker ---
-async function pedirResumenIA(texto) {
-  const respuesta = await fetch(
-    "https://broad-river-a64a.diosydiosperobienomal.workers.dev",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ text: texto }),
-    }
-  );
 
-  const datos = await respuesta.json();
-  return datos.summary || "La IA no devolvió un resumen.";
-}
-
-// --- Cuando se pulse el botón, manda el texto del libro ---
-document.getElementById("btn-resumen-ia").addEventListener("click", async () => {
-  const libro = document.getElementById("libro");
-  const salida = document.getElementById("definicion");
-
-  const texto = libro ? libro.innerText : "";
-
-  if (!texto.trim()) {
-    salida.textContent = "No hay texto del libro para resumir.";
-    return;
-  }
-
-  salida.textContent = "Pidiendo resumen a la IA...";
-
-  try {
-    const resumen = await pedirResumenIA(texto);
-    salida.textContent = resumen;
-  } catch (e) {
-    salida.textContent = "Error al pedir resumen: " + e.message;
-  }
-});
 </script>
 
 </body>
