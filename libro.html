@@ -708,7 +708,7 @@ function mostrarDefinicion(rawWord, idx) {
 
 prepararLibro();
 // =====================================================
-// RESÚMENES AUTOMÁTICOS CON IA (Cloudflare Worker + OpenAI)
+// RESUMÉN AUTOMÁTICO CON IA (Cloudflare Worker + OpenAI)
 // =====================================================
 
 // URL de tu Worker
@@ -724,45 +724,41 @@ function dividirEnBloques(texto, tam = 200) {
   return bloques;
 }
 
-// Llama al Worker para resumir un bloque
-async function resumirConIA(bloque) {
-  const res = await fetch(URL_RESUMEN, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ texto: bloque })
-  });
-
-  if (!res.ok) return "Error al resumir";
-
-  const data = await res.json();
-  return data.resumen || "Sin resumen";
-}
-
-// Genera los resúmenes para todos los bloques
+// Función que usará el botón (onclick)
 async function generarResumenCada200ConIA() {
   const texto = document.getElementById("texto-libro").innerText;
   const salida = document.getElementById("resumen");
+
   const bloques = dividirEnBloques(texto, 200);
 
   salida.innerHTML = "<h2>Resúmenes automáticos generados por IA</h2>";
 
   for (let i = 0; i < bloques.length; i++) {
-    const resumen = await resumirConIA(bloques[i]);
-    salida.innerHTML += `
-      <div style="margin-bottom:1rem; padding:0.5rem; border-left:3px solid #999;">
-        <h3>Bloque ${i + 1} (palabras ${i * 200} – ${(i + 1) * 200})</h3>
-        <p><em>Resumen generado automáticamente</em></p>
-        <p>${resumen}</p>
-      </div>
-    `;
+    try {
+      const r = await fetch(URL_RESUMEN, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texto: bloques[i] })
+      });
+
+      const data = await r.json();
+      const resumen = data.resumen || "Sin resumen";
+
+      salida.innerHTML += `
+        <div style="padding:10px; border:1px solid #ccc; margin-top:10px;">
+          <b>Bloque ${i + 1}</b><br>
+          ${resumen}
+        </div>
+      `;
+    } catch (e) {
+      salida.innerHTML += `
+        <div style="padding:10px; border:1px solid red; margin-top:10px;">
+          Error al resumir el bloque ${i + 1}
+        </div>
+      `;
+    }
   }
 }
-
-// Conecta el botón al cargar la página
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("btnResumenIA");
-  if (btn) btn.addEventListener("click", generarResumenCada200ConIA);
-});
 </script>
 
 </body>
