@@ -78,10 +78,8 @@
 </div>
 </div>  <!-- cierre del contenedor -->
 
-<button id="btnResumenIA"
-        style="margin-top:20px;"
-        onclick="generarResumenCada200ConIA()">
-  Generar resumen cada 200 palabras (IA)
+<button id="btn-resumen-ia">
+  Resumen IA del Libro
 </button>
 
 <div id="resumen" style="margin-top:20px;"></div>
@@ -707,58 +705,44 @@ function mostrarDefinicion(rawWord, idx) {
 ------------------------------------- */
 
 prepararLibro();
-// =====================================================
-// RESUMÉN AUTOMÁTICO CON IA (Cloudflare Worker + OpenAI)
-// =====================================================
-
-// URL de tu Worker
-const URL_RESUMEN = "https://broad-river-a64a.diosydiosperobienomal.workers.dev";
-
-// Divide el libro en bloques de 200 palabras
-function dividirEnBloques(texto, tam = 200) {
-  const palabras = texto.split(/\s+/).filter(p => p.trim().length > 0);
-  const bloques = [];
-  for (let i = 0; i < palabras.length; i += tam) {
-    bloques.push(palabras.slice(i, i + tam).join(" "));
-  }
-  return bloques;
-}
-
-// Función que usará el botón (onclick)
-async function generarResumenCada200ConIA() {
-  const texto = document.getElementById("texto-libro").innerText;
-  const salida = document.getElementById("resumen");
-
-  const bloques = dividirEnBloques(texto, 200);
-
-  salida.innerHTML = "<h2>Resúmenes automáticos generados por IA</h2>";
-
-  for (let i = 0; i < bloques.length; i++) {
-    try {
-      const r = await fetch(URL_RESUMEN, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto: bloques[i] })
-      });
-
-      const data = await r.json();
-      const resumen = data.resumen || "Sin resumen";
-
-      salida.innerHTML += `
-        <div style="padding:10px; border:1px solid #ccc; margin-top:10px;">
-          <b>Bloque ${i + 1}</b><br>
-          ${resumen}
-        </div>
-      `;
-    } catch (e) {
-      salida.innerHTML += `
-        <div style="padding:10px; border:1px solid red; margin-top:10px;">
-          Error al resumir el bloque ${i + 1}
-        </div>
-      `;
+// --- Función para pedir resumen IA a tu Worker ---
+async function pedirResumenIA(texto) {
+  const respuesta = await fetch(
+    "https://broad-river-a64a.diosydiosperobienomal.workers.dev",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: texto }),
     }
-  }
+  );
+
+  const datos = await respuesta.json();
+  return datos.summary || "La IA no devolvió un resumen.";
 }
+
+// --- Cuando se pulse el botón, manda el texto del libro ---
+document.getElementById("btn-resumen-ia").addEventListener("click", async () => {
+  const libro = document.getElementById("libro");
+  const salida = document.getElementById("definicion");
+
+  const texto = libro ? libro.innerText : "";
+
+  if (!texto.trim()) {
+    salida.textContent = "No hay texto del libro para resumir.";
+    return;
+  }
+
+  salida.textContent = "Pidiendo resumen a la IA...";
+
+  try {
+    const resumen = await pedirResumenIA(texto);
+    salida.textContent = resumen;
+  } catch (e) {
+    salida.textContent = "Error al pedir resumen: " + e.message;
+  }
+});
 </script>
 
 </body>
