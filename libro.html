@@ -203,351 +203,7 @@ const diccionario = {
       "12.Campo visual."
     ]
   },
-  /***************************************************
- *  RAZONADOR DEL DICCIONARIO
- *  - Rejilla de posición
- *  - Tabla de categorías 9–1
- *  - Sistema de premios y castigos (22 reglas)
- *
- *  NOTA: no modifica nada de tu código actual.
- ***************************************************/
-
-/******** 1. Normalización y utilidades ********/
-
-function norm(str) {
-  return str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // quita tildes
-    .replace(/[.,;:!?¡¿()"«»]/g, "") // quita signos
-    .trim();
-}
-
-function tokenizar(str) {
-  const limpio = norm(str);
-  return limpio.split(/\s+/).filter(Boolean);
-}
-
-// Palabras que ignoramos (ruido)
-const STOPWORDS = new Set([
-  "el","la","los","las","un","una","unos","unas",
-  "de","del","a","en","y","o","u","que","lo","le","se",
-  "por","para","con","sin","su","sus","mi","mis","tu","tus",
-  "al"
-]);
-
-/******** 2. Tabla de categorías (9–1) ********/
-
-const CATEGORIA_PESOS = {
-  verbo: 9,
-  sustantivo: 8,
-  adjetivo: 7,
-  adverbio: 6,
-  pronombre: 5,
-  determinante: 4, // artículos
-  articulo: 4,
-  preposicion: 3,
-  conjuncion: 2,
-  interjeccion: 1
-};
-
-// Listas simples para detectar clases funcionales
-const DETERMINANTES = new Set([
-  "el","la","los","las","un","una","unos","unas",
-  "este","esta","estos","estas",
-  "ese","esa","esos","esas",
-  "aquel","aquella","aquellos","aquellas"
-]);
-
-const PREPOSICIONES = new Set([
-  "a","ante","bajo","cabe","con","contra","de","desde","durante","en","entre",
-  "hacia","hasta","mediante","para","por","segun","sin","so","sobre","tras","del","al"
-]);
-
-const CONJUNCIONES = new Set([
-  "y","e","ni","o","u","pero","sino","aunque","que","porque","pues","mientras"
-]);
-
-const PRONOMBRES = new Set([
-  "yo","tu","el","ella","nosotros","vosotros","ellos","ellas",
-  "me","te","se","nos","os","lo","la","los","las","le","les"
-]);
-
-const INTERJECCIONES = new Set(["ay","oh","eh","uy","hala","bah","uff"]);
-
-// Heurística de categoría para cada palabra
-function categoriaDePalabra(palabra, categoriaLema) {
-  const w = norm(palabra);
-  if (DETERMINANTES.has(w)) return "determinante";
-  if (PREPOSICIONES.has(w)) return "preposicion";
-  if (CONJUNCIONES.has(w)) return "conjuncion";
-  if (PRONOMBRES.has(w)) return "pronombre";
-  if (INTERJECCIONES.has(w)) return "interjeccion";
-  if (w.endsWith("mente")) return "adverbio";
-  if (w.endsWith("ar") || w.endsWith("er") || w.endsWith("ir")) return "verbo"; // infinitivo
-
-  // si no sabemos, usamos la categoría del lema como referencia
-  if (!categoriaLema) return "sustantivo";
-  return categoriaLema;
-}
-
-function pesoCategoria(palabra, categoriaLema) {
-  const cat = categoriaDePalabra(palabra, categoriaLema);
-  return CATEGORIA_PESOS[cat] || 0;
-}
-
-/******** 3. Peso por POSICIÓN (rejilla móvil) ********/
-// i: posición (1..n), n: nº total de palabras
-function pesoPosicion(i, n) {
-  if (n <= 0) return 0;
-  let max;
-  if (n % 2 === 0) {
-    // n par → 4,3,2,1,0,-1,-2,-3...
-    max = n / 2;
-  } else {
-    // n impar → 3,2,1,0,-1,-2,-3...
-    max = (n - 1) / 2;
-  }
-  return max - (i - 1);
-}
-
-/******** 4. Elección de PALABRA NÚCLEO en UNA definición ********/
-
-function elegirPalabraNucleo(definicion, categoriaLema) {
-  const palabras = tokenizar(definicion);
-  const n = palabras.length;
-  if (n === 0) return null;
-
-  let mejorIdx = 0;
-  let mejorScore = -Infinity;
-
-  for (let i = 0; i < n; i++) {
-    const w = palabras[i];
-    if (STOPWORDS.has(w)) continue; // ruido
-
-    const posScore = pesoPosicion(i + 1, n);
-    const catScore = pesoCategoria(w, categoriaLema);
-    const score = posScore + catScore;
-
-    if (score > mejorScore) {
-      mejorScore = score;
-      mejorIdx = i;
-    }
-  }
-
-  return {
-    palabra: palabras[mejorIdx],
-    indice: mejorIdx,
-    score: mejorScore
-  };
-}
-
-/******** 5. Sistema de 22 reglas (premios/castigos) ********/
-/*
-   RESUMEN DE LAS REGLAS QUE SE APLICAN AQUÍ:
-
-   CASTIGOS (score -= ...):
-   1) Repetición del lema / calco del lema ............ -3
-   2) Estructura "es que" ............................. -2
-   3) Empezar o terminar con persona (me/te/se... la) . -1
-   4) Repetir artículos indefinidos (un/una/unos/unas) -1
-   5) "que ..." sin sentido QUE (empieza por "que") .. -2
-   6) Adverbio -mente sin verbo infinitivo ............ -1
-   7) Empezar por participio (-ado/-ido/-to/-so/-cho).. -2
-   8) Definición de palabra única ..................... -3
-   9) Duda de "o" (muchos " o ") ...................... -1
-   10) Más de 3 comas ................................. -1
-
-   PREMIOS (score += ...):
-   11) Presencia de "es" (ser copulativo) ............. +1
-   12) Rondación de "que": "de que", "al que", etc.... +2
-   13) Terminar en participio o serie ................. +2
-   14) "que" con buen uso (no "es que", ni al inicio) . +2
-   15) Núcleo verbal en verbos (hay infinitivo) ....... +3
-   16) "cuyo/cuya/cuyos/cuyas" ........................ +1
-   17) Cadena nominal taxinomizada ("X de Y de Z") .... +2
-   18) Calco del infinito ("no tiene ni puede tener") . +3
-   19) Buena forma de adjetivo (adjetivo + "que" sin calco) +2
-   20) Palabra insólita/técnica (12+ letras) .......... +1
-   21) Contenido antes de "que" (no empezar por "que") +2
-   22) (Reserva para futuras variantes de las anteriores)
-*/
-
-function scoreCalidadDefinicion(definicion, lema, categoriaLema) {
-  const textoNorm = " " + norm(definicion) + " ";
-  const lemaNorm = norm(lema);
-  const palabras = tokenizar(definicion);
-  const n = palabras.length;
-  let score = 0;
-
-  // --- CASTIGOS ---
-
-  // (1) Repetición del lema / calco del lema → -3
-  const raizLema = lemaNorm.slice(0, Math.max(3, Math.floor(lemaNorm.length / 2)));
-  if (textoNorm.includes(" " + lemaNorm + " ") || textoNorm.includes(raizLema)) {
-    score -= 3;
-  }
-
-  // (2) "es que" → -2
-  if (textoNorm.includes(" es que ")) score -= 2;
-
-  // (3) Empezar o terminar con persona → -1
-  const defTrim = definicion.trim();
-  const defNormTrim = textoNorm.trim();
-  if (/^(me|te|se|nos|os)\s+\w+/i.test(defNormTrim) ||
-      /\b(la|lo|las|los)\.?$/.test(defTrim)) {
-    score -= 1;
-  }
-
-  // (4) Repetición de artículos indefinidos → -1
-  const indefs = (textoNorm.match(/\b(un|uno|una|unos|unas)\b/g) || []).length;
-  if (indefs >= 2) score -= 1;
-
-  // (5) "que ..." sin sentido QUE → empieza por "que " → -2
-  if (defNormTrim.startsWith("que ")) score -= 2;
-
-  // (6) Adverbio desconectado de verbo → -1
-  const hayMente = palabras.some(w => norm(w).endsWith("mente"));
-  const hayInfinitivo = palabras.some(w => {
-    const wnorm = norm(w);
-    return wnorm.endsWith("ar") || wnorm.endsWith("er") || wnorm.endsWith("ir");
-  });
-  if (hayMente && !hayInfinitivo) score -= 1;
-
-  // (7) Empieza por participio → -2
-  const primeraNorm = norm(palabras[0] || "");
-  if (/(ado|ido|to|so|cho)$/.test(primeraNorm)) score -= 2;
-
-  // (8) Definición de palabra única → -3
-  if (n === 1) score -= 3;
-
-  // (9) Duda de "o" (muchos " o ") → -1
-  const numO = (textoNorm.match(/\so\s/g) || []).length;
-  if (numO >= 2) score -= 1;
-
-  // (10) Más de 3 comas → -1
-  const numComas = (definicion.match(/,/g) || []).length;
-  if (numComas > 3) score -= 1;
-
-  // --- PREMIOS ---
-
-  // (11) Presencia de " es " → +1
-  if (textoNorm.includes(" es ")) score += 1;
-
-  // (12) Rondación de "que" → +2
-  if (/(de que|al que|en que|lo que)/.test(textoNorm)) score += 2;
-
-  // (13) Terminar en participio/serie → +2
-  const ultimaNorm = norm(palabras[palabras.length - 1] || "");
-  if (/(ado|ido|to|so|cho)$/.test(ultimaNorm)) score += 2;
-
-  // (14) Buen uso de "que" → +2
-  if (textoNorm.includes(" que ") && !defNormTrim.startsWith("que ") && !textoNorm.includes(" es que ")) {
-    score += 2;
-  }
-
-  // (15) Núcleo verbal para lema verbo → +3
-  if (categoriaLema === "verbo" && hayInfinitivo) score += 3;
-
-  // (16) cuyo/cuya/cuyos/cuyas → +1
-  if (/\bcuyo(s)?\b|\bcuya(s)?\b/.test(textoNorm)) score += 1;
-
-  // (17) Cadena "X de Y de Z" (al menos dos " de ") → +2
-  const numDe = (textoNorm.match(/\sde\s/g) || []).length;
-  if (numDe >= 2) score += 2;
-
-  // (18) Calco del infinito → +3
-  if (textoNorm.includes("no tiene ni puede tener") ||
-      textoNorm.includes("no tener ni poder tener") ||
-      textoNorm.includes("es o puede ser") ||
-      textoNorm.includes("son o pueden ser")) {
-    score += 3;
-  }
-
-  // (19) Buena forma de adjetivo → +2
-  if (categoriaLema === "adjetivo" && textoNorm.includes(" que ") && !textoNorm.includes(raizLema)) {
-    score += 2;
-  }
-
-  // (20) Palabra muy larga (técnica) → +1
-  const hayLarga = palabras.some(w => norm(w).length >= 12);
-  if (hayLarga) score += 1;
-
-  // (21) Contenido antes de "que" → +2
-  if (textoNorm.includes(" que ") && !defNormTrim.startsWith("que ")) {
-    score += 2;
-  }
-
-  // (22) De momento se solapa con 21; dejamos hueco para expansión futura.
-
-  return score;
-}
-
-/******** 6. Elegir la mejor ACEPCIÓN de un lema ********/
-
-function elegirMejorAcepcion(lema, categoriaLema, definiciones, contextoTexto) {
-  const contextoPalabras = tokenizar(contextoTexto).filter(w => !STOPWORDS.has(w));
-  if (contextoPalabras.length === 0) return null;
-
-  // 1. Buscamos acepciones candidatas (comparten palabra)
-  const candidatas = [];
-  definiciones.forEach((def, idx) => {
-    const palabrasDef = tokenizar(def).filter(w => !STOPWORDS.has(w));
-    const setDef = new Set(palabrasDef);
-    const hayCoincidencia = contextoPalabras.some(w => setDef.has(w));
-    if (hayCoincidencia) {
-      candidatas.push({ index: idx, definicion: def });
-    }
-  });
-
-  if (candidatas.length === 0) return null;
-  if (candidatas.length === 1) return candidatas[0];
-
-  // 2. Varias candidatas → aplicamos calidad
-  let mejor = null;
-  let mejorScore = -Infinity;
-
-  candidatas.forEach(c => {
-    const calidad = scoreCalidadDefinicion(c.definicion, lema, categoriaLema);
-    const numPalabras = tokenizar(c.definicion).length;
-
-    if (calidad > mejorScore) {
-      mejorScore = calidad;
-      mejor = { ...c, calidad, numPalabras };
-    } else if (calidad === mejorScore && mejor) {
-      // Empate → gana la más larga
-      if (numPalabras > mejor.numPalabras) {
-        mejor = { ...c, calidad, numPalabras };
-      }
-    }
-  });
-
-  return mejor;
-}
-
-/******** 7. Función de alto nivel para usar desde el libro ********/
-
-function razonadorParaLema(lema, contextoTexto) {
-  const entrada = diccionario[lema.toLowerCase()];
-  if (!entrada) return null;
-
-  // si en el diccionario añades "categoria: 'verbo'" será mejor;
-  // si no, asumimos sustantivo por defecto
-  const categoriaLema = entrada.categoria || "sustantivo";
-  const defs = entrada.definiciones || [];
-
-  const mejorAcep = elegirMejorAcepcion(lema, categoriaLema, defs, contextoTexto);
-  if (!mejorAcep) return null;
-
-  const nucleo = elegirPalabraNucleo(mejorAcep.definicion, categoriaLema);
-
-  return {
-    indiceAcepcion: mejorAcep.index,
-    definicion: mejorAcep.definicion,
-    calidad: mejorAcep.calidad,
-    palabraNucleo: nucleo
-  };
-}
+ 
 
   hipotetico: { definicion: "Perteneciente a la hipótesis." },
 
@@ -1046,10 +702,357 @@ function mostrarDefinicion(rawWord, idx) {
 /* -------------------------------------
    INICIO
 ------------------------------------- */
+/***************************************************
+ *  RAZONADOR DEL DICCIONARIO
+ *  - Rejilla de posición
+ *  - Tabla de categorías 9–1
+ *  - Sistema de premios y castigos (22 reglas)
+ *
+ *  NOTA: no modifica nada de tu código actual.
+ ***************************************************/
 
+/******** 1. Normalización y utilidades ********/
+
+function norm(str) {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // quita tildes
+    .replace(/[.,;:!?¡¿()"«»]/g, "") // quita signos
+    .trim();
+}
+
+function tokenizar(str) {
+  const limpio = norm(str);
+  return limpio.split(/\s+/).filter(Boolean);
+}
+
+// Palabras que ignoramos (ruido)
+const STOPWORDS = new Set([
+  "el","la","los","las","un","una","unos","unas",
+  "de","del","a","en","y","o","u","que","lo","le","se",
+  "por","para","con","sin","su","sus","mi","mis","tu","tus",
+  "al"
+]);
+
+/******** 2. Tabla de categorías (9–1) ********/
+
+const CATEGORIA_PESOS = {
+  verbo: 9,
+  sustantivo: 8,
+  adjetivo: 7,
+  adverbio: 6,
+  pronombre: 5,
+  determinante: 4, // artículos
+  articulo: 4,
+  preposicion: 3,
+  conjuncion: 2,
+  interjeccion: 1
+};
+
+// Listas simples para detectar clases funcionales
+const DETERMINANTES = new Set([
+  "el","la","los","las","un","una","unos","unas",
+  "este","esta","estos","estas",
+  "ese","esa","esos","esas",
+  "aquel","aquella","aquellos","aquellas"
+]);
+
+const PREPOSICIONES = new Set([
+  "a","ante","bajo","cabe","con","contra","de","desde","durante","en","entre",
+  "hacia","hasta","mediante","para","por","segun","sin","so","sobre","tras","del","al"
+]);
+
+const CONJUNCIONES = new Set([
+  "y","e","ni","o","u","pero","sino","aunque","que","porque","pues","mientras"
+]);
+
+const PRONOMBRES = new Set([
+  "yo","tu","el","ella","nosotros","vosotros","ellos","ellas",
+  "me","te","se","nos","os","lo","la","los","las","le","les"
+]);
+
+const INTERJECCIONES = new Set(["ay","oh","eh","uy","hala","bah","uff"]);
+
+// Heurística de categoría para cada palabra
+function categoriaDePalabra(palabra, categoriaLema) {
+  const w = norm(palabra);
+  if (DETERMINANTES.has(w)) return "determinante";
+  if (PREPOSICIONES.has(w)) return "preposicion";
+  if (CONJUNCIONES.has(w)) return "conjuncion";
+  if (PRONOMBRES.has(w)) return "pronombre";
+  if (INTERJECCIONES.has(w)) return "interjeccion";
+  if (w.endsWith("mente")) return "adverbio";
+  if (w.endsWith("ar") || w.endsWith("er") || w.endsWith("ir")) return "verbo"; // infinitivo
+
+  // si no sabemos, usamos la categoría del lema como referencia
+  if (!categoriaLema) return "sustantivo";
+  return categoriaLema;
+}
+
+function pesoCategoria(palabra, categoriaLema) {
+  const cat = categoriaDePalabra(palabra, categoriaLema);
+  return CATEGORIA_PESOS[cat] || 0;
+}
+
+/******** 3. Peso por POSICIÓN (rejilla móvil) ********/
+// i: posición (1..n), n: nº total de palabras
+function pesoPosicion(i, n) {
+  if (n <= 0) return 0;
+  let max;
+  if (n % 2 === 0) {
+    // n par → 4,3,2,1,0,-1,-2,-3...
+    max = n / 2;
+  } else {
+    // n impar → 3,2,1,0,-1,-2,-3...
+    max = (n - 1) / 2;
+  }
+  return max - (i - 1);
+}
+
+/******** 4. Elección de PALABRA NÚCLEO en UNA definición ********/
+
+function elegirPalabraNucleo(definicion, categoriaLema) {
+  const palabras = tokenizar(definicion);
+  const n = palabras.length;
+  if (n === 0) return null;
+
+  let mejorIdx = 0;
+  let mejorScore = -Infinity;
+
+  for (let i = 0; i < n; i++) {
+    const w = palabras[i];
+    if (STOPWORDS.has(w)) continue; // ruido
+
+    const posScore = pesoPosicion(i + 1, n);
+    const catScore = pesoCategoria(w, categoriaLema);
+    const score = posScore + catScore;
+
+    if (score > mejorScore) {
+      mejorScore = score;
+      mejorIdx = i;
+    }
+  }
+
+  return {
+    palabra: palabras[mejorIdx],
+    indice: mejorIdx,
+    score: mejorScore
+  };
+}
+
+/******** 5. Sistema de 22 reglas (premios/castigos) ********/
+/*
+   RESUMEN DE LAS REGLAS QUE SE APLICAN AQUÍ:
+
+   CASTIGOS (score -= ...):
+   1) Repetición del lema / calco del lema ............ -3
+   2) Estructura "es que" ............................. -2
+   3) Empezar o terminar con persona (me/te/se... la) . -1
+   4) Repetir artículos indefinidos (un/una/unos/unas) -1
+   5) "que ..." sin sentido QUE (empieza por "que") .. -2
+   6) Adverbio -mente sin verbo infinitivo ............ -1
+   7) Empezar por participio (-ado/-ido/-to/-so/-cho).. -2
+   8) Definición de palabra única ..................... -3
+   9) Duda de "o" (muchos " o ") ...................... -1
+   10) Más de 3 comas ................................. -1
+
+   PREMIOS (score += ...):
+   11) Presencia de "es" (ser copulativo) ............. +1
+   12) Rondación de "que": "de que", "al que", etc.... +2
+   13) Terminar en participio o serie ................. +2
+   14) "que" con buen uso (no "es que", ni al inicio) . +2
+   15) Núcleo verbal en verbos (hay infinitivo) ....... +3
+   16) "cuyo/cuya/cuyos/cuyas" ........................ +1
+   17) Cadena nominal taxinomizada ("X de Y de Z") .... +2
+   18) Calco del infinito ("no tiene ni puede tener") . +3
+   19) Buena forma de adjetivo (adjetivo + "que" sin calco) +2
+   20) Palabra insólita/técnica (12+ letras) .......... +1
+   21) Contenido antes de "que" (no empezar por "que") +2
+   22) (Reserva para futuras variantes de las anteriores)
+*/
+
+function scoreCalidadDefinicion(definicion, lema, categoriaLema) {
+  const textoNorm = " " + norm(definicion) + " ";
+  const lemaNorm = norm(lema);
+  const palabras = tokenizar(definicion);
+  const n = palabras.length;
+  let score = 0;
+
+  // --- CASTIGOS ---
+
+  // (1) Repetición del lema / calco del lema → -3
+  const raizLema = lemaNorm.slice(0, Math.max(3, Math.floor(lemaNorm.length / 2)));
+  if (textoNorm.includes(" " + lemaNorm + " ") || textoNorm.includes(raizLema)) {
+    score -= 3;
+  }
+
+  // (2) "es que" → -2
+  if (textoNorm.includes(" es que ")) score -= 2;
+
+  // (3) Empezar o terminar con persona → -1
+  const defTrim = definicion.trim();
+  const defNormTrim = textoNorm.trim();
+  if (/^(me|te|se|nos|os)\s+\w+/i.test(defNormTrim) ||
+      /\b(la|lo|las|los)\.?$/.test(defTrim)) {
+    score -= 1;
+  }
+
+  // (4) Repetición de artículos indefinidos → -1
+  const indefs = (textoNorm.match(/\b(un|uno|una|unos|unas)\b/g) || []).length;
+  if (indefs >= 2) score -= 1;
+
+  // (5) "que ..." sin sentido QUE → empieza por "que " → -2
+  if (defNormTrim.startsWith("que ")) score -= 2;
+
+  // (6) Adverbio desconectado de verbo → -1
+  const hayMente = palabras.some(w => norm(w).endsWith("mente"));
+  const hayInfinitivo = palabras.some(w => {
+    const wnorm = norm(w);
+    return wnorm.endsWith("ar") || wnorm.endsWith("er") || wnorm.endsWith("ir");
+  });
+  if (hayMente && !hayInfinitivo) score -= 1;
+
+  // (7) Empieza por participio → -2
+  const primeraNorm = norm(palabras[0] || "");
+  if (/(ado|ido|to|so|cho)$/.test(primeraNorm)) score -= 2;
+
+  // (8) Definición de palabra única → -3
+  if (n === 1) score -= 3;
+
+  // (9) Duda de "o" (muchos " o ") → -1
+  const numO = (textoNorm.match(/\so\s/g) || []).length;
+  if (numO >= 2) score -= 1;
+
+  // (10) Más de 3 comas → -1
+  const numComas = (definicion.match(/,/g) || []).length;
+  if (numComas > 3) score -= 1;
+
+  // --- PREMIOS ---
+
+  // (11) Presencia de " es " → +1
+  if (textoNorm.includes(" es ")) score += 1;
+
+  // (12) Rondación de "que" → +2
+  if (/(de que|al que|en que|lo que)/.test(textoNorm)) score += 2;
+
+  // (13) Terminar en participio/serie → +2
+  const ultimaNorm = norm(palabras[palabras.length - 1] || "");
+  if (/(ado|ido|to|so|cho)$/.test(ultimaNorm)) score += 2;
+
+  // (14) Buen uso de "que" → +2
+  if (textoNorm.includes(" que ") && !defNormTrim.startsWith("que ") && !textoNorm.includes(" es que ")) {
+    score += 2;
+  }
+
+  // (15) Núcleo verbal para lema verbo → +3
+  if (categoriaLema === "verbo" && hayInfinitivo) score += 3;
+
+  // (16) cuyo/cuya/cuyos/cuyas → +1
+  if (/\bcuyo(s)?\b|\bcuya(s)?\b/.test(textoNorm)) score += 1;
+
+  // (17) Cadena "X de Y de Z" (al menos dos " de ") → +2
+  const numDe = (textoNorm.match(/\sde\s/g) || []).length;
+  if (numDe >= 2) score += 2;
+
+  // (18) Calco del infinito → +3
+  if (textoNorm.includes("no tiene ni puede tener") ||
+      textoNorm.includes("no tener ni poder tener") ||
+      textoNorm.includes("es o puede ser") ||
+      textoNorm.includes("son o pueden ser")) {
+    score += 3;
+  }
+
+  // (19) Buena forma de adjetivo → +2
+  if (categoriaLema === "adjetivo" && textoNorm.includes(" que ") && !textoNorm.includes(raizLema)) {
+    score += 2;
+  }
+
+  // (20) Palabra muy larga (técnica) → +1
+  const hayLarga = palabras.some(w => norm(w).length >= 12);
+  if (hayLarga) score += 1;
+
+  // (21) Contenido antes de "que" → +2
+  if (textoNorm.includes(" que ") && !defNormTrim.startsWith("que ")) {
+    score += 2;
+  }
+
+  // (22) De momento se solapa con 21; dejamos hueco para expansión futura.
+
+  return score;
+}
+
+/******** 6. Elegir la mejor ACEPCIÓN de un lema ********/
+
+function elegirMejorAcepcion(lema, categoriaLema, definiciones, contextoTexto) {
+  const contextoPalabras = tokenizar(contextoTexto).filter(w => !STOPWORDS.has(w));
+  if (contextoPalabras.length === 0) return null;
+
+  // 1. Buscamos acepciones candidatas (comparten palabra)
+  const candidatas = [];
+  definiciones.forEach((def, idx) => {
+    const palabrasDef = tokenizar(def).filter(w => !STOPWORDS.has(w));
+    const setDef = new Set(palabrasDef);
+    const hayCoincidencia = contextoPalabras.some(w => setDef.has(w));
+    if (hayCoincidencia) {
+      candidatas.push({ index: idx, definicion: def });
+    }
+  });
+
+  if (candidatas.length === 0) return null;
+  if (candidatas.length === 1) return candidatas[0];
+
+  // 2. Varias candidatas → aplicamos calidad
+  let mejor = null;
+  let mejorScore = -Infinity;
+
+  candidatas.forEach(c => {
+    const calidad = scoreCalidadDefinicion(c.definicion, lema, categoriaLema);
+    const numPalabras = tokenizar(c.definicion).length;
+
+    if (calidad > mejorScore) {
+      mejorScore = calidad;
+      mejor = { ...c, calidad, numPalabras };
+    } else if (calidad === mejorScore && mejor) {
+      // Empate → gana la más larga
+      if (numPalabras > mejor.numPalabras) {
+        mejor = { ...c, calidad, numPalabras };
+      }
+    }
+  });
+
+  return mejor;
+}
+
+/******** 7. Función de alto nivel para usar desde el libro ********/
+
+function razonadorParaLema(lema, contextoTexto) {
+  const entrada = diccionario[lema.toLowerCase()];
+  if (!entrada) return null;
+
+  // si en el diccionario añades "categoria: 'verbo'" será mejor;
+  // si no, asumimos sustantivo por defecto
+  const categoriaLema = entrada.categoria || "sustantivo";
+  const defs = entrada.definiciones || [];
+
+  const mejorAcep = elegirMejorAcepcion(lema, categoriaLema, defs, contextoTexto);
+  if (!mejorAcep) return null;
+
+  const nucleo = elegirPalabraNucleo(mejorAcep.definicion, categoriaLema);
+
+  return {
+    indiceAcepcion: mejorAcep.index,
+    definicion: mejorAcep.definicion,
+    calidad: mejorAcep.calidad,
+    palabraNucleo: nucleo
+  };
+  }
 prepararLibro();
 
-</script>
+</script> 
+  <!-- DEBUG DEL RAZONADOR -->
+<h3>Debug del razonador</h3>
+<pre id="debug-razonador" style="border:1px solid #ccc; padding:0.5rem; white-space:pre-wrap;"></pre>
 
 </body>
 </html>
