@@ -647,14 +647,16 @@ function obtenerClaveVerbal(rawWord, idx) {
   return lemma;
 }
 
-function mostrarDefinicion(rawWord, idx) {
+  function mostrarDefinicion(rawWord, idx) {
   const clave = obtenerClaveVerbal(rawWord, idx);
 
+  // Entrada en el diccionario (por clave directa o por índice normalizado)
   const entrada =
     diccionario[clave] ||
     diccionarioIdx[normalizarPalabra(clave)];
 
   const panel = document.getElementById("definicion");
+  const debugBox = document.getElementById("debug-razonador");
 
   limpiarResaltado();
   resaltarCoincidencias(rawWord);
@@ -666,38 +668,92 @@ function mostrarDefinicion(rawWord, idx) {
         Esta palabra no tiene definición aún.
         <br><small>(clave interna: ${clave})</small>
       </p>`;
+    if (debugBox) {
+      debugBox.textContent = "Palabra no encontrada en diccionario.";
+    }
     return;
   }
 
+  // Unificamos definiciones en un solo array
   let definiciones = [];
   if (entrada.definicion) definiciones.push(entrada.definicion);
   if (entrada.definiciones) definiciones.push(...entrada.definiciones);
 
   const contexto = obtenerContexto(idx);
 
-  let { indice: indiceElegido, explicacion } =
-    elegirDefinicionConExplicacion(definiciones, contexto);
+  // ---------- INTENTO 1: RAZONADOR NUEVO ----------
+  const resultadoRazonador = razonadorParaLema(clave, contexto);
 
+  let indiceElegido = 0;
+  let htmlExp = "";
+
+  if (resultadoRazonador) {
+    indiceElegido = resultadoRazonador.indiceAcepcion;
+
+    if (debugBox) {
+      debugBox.textContent = JSON.stringify(resultadoRazonador, null, 2);
+    }
+
+    htmlExp = `
+      <hr>
+      <p style="font-size:0.9em; color:green;">
+        <strong>🤖 Elección del razonador:</strong><br>
+        Calidad: ${resultadoRazonador.calidad}<br>
+        Núcleo detectado:
+        <em>"${resultadoRazonador.palabraNucleo ? resultadoRazonador.palabraNucleo.palabra : "ninguno"}"</em>
+      </p>`;
+  } else {
+    // ---------- INTENTO 2: LÓGICA ANTIGUA ----------
+    if (debugBox) {
+      debugBox.textContent =
+        "El razonador devolvió null (sin contexto suficiente). Usando lógica simple.";
+    }
+
+    const { indice, explicacion } =
+      elegirDefinicionConExplicacion(definiciones, contexto);
+    indiceElegido = indice;
+
+    const partes = [];
+    if (explicacion.exactas.length) {
+      partes.push("Coincidencias exactas: " + explicacion.exactas.join(", "));
+    }
+    if (explicacion.sinonimos.length) {
+      partes.push(
+        "Sinónimos: " +
+          explicacion.sinonimos
+            .map((s) => s.coincidencia + "→" + s.definicion)
+            .join(", ")
+      );
+    }
+
+    if (partes.length) {
+      htmlExp = `
+        <hr>
+        <p style="font-size:0.9em;">
+          <strong>Lógica simple:</strong> ${partes.join(" | ")}</p>`;
+    }
+  }
+
+  // Pintamos TODAS las acepciones, destacando la elegida
   const htmlDefs = definiciones
-    .map((d, i) => `<p${i === indiceElegido ? ' style="color:blue;"' : ''}>${d}</p>`)
+    .map(
+      (d, i) =>
+        `<p${
+          i === indiceElegido
+            ? ' style="color:blue; font-weight:bold; border-left:3px solid blue; padding-left:5px;"'
+            : ""
+        }>${d}</p>`
+    )
     .join("");
 
-  let htmlExp = "";
-  const partes = [];
-
-  if (explicacion.exactas.length)
-    partes.push("Coincidencias exactas: <b>" + explicacion.exactas.join(", ") + "</b>.");
-
-  if (explicacion.sinonimos.length)
-    partes.push("Sinónimos: <b>" +
-      explicacion.sinonimos.map(s => `${s.palabraDef} ↔ ${s.coincidencia}`).join(", ") +
-      "</b>.");
-
-  if (partes.length)
-    htmlExp = `<hr><p style="font-size:0.9em;"><strong>Razón:</strong> ${partes.join(" ")}</p>`;
-
-  panel.innerHTML = `<h2>${rawWord}</h2>${htmlDefs}${htmlExp}`;
-}
+  panel.innerHTML = `
+    <h2>${rawWord}
+      <small style="font-size:0.5em; color:grey;">(${clave})</small>
+    </h2>
+    ${htmlDefs}
+    ${htmlExp}
+  `;
+  }
 
 /* -------------------------------------
    INICIO
