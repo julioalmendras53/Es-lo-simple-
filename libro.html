@@ -6,126 +6,75 @@
   <title>Libro + Razonador</title>
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 1rem;
-      background-color: #fff;
-    }
-
-    /* CONTENEDOR PRINCIPAL */
+    body { font-family: Arial, sans-serif; margin: 1rem; background-color: #fff; }
+    
+    /* Layout Responsive */
     #contenedor {
       display: grid;
-      grid-template-columns: 2fr 1fr; /* Escritorio: Libro izq, Chat der */
-      gap: 1.5rem;
+      grid-template-columns: 2fr 1fr;
+      gap: 1rem;
       width: 100%;
-      height: 95vh;
+      height: 90vh;
     }
 
-    h1 { grid-column: 1 / -1; margin-top: 0; font-size: 1.5rem; text-align: center;}
+    h1 { grid-column: 1 / -1; margin: 0 0 10px 0; font-size: 1.5rem; text-align: center; }
 
-    /* ESTILOS DEL LIBRO */
+    /* Libro */
     #libro {
-      line-height: 1.8;
-      text-align: justify;
-      border: 1px solid #ccc;
+      border: 2px solid #007bff;
       padding: 1rem;
       border-radius: 8px;
       overflow-y: auto;
       background-color: #fafafa;
+      line-height: 1.8;
+      text-align: justify;
       font-size: 1.1rem;
     }
 
-    .palabra { cursor: pointer; padding: 2px 0; }
-    .palabra:hover { background-color: #e0f7fa; text-decoration: underline; color: #007bff; }
-    .palabra.resaltada { color: blue; font-weight: bold; background-color: yellow; }
+    .palabra { cursor: pointer; }
+    .palabra:hover { background-color: #b3d7ff; color: #000; border-radius: 3px; }
+    .palabra.resaltada { background-color: yellow; font-weight: bold; }
 
-    /* ESTILOS DEL CHAT */
+    /* Chat */
     #chat-wrapper {
       display: flex;
       flex-direction: column;
       border: 1px solid #ccc;
       border-radius: 8px;
       background-color: #f9f9f9;
-      overflow: hidden;
       height: 100%;
+      overflow: hidden;
     }
 
-    #chat-header {
-      background: #eee;
-      padding: 10px;
-      border-bottom: 1px solid #ccc;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
+    #chat-header { background: #eee; padding: 10px; font-weight: bold; border-bottom: 1px solid #ddd; }
+    
     #chat-history {
       flex: 1;
-      padding: 1rem;
+      padding: 10px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    .mensaje {
-      max-width: 90%;
-      padding: 10px 15px;
-      border-radius: 12px;
-      line-height: 1.4;
-      font-size: 0.95rem;
-      animation: fadein 0.3s;
-    }
+    .mensaje { padding: 8px 12px; border-radius: 10px; max-width: 90%; font-size: 0.95rem; }
+    .msg-bot { align-self: flex-start; background: #fff; border: 1px solid #ddd; }
+    .msg-user { align-self: flex-end; background: #007bff; color: white; }
+    .msg-system { align-self: center; color: #888; font-style: italic; font-size: 0.8rem; }
 
-    .msg-bot { align-self: flex-start; background-color: #fff; border: 1px solid #ddd; color: #333; border-bottom-left-radius: 2px; }
-    .msg-user { align-self: flex-end; background-color: #007bff; color: white; border-bottom-right-radius: 2px; }
-    .msg-system { align-self: center; font-size: 0.8rem; color: #888; font-style: italic; background: none; border: none; }
+    #chat-input-area { display: flex; padding: 10px; border-top: 1px solid #ddd; background: white; }
+    #chat-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; margin-right: 5px; }
+    #chat-send { padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 20px; font-weight: bold; }
 
-    #chat-input-area {
-      display: flex;
-      padding: 10px;
-      border-top: 1px solid #ddd;
-      background: white;
-    }
-    #chat-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
-    #chat-send { margin-left: 10px; padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;}
+    /* Tarjetas */
+    .tarjeta { border: 1px solid #ddd; padding: 8px; margin-top: 5px; border-radius: 5px; background: white; border-left: 4px solid #ccc; }
+    .ganadora { border-left-color: #28a745; background: #e8f5e9; }
 
-    /* TARJETAS DE ANÁLISIS */
-    .tarjeta-analisis {
-      border: 1px solid #ddd;
-      padding: 8px;
-      margin-top: 5px;
-      background: white;
-      border-radius: 5px;
-      font-size: 0.85rem;
-      border-left: 4px solid #ccc;
-    }
-    .tarjeta-ganadora { border-left-color: #28a745; background-color: #e8f5e9; }
-    .tarjeta-descartada { border-left-color: #dc3545; opacity: 0.6; }
-
-    @keyframes fadein { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* --- RESPONSIVE DESIGN (CELULAR) --- */
+    /* MÓVIL */
     @media (max-width: 768px) {
-      #contenedor {
-        display: flex;
-        flex-direction: column;
-        height: auto; /* Altura automática para scrollear la página entera */
-      }
-      
-      h1 { font-size: 1.2rem; margin-bottom: 0.5rem; }
-
-      #libro {
-        max-height: 40vh; /* El libro ocupa el 40% de la pantalla vertical */
-        min-height: 200px;
-        border: 2px solid #007bff; /* Borde azul para que sepas dónde está */
-      }
-
-      #chat-wrapper {
-        height: 50vh; /* El chat ocupa el 50% */
-        min-height: 300px;
-      }
+      #contenedor { display: flex; flex-direction: column; height: auto; }
+      #libro { max-height: 40vh; min-height: 200px; }
+      #chat-wrapper { height: 50vh; min-height: 300px; }
     }
   </style>
 </head>
@@ -134,284 +83,224 @@
 
 <div id="contenedor">
   <h1>Libro del Infinito</h1>
-
-  <div id="libro">Cargando libro...</div>
+  
+  <div id="libro">
+    Cargando libro... (Si esto no cambia en 2 segundos, el script falló)
+  </div>
 
   <div id="chat-wrapper">
     <div id="chat-header">🧠 El Razonador</div>
     <div id="chat-history">
-      <div class="mensaje msg-bot">
-        Hola. Toca cualquier palabra del texto de arriba y te explicaré qué significa según mi base de datos.
-      </div>
+      <div class="mensaje msg-bot">Hola. Toca una palabra del texto.</div>
     </div>
     <div id="chat-input-area">
-      <input type="text" id="chat-input" placeholder="Escribe aquí..." onkeypress="handleEnter(event)">
-      <button id="chat-send" onclick="enviarMensajeUsuario()">Enviar</button>
+      <input type="text" id="chat-input" placeholder="...">
+      <button id="chat-send" onclick="enviarUser()">Enviar</button>
     </div>
   </div>
 </div>
 
-<pre id="texto-libro" style="display:none;">
- 1 es aterrador 16857 El infinito ha dado un plus a la materia. 16858 El infinito es aterrador como el 1. 16859 No se anda con simplezas éste 1. 16860 Si acumularamos los teoremas que tienen por fundamento en el 1, estaríamos hasta los 80 años hablando,  sin vejez ya. 16861 El infinito quiere alzarse con el trofeo del 1. 16862 Sin un contexto, el 1, tiene poco que decir. 16863 El infinito pertenece a un conjunto hiperreal. 16864 Si contamos las veces que infinito ha dado algo a este servidor, no bastaría para comenzar. 16865 El infinito tiene a 1 como un posible resultado de múltiples casos. 16866 Para mostrar un botón. 16867 La raíz infinita de infinito es tendente al 1. 16868 ¿Quién sacó este naipe del codo? 16869 Parece que las operaciones para llegar a ese resultado no son complejas. 16870 Sin complejidad, cero tiene aún más sentido. 16871 El infinito se desglosó en infinito e infinita para llegar a 1. 16872 El infinito es en un desglose 1 sólo sin más añadidos. 
- 16873 Parece que añadir indefinidamente buscase un fin. 16874 Parece que añadir 1 al 1 no montara mucho a ojos del infinito. 
- 16875 Cuando se llega a esos entornos tan brutales, no tiene caso el 1. 16876 El infinito es 1 y el primero. 16877 Ya esbocé que el 1 es aterrador y partir mi escrito máximo, debe justificar sus decisiones. 16878 Por eso es que en el juego del go, Alfago, demoró de 30 a 40 segundos en responder a la piedra primera acotada por Lee Sedol. 16878 bis La inteligencia dice que para asegurar el fuseki es necesario casi demorar una jugada, que es la más importante.  16879 Que pasara un minuto, también podría ser. 16880 El 1 es tan aterrador, porque no hay destino en la tierra más todavía. 16881 El infinito es vertebrador de los dígitos nombrados. 16882 El infinito es siempre algo que no tiene fin. 16883 Toda la definición de infinito puede ser puesta en lenguaje matemático. 16884 No hay nada que la matemática y sus matemáticos desconozcan del infinito, aún así insisten en que no tiene sentido, esas operaciones que no gustan. 
- 16885 Sin el 1, no habría origen. 16886 Es primero el 1 entre 0, el que pone la polémica en la mesa. 16887 Es más todavía, el 1 es origen de todo número, incluyendo el infinito, sí lo creo. 16888 El infinito sigue siendo la vértebra en este universo máximo. 16889 Conseguir el 1 debiera ser el principal objetivo del infinito, pero descreo de ello pronto. 16890 En un plano complejo el 1 es más especial, porque se le añaden cosas, sin dejar de ser 1. 16891 El infinito es matemáticamente perfecto, ya que de matemáticamente puede ser, ya que, por bis, infinito no es existente sin la matemática, y lo de perfecto es claro que el matemático, puede pasar a su dialecto toda la definición, con alguna reticencia. 16892 El infinito me exige a buscar en 1, algo más allá del número meramente. 16893 Muy obtuso seré si llego con que el 1 no es real, en el caso de que cero es denominador. 16894 Algo de verdad tendrá que cero no puede dividir a ningún/algún número. 16895 O quizá esté hablando el miedo del matemático, con decir que no se puede. 16896 Yo prefiero creer en el miedo, que es más lógico ante algo extraño. 16897 El 1 es origen de Google, así como es origen del número de Graham. 16898 Yo no quiero creer eso. 16899 Graham ha desquiciado el 1 con apartarse del sistema numérico decimal. 16900 En infinito 1 es el origen debido. 16901 Pero 1 tiene un poder en multiplicarse con números alteraandolos mínimamente. 16902 El infinito es una ecuación. 16903 Nada en la matemática es cero. 16904 La nada aquí no está. 16905 Si nos vamos a referir a cero, declararemos que es algo por convención. 16906 De sumar 1 a 1 resultó la √2. 16907 ¿Cómo es eso? 16907 Muy pocos recursos se hizo Hipaso de Metaponto, al sumar, simple, a 1 con 1. 16908 El infinito tiene un listado de números que siguen la ley del infinito. Esto es ñañ.16909 El infinito tiene a √2 como su primer elemento. 16910 De ahí saltamos a los números primos bajo raíz. 16911 Todo número primo bajo raíz, deberá ser irracional. 
- 16912 Tratar de aplicar razón a los números primos, quizá esté errado. 16913 El infinito es un número, creo. 16914 El infinito es aterrador, misma cosa pasa con el 1. 16915 Parece que a la usanza de infinito, sumar 1 es algo ridículamente especial. 16916 (1 +1) y bajo raíz se sale de razón. 16917 El 1 no es aterrador, porque es nuestro aliado. 16918 Perder la razón no es algo especial. 16919 Más bien ser razón es lo especial. 16920 Leeré este escrito una y otra vez, porque quiero que tenga una coherencia de 666. 16921 Con que la Iglesias referencie a 666 como el número bestial bastará. 16922 El infinito es un resumen de la existencia. 16923 Partimos con los números de contar. 16924 Me miro la mano con 5 dedos y me pregunto, ¿habrá una correspondencia en la naturaleza? 16925 El infinito se hace desde un 1. 16926 Los matemáticos nos dicen que el universo se hizo del vacío. 16927 Yo me opongo fuertemente a ello. 16928 Antes de la palabra divina, había un ser planeando en el aire del horizonte. 16929 Como abarcando todo. 16930 Quizá fue el infinito transmutado en una tierra preexistente. 16931 Un ser era el que planeaba. 16932 Es común esa idea de que los seres
- podrían llegar a volar, por alguna potencia salida de sí mismos. 16933 ¿Qué intención tenía Dios en planear 1 en la tierra preexistente? 16934 Dios fue singular en ese momento, y siguió siendo singular todo el tiempo, hasta el futuro mío. 16935 Al menos lleguemos a la frase 17 mil antes de pasar al aterrador 2. 16936 El infinito es un elemento elemental. 16937 Nada avanzaré con eso. 16938 Sin 1, no tendríamos el altisonante universo. 16939 En el cosmos nada hay de unidad, y ello es extraño, ya que 1 está en todo número. 16940 Para empezar el 1 y el número son los divisores de los números primos, excluyendo todo otro foráneo como un número compuesto. 16941 El infinito prefirió negar, antes que decir que su infinito era de 1. 16942 Pudo decir que 1 era su fin, sin embargo, los datos no revelan eso. 16943 Tanto es la definición del infinito que llega al número 3 y 2. 16944 Tres negaciones. 16945 El infinito no tiene 3 fines, sino dos. 16946 Este menosprecio del 1 es característico del carácter de no unificar las cosas primero. 16947 El 1 es aterrador, porque no hay algo bajo el sol que guarde más secretos que el triste número 1. 16948 Su secretismo es pavoroso. 16949 No hay otro objetivo que hacerte ver que infinito es un número real. 16950 Y que lo irreal es el 1. 16951 Sin 1, no tendríamos a 2 ni √2 . 16952 Sumar 1 entre números del 0 al 10, tiene un recorrido asombrosamente grande. 
- 16953 El 1 tiene algo de grandeza en permitir a los humanos buscar unidad. 16954 El infinito es gestor del 1. 16955 Casi que el primero fuera por infinito. 16956 El infinito es un ser que continuamente está amando. 16957 El genio de este escrito es presentar argumentos de la numeridad del infinito y nada más. 16958 El infinito es aterrador como lo es el 1. 16959 Yo sospecho más en 1 que en cero, como la otra cara de la moneda, principiada por infinito. 16960 No hay en cero lo que hay en 1. 
- 16961 Sin unidad, no tiene sentido hablar del mundo. 16962 Sin unidad, no hay universo, quitando de en medio al cosmos. 16963 Porque el humano todo el tiempo vaga y no va a  los asuntos importantes, es que tenemos universo y no varios. 16964 Sin unidad, no habría ilusión en las lenguas, de hacerlas más grandes. 16965 El 1 es la solución de innumerables ecuaciones de segundo y tercer grado. 16966 Es mucho el atractivo de poner en 1 nuestra esperanza. 16967 Cuando hallo al 1 en la ecuación me siento feliz que sea tan simple y satisfacción hacerlo. 16968 El infinito es simple, porque la definimos necesariamente con ser. 16969 ¿Cuál es el problema con limitar las definiciones a 1 palabra? 16970 El infinito es un kit que viene con las reglas de uso. 16971 El infinito es matemáticamente loco. 16972 Yo en un momento fui unidad, cuando me convertí en otra persona, fui transitando hacia el 2. 16973 No entraré a tocar el 2 ni √2 menos. 16974 El infinito halla un nuevo mundo en esta frase. 16975 Si tuviéramos, que creo encima, un número asombrosamente largo, con coma decimal y un abismo de ceros, ¿esperaríamos terminar en un cero a favor de toda lógica o hubiere más tarde un 1 final? 16976 ¿De dónde salió ese 1? 16977 ¿Quién me permite imaginar mi cuento? 16978 A partir de aquí, ¿habrá una secuencia infinita de preguntas? 16979 ¿O se terminará todo en una forma caótica? 16980 Parece que ese 1 testarudo final o finalizador testarudo parte del cero. 16981 Nadie puede tener la hazaña de hacer de cero algo. 16982 Excepto un ser muy especial como Cristo, él de migajas creó hogazas. 16983 Ya con ese precedente en Cristo, tenemos como justificar que se cree un 1 final. 16984 Nadie apostaría a sacar el cero de su sitio final. 16985 Pero el azar es raro. Lo sé. 16986 Suceden cosas increíbles todo el tiempo. 16987 Surgió la vida que era ridículamente improbable. 16988 Hay un ser escribiendo para ti. 16989 Con amor siempre. 16990 El infinito da esas preguntas que nos dejan boquiabiertos por su asombrosa magia. 16991 Después de un millón de ceros, ¿quién no se cansaría de la monotonía? 16992 Raíz de 1 es 1. 16993 Raíz cúbica de 1 es 1. 16994 Y ya la racha es imparable. 16995 Raíz infinita de 1 es 1. 16996 ¿Qué significa esto? 16997 Si raíz infinita de 1 es 1 e infinita de infinito es tendiente de 1, es claro que alguien miente. 16997 bis La clave está en que uno tiende al 1  y el otro es 1.   16998 Ese movimiento de 1 es imposible. 16999 No puede ser 1, porque infinito lo impide. 17000 El infinito está lleno de preguntas sin contestación. 
- 17001 El infinito puede continuar sin límites, andando en esta metáfora. 17002 El 1 sumado al mismo, produce 2 elementos. 17003 Ningún número es tan querendón del 1 como 2. 17004 Si no acabamos con el 1, menos podremos acabar con los siguientes números. 17005 El 1 es algo interesante, ya que representa la cosa. 17006 ¿Es el infinito cruel con el 1, al no tomarlo en cuenta? 17007 Podemos caer en un abismo con el 1 tan solo partiendo. 17008 No hay número más poderoso que 1. 17009 Me obligo a extender grandemente el análisis de 1. 17010 El 1 es una cosa simple. 17011 Sin el 1, no habría origen. 17012 El 6 tiene como origen el 3 y el 2. 17013 Porque 3×2 es 6. 17014 Nada impide que 3×2×1 sea la definitiva. 17015 A la vista salta que el número, no tiene como origen un número más alto, sino todo lo contrario. 17016 El infinito juega con 1 y termina mal usado. 17017 Es el 1 el juguete de infinito, todas las veces. 17018 ¿A qué se debe esa inquina del infinito por 1 y 0? 17019 La posición en infinito deja de tener sentido, así el cero que significa número, no tiene cabida en el número final. 
- 17020 El infinito es numérico por cero razones. 17021 De 10 saco 0.  17022 Todo es muy extraño por tener fin. 17023 Se supone que el todopoderoso lo podía todo. 17024 Pero esto es un engaño.  17025 El infinito como un niño ordenando números en su cunita, es la máxima expresión. 17026 El infinito es un número, porque también es un límite. 17027 El límite puede decidirse a ser número, solamente si maquinamos las cosas. 17028 El infinito da continuidad a algo. 17029 Sin ver lo previamente dicho, estoy exhalando palabras. 17030 Sin ver la historia, es que hago historia. 17031 Al infinito no pueden confiar los límites. 17032 Ojo a todo por infinito. 17033 Nada o cero puede multiplicar a alguien, sin cancelarse  en el proceso. 17034 Hay más y es que cero produce con alguien un todo. 17035 Cero merece tanto espacio como el 1. 17036 Todo por infinito no puede ser. 17037 Daría algo extrañamente distinto a cero. 17038 No puedo mover en la ecuación a cero, como si no hubiera mañana. 17039 El movimiento del caballo en ajedrez es parecido a lo que quiero explicar. 17039 Incluso para lo absoluto como el 1 mezclado traicioneramente con infinito, algo no puede ser. 17040 El infinito es un final no esperado. 17041 Quisiéramos que tras infinito, hubiera más materia o espíritu andando. 17042 Del infinito demostraré que es verdaderamente número. 17043 Pero para ello necesito empezar con el 1. 17044 Sin monoteísmo, seríamos seres muy desgraciados. 17045 Del 1 podemos observar infinidad de cosas. 17046 Entre 1 y 0 está todo el asunto. 17047 Quizá no pase del cero en este presente volumen. 17048 Hay tanto por hablar de estos dos especiales números que temo, por tanto. 17049 El infinito se ordena en la ecuación a una forma de enlazarse. 17050 No puede haber infinito×1.  17051 De fracción viene el impedimento. 17052 Bien. 17053 El infinito tiene por gusto basar sus reglas en el 1. 17054 ¿Quién desglosaraa más que infinito? 17055 Sin el 1, la nada, tendría más diabólico sentido. 17056 Es en el 1 en que apoyamos nuestra fe. 17057 De un monoteísmo feo, heredamos a Dios. 17058 Llega el momento de preguntar. 17059 Muchas cosas han robado mi imaginación en estos días. 17060 Ésta es una. 17061 En la hipótesis de Riemann tenemos una función z que tiene un polo simple en s=1. 17062 Sabemos con mucha ciencia que ese polo simple diverge. 17063 Eso significa que se dispara con lentitud hacia el infinito. 17064 Es como si dispararas una sandía con una honda o un planeta con una cuchara, algo totalmente lento 17065 Con cariño te traeré a qué número se eleva la cuenta con 10 millones y 100 millones, maguer eso signifique sufrimiento para la máquina. 17066 Mejor lo hice con un gúgol de sumatorias. 17067 Para 10 millones dio 16,7.  17068 Para un gúgol dio 230,84. 17068 Esta lenta sumatoria es debido a que con el polo simple de s=1 se suma 1 + ½ +⅓ +¼ +⅕ +⅙ + 1/7 + ⅛… etc. 17069 Como ves el polo simple se dispara al infinito, con 1 gúgol dio 230 simple. 17070 Temo meterme en la tratativas de esta hipótesis. 17071 Ya que es muy complejo. 17072 Existe un rumor que dice que la hipótesis de Riemann es clarificadora de los números primos. 17073 No hago sin razón esto. 17074 Primero botemos una frase de infinito. 17075 El infinito de Riemann en el polo simple es muy lento. 17076 Nadie sabe por qué se llama polo simple. 17077 ¿Acaso es un punto? 17078 Este s=1 es un infinito igualando a otro. 17079 Por un lado tendríamos un número que se ingresa y otro que sale, y si necesitamos del número infinito para llegar a infinito, no sé de qué hablamos. 17080 No hago esto sin razón. 17081 Los números primos son los naturales mayores a 1, que, pueden dividirse por 1 y por él mismo o sí mismo. 17082 Para que sea 1 la factorización, se rechazan los enteros negativos juntando cero. 17083 La máquina me explicó esto y quedé satisfecho. 17084 Te traigo en breve esto. 
- 30=(-2)×3 ×(-5)
- 30=2×3×5 7085 Con números negativos hace que la factorización no sea única. 17086 Así que por conveniencia, se fijó a los primos como sólo los naturales. 17087 ¿Qué hay del infinito? 17088 No hay una factorización del infinito, por lo que, el infinito se queda solo en un puede ser primo. 17089 El 1 no para de asombrarnos, porque hay más. 17090 El primo 2 y 3 tienen de diferencia 1. 17091 Y para su sorpresa, son los dos únicos primos que tienen una diferencia de 1 en toda la recta de primos. 17092 Más allá la diferencia de 1 se pierde totalmente. 17093 El 1 no es primo cómo sospechamos que infinito sea impar y primo, por razones no del todo honestas. 17094 Si el infinito es impar, habría una conexión de Noes que sería interesante ver. 17095 Con un impar coronando, sería la muerte del par. 17096 El infinito es un número por la transfusión de verdades, desde la propia matemática hacia la gente. 17097 Sin el 1, la matemática estaría inexistente aún en el siglo XXI. 17098 Son innumerables las ocasiones en que 1, ha venido a definir las cosas. 17099 Basta con echar ojo a los números primos y veremos que si se dividen por 1, siguen siendo ellos. 17100 El infinito es un límite al que se encamina este socio.
+<pre id="texto-fuente" style="display:none;">
+1 es aterrador 16857 El infinito ha dado un plus a la materia. 16858 El infinito es aterrador como el 1. 16859 No se anda con simplezas éste 1. 16860 Si acumularamos los teoremas que tienen por fundamento en el 1, estaríamos hasta los 80 años hablando,  sin vejez ya. 16861 El infinito quiere alzarse con el trofeo del 1. 16862 Sin un contexto, el 1, tiene poco que decir. 16863 El infinito pertenece a un conjunto hiperreal. 16864 Si contamos las veces que infinito ha dado algo a este servidor, no bastaría para comenzar. 16865 El infinito tiene a 1 como un posible resultado de múltiples casos. 16866 Para mostrar un botón. 16867 La raíz infinita de infinito es tendente al 1. 16868 ¿Quién sacó este naipe del codo? 16869 Parece que las operaciones para llegar a ese resultado no son complejas. 16870 Sin complejidad, cero tiene aún más sentido. 16871 El infinito se desglosó en infinito e infinita para llegar a 1. 16872 El infinito es en un desglose 1 sólo sin más añadidos. 
+16873 Parece que añadir indefinidamente buscase un fin. 16874 Parece que añadir 1 al 1 no montara mucho a ojos del infinito. 
+16875 Cuando se llega a esos entornos tan brutales, no tiene caso el 1. 16876 El infinito es 1 y el primero. 16877 Ya esbocé que el 1 es aterrador y partir mi escrito máximo, debe justificar sus decisiones. 16878 Por eso es que en el juego del go, Alfago, demoró de 30 a 40 segundos en responder a la piedra primera acotada por Lee Sedol. 16878 bis La inteligencia dice que para asegurar el fuseki es necesario casi demorar una jugada, que es la más importante.  16879 Que pasara un minuto, también podría ser. 16880 El 1 es tan aterrador, porque no hay destino en la tierra más todavía. 16881 El infinito es vertebrador de los dígitos nombrados. 16882 El infinito es siempre algo que no tiene fin. 16883 Toda la definición de infinito puede ser puesta en lenguaje matemático. 16884 No hay nada que la matemática y sus matemáticos desconozcan del infinito, aún así insisten en que no tiene sentido, esas operaciones que no gustan. 
+16885 Sin el 1, no habría origen. 16886 Es primero el 1 entre 0, el que pone la polémica en la mesa. 16887 Es más todavía, el 1 es origen de todo número, incluyendo el infinito, sí lo creo. 16888 El infinito sigue siendo la vértebra en este universo máximo. 16889 Conseguir el 1 debiera ser el principal objetivo del infinito, pero descreo de ello pronto. 16890 En un plano complejo el 1 es más especial, porque se le añaden cosas, sin dejar de ser 1. 16891 El infinito es matemáticamente perfecto, ya que de matemáticamente puede ser, ya que, por bis, infinito no es existente sin la matemática, y lo de perfecto es claro que el matemático, puede pasar a su dialecto toda la definición, con alguna reticencia. 16892 El infinito me exige a buscar en 1, algo más allá del número meramente. 16893 Muy obtuso seré si llego con que el 1 no es real, en el caso de que cero es denominador. 16894 Algo de verdad tendrá que cero no puede dividir a ningún/algún número. 16895 O quizá esté hablando el miedo del matemático, con decir que no se puede. 16896 Yo prefiero creer en el miedo, que es más lógico ante algo extraño. 16897 El 1 es origen de Google, así como es origen del número de Graham. 16898 Yo no quiero creer eso. 16899 Graham ha desquiciado el 1 con apartarse del sistema numérico decimal. 16900 En infinito 1 es el origen debido. 16901 Pero 1 tiene un poder en multiplicarse con números alteraandolos mínimamente. 16902 El infinito es una ecuación. 16903 Nada en la matemática es cero. 16904 La nada aquí no está. 16905 Si nos vamos a referir a cero, declararemos que es algo por convención. 16906 De sumar 1 a 1 resultó la √2. 16907 ¿Cómo es eso? 16907 Muy pocos recursos se hizo Hipaso de Metaponto, al sumar, simple, a 1 con 1. 16908 El infinito tiene un listado de números que siguen la ley del infinito. Esto es ñañ.16909 El infinito tiene a √2 como su primer elemento. 16910 De ahí saltamos a los números primos bajo raíz. 16911 Todo número primo bajo raíz, deberá ser irracional. 
+16912 Tratar de aplicar razón a los números primos, quizá esté errado. 16913 El infinito es un número, creo. 16914 El infinito es aterrador, misma cosa pasa con el 1. 16915 Parece que a la usanza de infinito, sumar 1 es algo ridículamente especial. 16916 (1 +1) y bajo raíz se sale de razón. 16917 El 1 no es aterrador, porque es nuestro aliado. 16918 Perder la razón no es algo especial. 16919 Más bien ser razón es lo especial. 16920 Leeré este escrito una y otra vez, porque quiero que tenga una coherencia de 666. 16921 Con que la Iglesias referencie a 666 como el número bestial bastará. 16922 El infinito es un resumen de la existencia. 16923 Partimos con los números de contar. 16924 Me miro la mano con 5 dedos y me pregunto, ¿habrá una correspondencia en la naturaleza? 16925 El infinito se hace desde un 1. 16926 Los matemáticos nos dicen que el universo se hizo del vacío. 16927 Yo me opongo fuertemente a ello. 16928 Antes de la palabra divina, había un ser planeando en el aire del horizonte. 16929 Como abarcando todo. 16930 Quizá fue el infinito transmutado en una tierra preexistente. 16931 Un ser era el que planeaba. 16932 Es común esa idea de que los seres
+podrían llegar a volar, por alguna potencia salida de sí mismos. 16933 ¿Qué intención tenía Dios en planear 1 en la tierra preexistente? 16934 Dios fue singular en ese momento, y siguió siendo singular todo el tiempo, hasta el futuro mío. 16935 Al menos lleguemos a la frase 17 mil antes de pasar al aterrador 2. 16936 El infinito es un elemento elemental. 16937 Nada avanzaré con eso. 16938 Sin 1, no tendríamos el altisonante universo. 16939 En el cosmos nada hay de unidad, y ello es extraño, ya que 1 está en todo número. 16940 Para empezar el 1 y el número son los divisores de los números primos, excluyendo todo otro foráneo como un número compuesto. 16941 El infinito prefirió negar, antes que decir que su infinito era de 1. 16942 Pudo decir que 1 era su fin, sin embargo, los datos no revelan eso. 16943 Tanto es la definición del infinito que llega al número 3 y 2. 16944 Tres negaciones. 16945 El infinito no tiene 3 fines, sino dos. 16946 Este menosprecio del 1 es característico del carácter de no unificar las cosas primero. 16947 El 1 es aterrador, porque no hay algo bajo el sol que guarde más secretos que el triste número 1. 16948 Su secretismo es pavoroso. 16949 No hay otro objetivo que hacerte ver que infinito es un número real. 16950 Y que lo irreal es el 1. 16951 Sin 1, no tendríamos a 2 ni √2 . 16952 Sumar 1 entre números del 0 al 10, tiene un recorrido asombrosamente grande. 
+16953 El 1 tiene algo de grandeza en permitir a los humanos buscar unidad. 16954 El infinito es gestor del 1. 16955 Casi que el primero fuera por infinito. 16956 El infinito es un ser que continuamente está amando. 16957 El genio de este escrito es presentar argumentos de la numeridad del infinito y nada más. 16958 El infinito es aterrador como lo es el 1. 16959 Yo sospecho más en 1 que en cero, como la otra cara de la moneda, principiada por infinito. 16960 No hay en cero lo que hay en 1. 
+16961 Sin unidad, no tiene sentido hablar del mundo. 16962 Sin unidad, no hay universo, quitando de en medio al cosmos. 16963 Porque el humano todo el tiempo vaga y no va a  los asuntos importantes, es que tenemos universo y no varios. 16964 Sin unidad, no habría ilusión en las lenguas, de hacerlas más grandes. 16965 El 1 es la solución de innumerables ecuaciones de segundo y tercer grado. 16966 Es mucho el atractivo de poner en 1 nuestra esperanza. 16967 Cuando hallo al 1 en la ecuación me siento feliz que sea tan simple y satisfacción hacerlo. 16968 El infinito es simple, porque la definimos necesariamente con ser. 16969 ¿Cuál es el problema con limitar las definiciones a 1 palabra? 16970 El infinito es un kit que viene con las reglas de uso. 16971 El infinito es matemáticamente loco. 16972 Yo en un momento fui unidad, cuando me convertí en otra persona, fui transitando hacia el 2. 16973 No entraré a tocar el 2 ni √2 menos. 16974 El infinito halla un nuevo mundo en esta frase. 16975 Si tuviéramos, que creo encima, un número asombrosamente largo, con coma decimal y un abismo de ceros, ¿esperaríamos terminar en un cero a favor de toda lógica o hubiere más tarde un 1 final? 16976 ¿De dónde salió ese 1? 16977 ¿Quién me permite imaginar mi cuento? 16978 A partir de aquí, ¿habrá una secuencia infinita de preguntas? 16979 ¿O se terminará todo en una forma caótica? 16980 Parece que ese 1 testarudo final o finalizador testarudo parte del cero. 16981 Nadie puede tener la hazaña de hacer de cero algo. 16982 Excepto un ser muy especial como Cristo, él de migajas creó hogazas. 16983 Ya con ese precedente en Cristo, tenemos como justificar que se cree un 1 final. 16984 Nadie apostaría a sacar el cero de su sitio final. 16985 Pero el azar es raro. Lo sé. 16986 Suceden cosas increíbles todo el tiempo. 16987 Surgió la vida que era ridículamente improbable. 16988 Hay un ser escribiendo para ti. 16989 Con amor siempre. 16990 El infinito da esas preguntas que nos dejan boquiabiertos por su asombrosa magia. 16991 Después de un millón de ceros, ¿quién no se cansaría de la monotonía? 16992 Raíz de 1 es 1. 16993 Raíz cúbica de 1 es 1. 16994 Y ya la racha es imparable. 16995 Raíz infinita de 1 es 1. 16996 ¿Qué significa esto? 16997 Si raíz infinita de 1 es 1 e infinita de infinito es tendiente de 1, es claro que alguien miente. 16997 bis La clave está en que uno tiende al 1  y el otro es 1.   16998 Ese movimiento de 1 es imposible. 16999 No puede ser 1, porque infinito lo impide. 17000 El infinito está lleno de preguntas sin contestación. 
+17001 El infinito puede continuar sin límites, andando en esta metáfora. 17002 El 1 sumado al mismo, produce 2 elementos. 17003 Ningún número es tan querendón del 1 como 2. 17004 Si no acabamos con el 1, menos podremos acabar con los siguientes números. 17005 El 1 es algo interesante, ya que representa la cosa. 17006 ¿Es el infinito cruel con el 1, al no tomarlo en cuenta? 17007 Podemos caer en un abismo con el 1 tan solo partiendo. 17008 No hay número más poderoso que 1. 17009 Me obligo a extender grandemente el análisis de 1. 17010 El 1 es una cosa simple. 17011 Sin el 1, no habría origen. 17012 El 6 tiene como origen el 3 y el 2. 17013 Porque 3×2 es 6. 17014 Nada impide que 3×2×1 sea la definitiva. 17015 A la vista salta que el número, no tiene como origen un número más alto, sino todo lo contrario. 17016 El infinito juega con 1 y termina mal usado. 17017 Es el 1 el juguete de infinito, todas las veces. 17018 ¿A qué se debe esa inquina del infinito por 1 y 0? 17019 La posición en infinito deja de tener sentido, así el cero que significa número, no tiene cabida en el número final. 
+17020 El infinito es numérico por cero razones. 17021 De 10 saco 0.  17022 Todo es muy extraño por tener fin. 17023 Se supone que el todopoderoso lo podía todo. 17024 Pero esto es un engaño.  17025 El infinito como un niño ordenando números en su cunita, es la máxima expresión. 17026 El infinito es un número, porque también es un límite. 17027 El límite puede decidirse a ser número, solamente si maquinamos las cosas. 17028 El infinito da continuidad a algo. 17029 Sin ver lo previamente dicho, estoy exhalando palabras. 17030 Sin ver la historia, es que hago historia. 17031 Al infinito no pueden confiar los límites. 17032 Ojo a todo por infinito. 17033 Nada o cero puede multiplicar a alguien, sin cancelarse  en el proceso. 17034 Hay más y es que cero produce con alguien un todo. 17035 Cero merece tanto espacio como el 1. 17036 Todo por infinito no puede ser. 17037 Daría algo extrañamente distinto a cero. 17038 No puedo mover en la ecuación a cero, como si no hubiera mañana. 17039 El movimiento del caballo en ajedrez es parecido a lo que quiero explicar. 17039 Incluso para lo absoluto como el 1 mezclado traicioneramente con infinito, algo no puede ser. 17040 El infinito es un final no esperado. 17041 Quisiéramos que tras infinito, hubiera más materia o espíritu andando. 17042 Del infinito demostraré que es verdaderamente número. 17043 Pero para ello necesito empezar con el 1. 17044 Sin monoteísmo, seríamos seres muy desgraciados. 17045 Del 1 podemos observar infinidad de cosas. 17046 Entre 1 y 0 está todo el asunto. 17047 Quizá no pase del cero en este presente volumen. 17048 Hay tanto por hablar de estos dos especiales números que temo, por tanto. 17049 El infinito se ordena en la ecuación a una forma de enlazarse. 17050 No puede haber infinito×1.  17051 De fracción viene el impedimento. 17052 Bien. 17053 El infinito tiene por gusto basar sus reglas en el 1. 17054 ¿Quién desglosaraa más que infinito? 17055 Sin el 1, la nada, tendría más diabólico sentido. 17056 Es en el 1 en que apoyamos nuestra fe. 17057 De un monoteísmo feo, heredamos a Dios. 17058 Llega el momento de preguntar. 17059 Muchas cosas han robado mi imaginación en estos días. 17060 Ésta es una. 17061 En la hipótesis de Riemann tenemos una función z que tiene un polo simple en s=1. 17062 Sabemos con mucha ciencia que ese polo simple diverge. 17063 Eso significa que se dispara con lentitud hacia el infinito. 17064 Es como si dispararas una sandía con una honda o un planeta con una cuchara, algo totalmente lento 17065 Con cariño te traeré a qué número se eleva la cuenta con 10 millones y 100 millones, maguer eso signifique sufrimiento para la máquina. 17066 Mejor lo hice con un gúgol de sumatorias. 17067 Para 10 millones dio 16,7.  17068 Para un gúgol dio 230,84. 17068 Esta lenta sumatoria es debido a que con el polo simple de s=1 se suma 1 + ½ +⅓ +¼ +⅕ +⅙ + 1/7 + ⅛… etc. 17069 Como ves el polo simple se dispara al infinito, con 1 gúgol dio 230 simple. 17070 Temo meterme en la tratativas de esta hipótesis. 17071 Ya que es muy complejo. 17072 Existe un rumor que dice que la hipótesis de Riemann es clarificadora de los números primos. 17073 No hago sin razón esto. 17074 Primero botemos una frase de infinito. 17075 El infinito de Riemann en el polo simple es muy lento. 17076 Nadie sabe por qué se llama polo simple. 17077 ¿Acaso es un punto? 17078 Este s=1 es un infinito igualando a otro. 17079 Por un lado tendríamos un número que se ingresa y otro que sale, y si necesitamos del número infinito para llegar a infinito, no sé de qué hablamos. 17080 No hago esto sin razón. 17081 Los números primos son los naturales mayores a 1, que, pueden dividirse por 1 y por él mismo o sí mismo. 17082 Para que sea 1 la factorización, se rechazan los enteros negativos juntando cero. 17083 La máquina me explicó esto y quedé satisfecho. 17084 Te traigo en breve esto. 
+30=(-2)×3 ×(-5)
+30=2×3×5 7085 Con números negativos hace que la factorización no sea única. 17086 Así que por conveniencia, se fijó a los primos como sólo los naturales. 17087 ¿Qué hay del infinito? 17088 No hay una factorización del infinito, por lo que, el infinito se queda solo en un puede ser primo. 17089 El 1 no para de asombrarnos, porque hay más. 17090 El primo 2 y 3 tienen de diferencia 1. 17091 Y para su sorpresa, son los dos únicos primos que tienen una diferencia de 1 en toda la recta de primos. 17092 Más allá la diferencia de 1 se pierde totalmente. 17093 El 1 no es primo cómo sospechamos que infinito sea impar y primo, por razones no del todo honestas. 17094 Si el infinito es impar, habría una conexión de Noes que sería interesante ver. 17095 Con un impar coronando, sería la muerte del par. 17096 El infinito es un número por la transfusión de verdades, desde la propia matemática hacia la gente. 17097 Sin el 1, la matemática estaría inexistente aún en el siglo XXI. 17098 Son innumerables las ocasiones en que 1, ha venido a definir las cosas. 17099 Basta con echar ojo a los números primos y veremos que si se dividen por 1, siguen siendo ellos. 17100 El infinito es un límite al que se encamina este socio.
 </pre>
 
 <script>
-// Manejo de errores global
-window.onerror = function(msg, url, line) {
-  alert("ERROR DE CÓDIGO:\n" + msg + "\nEn línea: " + line);
-};
-
-/* 1. NORMALIZACIÓN */
-function norm(str) {
-  if(!str) return "";
-  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9ñ]/gi, "");
-}
-function normalizarPalabra(raw) { return norm(raw); }
-
-/* 2. DICCIONARIO */
-const diccionario = {
-  infinito:   { definicion: "Que crece sin parar." },
-  perro:      { definicion: "Mamífero doméstico carnívoro y canido." },
-  ser:        { definicion: "Para afirmar o negar un puente entre sujeto y predicado." },
-  ilimitado:  { definicion: "Que no posee límite." },
-  universo:   { definicion: "Todo lo que existe tanto fuera de la Tierra como dentro." },
-  dios:       { definiciones: ["Ser supremo que puede todo lo coherente.", "Hacedor del universo.", "Deidad politeista."] }, 
-  madre:      { definiciones: ["Mujer especial que ha engendrado uno o más hijos.", "Término coloquialmente abreviado como mamá."] }, 
-  google:     { definicion: "Empresa multinacional tecnológica." },
-  adjetivo:   { definicion: "Palabra que se pone antes o después de un sustantivo." },
-  ajedrez:    { definicion: "Juego mental entre dos oponentes en un tablero 8x8." },
-  dato:       { definicion: "Estadio previo a una información hecha." },
-  escritor:   { definicion: "Persona que ha escrito una obra literaria asentada." },
-  loco:       { definicion: "Que se ha vuelto irracional." },
-  misericordia: { definicion: "Virtud de Dios o el hombre de sentir compasión." },
-  deporte:    { definicion: "Actividad física o mental reglada." },
-  conjetura:  { definicion: "Idea que a partir de datos lanza una suposición." },
-  matematica: { definicion: "Área del saber que generaliza los números." },
-  matematico: { definicion: "Aquella persona que estudia la matemática." },
-  dibujar:    { definicion: "Trazar líneas para obtener una figura." },
-  laberinto:  { definicion: "Lugar físico o conceptual artificialmente creado con caminos absurdos." },
-  flaco:      { definicion: "Calificativo que habla de la poca masa grasa." },
-  el:         { definicion: "Artículo que indica un nombre consabido." },
-  infierno:   { definicion: "Lugar de tormentos eternos." },
-  existir:    { definicion: "Ser real y enteramente creíble." },
-  tenedor:    { definicion: "Útil de mesa formado de un mango con más de 3 púas." },
-  cuchara:    { definicion: "Útil de mesa con mango y en el extremo una concavidad." },
-  indeterminado: {definicion: "No determinado a un resultado único." },
-  virus:      { definiciones: [ "Germen infeccioso.", "Mecanismo infeccioso informático." ] },
-  nada:       { definicion: "Aquello que es pensable solo por negación." },
-  holomorfa:  { definicion: "Función que es diferenciable y suave." },
-  negar:      { definicion: "Decir que no." },
-  no:         { definicion: "Adverbio fundamental de negación." }, 
-  poder:      { definicion: "Facultad libre de hacer algo." },
-  "poder-verbo": { definiciones: [ "1.Tener vía libre.", "2.Expresa posibilidad.", "3.Ser capaz de vencer." ] },
-  "poder-sustantivo": { definiciones: [ "1.Facultad para hacer.", "2.Gobierno.", "3.Fuerza física." ] }, 
-  persona:    { definiciones: [ "Individuo de la clase humana.", "Categoría gramatical." ] },
-  limitado:   { definicion: "Que tiene límites." }, 
-  nadie:      { definicion: "1.Ningún individuo." },
-  eternamente:{ definiciones: [ "1.De forma eterna.", "2. Jamás." ] },
-  eterno:     { definiciones: [ "1.Que no posee inicio ni fin.", "2.Que se reitera muchísimo." ] },
-  todopoderoso: { definicion: "Que es poderoso hasta todo." },
-  aprender:   { definicion: "Adquirir el saber." },
-  artificial: { definiciones: [ "1.Fabricado por el hombre.", "2.Lo que es contrario a natural." ] },
-  muerte:     { definiciones: [ "1.Termino de la vida.", "2.Ruina o destrucción." ] },
-  mapear:     { definiciones: [ "1.Crear mapas.", "2.Investigar la parte en el todo." ] },
-  sensacion:  { definiciones: [ "1.El sentir en el cuerpo.", "2.Percepción general.", "3.Corazonada." ] },
-  ciclo:      { definiciones: [ "1.Periodo de tiempo.", "2.Colección de fenómenos.", "3.Serie de pasos." ] },
-  agujero:    { definiciones: [ "1.Abertura o hueco.", "2.Falta inmotivada de dinero." ] },
-  negro:      { definiciones: [ "1.Ausencia total de luz.", "2.De color negro.", "3.Triste o pesimista." ] },
-  de:         { definiciones: [ "1.Indica pertenencia.", "2.Procedencia.", "3.Material.", "4.Contenido." ] },
-  amanecer:   { definiciones: [ "1.Comenzar a verse la luz.", "2.Nacer figurado." ] },
-  en:         { definiciones: [ "1.Tiempo, lugar o modo.", "2.Sobre." ] },
-  ese:        { definiciones: [ "1.Cercano al interlocutor.", "2.Mencionado." ] },
-  campo:      { definiciones: [ "1.Terreno extenso.", "2.Terreno de juego.", "3.Campo de conocimiento." ] },
-  vencer:     { definiciones: [ "1.Batir al enemigo.", "2.Ser superior." ] },
-  aterrador:  { definiciones: [ "Que aterra o aterroriza.", "Lo contrario a tranquilizador." ] },
-  plus:       { definiciones: [ "Sobresueldo.", "Suplemento material." ] },
-  materia:    { definiciones: [ "Elemento físico.", "Asignatura.", "Motivo." ] }, 
-  simplezas:  { definiciones: [ "Cualidad de simple.", "Cosa de poca relevancia." ] }, 
-  fundamento: { definiciones: [ "Cimientos.", "Motivo suficiente." ] }, 
-  vejez:      { definiciones: [ "Estado de viejo.", "Edad avanzada." ] }
-};
-
-/* 3. ÍNDICE RÁPIDO */
-const diccionarioIdx = {};
-for (const [k, v] of Object.entries(diccionario)) {
-  diccionarioIdx[norm(k)] = v;
-}
-
-/* 4. LÓGICA DE DETECCIÓN */
-const verbLemmaMap = { "puedo":"poder", "puedes":"poder", "puede":"poder", "podemos":"poder", "pueden":"poder", "pude":"poder", "pudo":"poder", "creo":"crear" };
-const cliticEndings = ["melo","mela","telo","tela","selo","sela","me","te","se","lo","la","le","les","nos","os"];
-
-function obtenerClaveVerbal(rawWord, idx) {
-  const original = rawWord.trim();
-  let w = norm(original);
-  
-  // Quitar pronombres pegados
-  let changed = true;
-  while(changed) {
-    changed = false;
-    for(const cl of cliticEndings) {
-      if(w.endsWith(cl) && w.length > cl.length + 2) {
-        w = w.slice(0, -cl.length);
-        changed = true;
-      }
+// 1. FORZAR ESPERA A QUE CARGUE LA PÁGINA
+window.onload = function() {
+    try {
+        console.log("Iniciando aplicación...");
+        prepararLibro();
+    } catch(e) {
+        alert("Error crítico iniciando: " + e.message);
     }
-  }
+};
 
-  // Infinitivos simples
-  if(verbLemmaMap[w]) return verbLemmaMap[w];
-  if(w.endsWith("ando")) {
-     const stem = w.slice(0, -4);
-     if(diccionario[stem+"ar"]) return stem+"ar";
-  }
-  
-  // Caso especial PODER
-  if(w === "poder" || w.startsWith("pod") || w.startsWith("pud")) return "poder-verbo";
-  
-  return w;
+// --- LOGICA ---
+
+// Normalización
+function norm(str) { 
+  if(!str) return "";
+  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9ñ]/gi, ""); 
 }
 
-/* 5. PREPARAR LIBRO */
-let tokensLibro = [];
-function prepararLibro() {
-  const texto = document.getElementById("texto-libro").innerText;
-  const divLibro = document.getElementById("libro");
+// Diccionario (Simplificado para evitar errores de sintaxis)
+const diccionario = {
+  infinito: { definicion: "Que no tiene fin o término." },
+  aterrador: { definicion: "Que causa terror o mucho miedo." },
+  plus: { definicion: "Algo extra o añadido." },
+  materia: { definicion: "Sustancia que forma los cuerpos físicos." },
+  simplezas: { definicion: "Cosas simples, tonterías o de poca importancia." },
+  teorema: { definicion: "Proposición demostrable mediante reglas lógicas." },
+  fundamento: { definicion: "Base o cimiento sobre el que se apoya algo." },
+  vejez: { definicion: "Última etapa de la vida." },
+  trofeo: { definicion: "Objeto que se da en señal de victoria." },
+  hiperreal: { definicion: "Más allá de lo real, en matemáticas números que incluyen infinitos." },
+  servidor: { definicion: "Persona que sirve, o computadora que da datos." },
+  raiz: { definicion: "Origen o base. En matemáticas, número que multiplicado da otro." },
+  naipe: { definicion: "Carta de la baraja." },
+  compleja: { definicion: "Difícil, compuesta de varios elementos." },
+  desglose: { definicion: "Separación de las partes de un todo." },
+  brutal: { definicion: "Muy grande, intenso o violento." },
+  decision: { definicion: "Determinación definitiva adoptada en un asunto." },
+  inteligencia: { definicion: "Facultad de la mente de aprender y razonar." },
+  destino: { definicion: "Fuerza desconocida que se cree actúa sobre las personas." },
+  vertebra: { definicion: "Cada hueso de la columna, o pieza central de algo." },
+  matematica: { definicion: "Ciencia de los números y figuras." },
+  origen: { definicion: "Principio, nacimiento o causa de algo." },
+  polemica: { definicion: "Discusión o controversia." },
+  objetivo: { definicion: "Fin o meta a la que se quiere llegar." },
+  perfecto: { definicion: "Que tiene todas las cualidades deseables, sin errores." },
+  dialecto: { definicion: "Variedad de un idioma." },
+  reticencia: { definicion: "Desconfianza o reserva." },
+  obtuso: { definicion: "Tonto o que comprende lentamente. Ángulo mayor a 90 grados." },
+  miedo: { definicion: "Sensación de angustia ante un peligro." },
+  logico: { definicion: "Que sigue las reglas de la razón." },
+  google: { definicion: "Buscador de internet gigante." },
+  graham: { definicion: "Número de Graham, un número inmensamente grande." },
+  decimal: { definicion: "Sistema numérico basado en 10." },
+  ecuacion: { definicion: "Igualdad matemática con incógnitas." },
+  convencion: { definicion: "Acuerdo o norma aceptada por todos." },
+  recurso: { definicion: "Medio para conseguir algo." },
+  primo: { definicion: "Número divisible solo por 1 y por sí mismo." },
+  irracional: { definicion: "Que no tiene razón. En mates, número que no es fracción exacta." },
+  usanza: { definicion: "Modo o costumbre." },
+  aliado: { definicion: "Que está unido con otro para un fin." },
+  coherencia: { definicion: "Relación lógica entre las cosas." },
+  bestial: { definicion: "Brutal, propio de bestias." },
+  existencia: { definicion: "Acto de existir o vivir." },
+  vacio: { definicion: "Falta de contenido físico o mental." },
+  divina: { definicion: "Relacionado con Dios." },
+  horizonte: { definicion: "Línea donde se unen tierra y cielo." },
+  potencia: { definicion: "Capacidad de hacer algo." },
+  singular: { definicion: "Único, solo o extraordinario." },
+  cosmos: { definicion: "El universo como un todo ordenado." },
+  caracter: { definicion: "Conjunto de rasgos de una persona o cosa." },
+  secreto: { definicion: "Algo oculto que no se debe contar." },
+  humano: { definicion: "Perteneciente a la especie Homo Sapiens." },
+  gestor: { definicion: "Persona que administra algo." },
+  amor: { definicion: "Sentimiento intenso de afecto." },
+  esperanza: { definicion: "Confianza en lograr lo que se desea." },
+  kit: { definicion: "Conjunto de herramientas o piezas." },
+  caotico: { definicion: "Desordenado, confuso." },
+  azar: { definicion: "Causa imprevista, suerte." },
+  monotonia: { definicion: "Falta de variedad, aburrimiento." },
+  metafora: { definicion: "Figura retórica de comparación." },
+  abismo: { definicion: "Profundidad grande y peligrosa." },
+  inquina: { definicion: "Aversión o mala voluntad." },
+  limite: { definicion: "Línea real o imaginaria que separa dos cosas." },
+  continuidad: { definicion: "Unión natural entre partes, sin interrupción." },
+  traicion: { definicion: "Falta de lealtad." },
+  monoteismo: { definicion: "Creencia en un solo Dios." },
+  hipotesis: { definicion: "Suposición para iniciar una investigación." },
+  diverge: { definicion: "Separarse o irse alejando." },
+  lento: { definicion: "Poco veloz." },
+  sufrimiento: { definicion: "Dolor físico o moral." },
+  gugol: { definicion: "Número 1 seguido de 100 ceros." },
+  rumor: { definicion: "Noticia no confirmada que corre entre la gente." },
+  factorizacion: { definicion: "Descomposición de un número en factores." },
+  impar: { definicion: "Número no divisible por dos." },
+  transfusion: { definicion: "Paso de un líquido (como sangre) de un lado a otro." },
+  socio: { definicion: "Persona asociada con otra." },
   
-  divLibro.innerHTML = "";
-  tokensLibro = texto.split(/(\s+)/); // Separar por espacios pero mantenerlos
+  // Palabras comunes
+  el: { definicion: "Artículo determinado." },
+  la: { definicion: "Artículo determinado femenino." },
+  uno: { definicion: "El primer número natural." },
+  cero: { definicion: "Ausencia de cantidad." }
+};
 
-  let wordIndex = 0;
-  tokensLibro.forEach(token => {
-    if(/^\s+$/.test(token)) {
-      divLibro.appendChild(document.createTextNode(token));
+let tokens = [];
+
+function prepararLibro() {
+  const divLibro = document.getElementById("libro");
+  const elTexto = document.getElementById("texto-fuente");
+  
+  // CLAVE: Usar textContent para leer aunque esté oculto
+  const textoRaw = elTexto.textContent || elTexto.innerText; 
+  
+  if(!textoRaw || textoRaw.trim().length === 0) {
+     divLibro.innerHTML = "Error: No pude leer el texto fuente.";
+     return;
+  }
+
+  divLibro.innerHTML = ""; // Limpiar el "Cargando..."
+  
+  tokens = textoRaw.split(/(\s+)/);
+  
+  let html = "";
+  tokens.forEach((t, i) => {
+    if(t.trim().length === 0) {
+      divLibro.appendChild(document.createTextNode(t));
     } else {
-      const span = document.createElement("span");
-      span.textContent = token;
+      let span = document.createElement("span");
+      span.textContent = t;
       span.className = "palabra";
-      // Guardamos el índice actual en una variable local del bucle
-      const myIdx = wordIndex; 
-      span.onclick = () => mostrarDefinicion(token, myIdx);
+      span.onclick = function() { analizar(t, i); };
       divLibro.appendChild(span);
-      wordIndex++;
     }
   });
+}
+
+function analizar(palabra, index) {
+  // Limpiar resaltado anterior
+  document.querySelectorAll(".resaltada").forEach(e => e.classList.remove("resaltada"));
+  
+  // Resaltar actual (buscando por texto exacto simple)
+  // Nota: En una app real usaríamos IDs únicos, aquí simplificamos visualmente
+  event.target.classList.add("resaltada");
+
+  const limpia = norm(palabra);
+  const entrada = diccionario[limpia];
+  const chat = document.getElementById("chat-history");
+  
+  let msg = "";
+  
+  if(entrada) {
+     msg = `<strong>${palabra}</strong>: ${entrada.definicion}`;
+     // Añadir contexto visual
+     const contexto = obtenerContexto(index);
+     addMsg(`He analizado "<strong>${palabra}</strong>" en la frase: <em>"...${contexto}..."</em>`, "system");
+     setTimeout(() => addMsg(msg, "bot"), 400);
+  } else {
+     addMsg(`Mmm... la palabra "<strong>${palabra}</strong>" no está en mi índice todavía.`, "bot");
+  }
 }
 
 function obtenerContexto(idx) {
-  // Buscar 5 palabras atrás y 5 adelante para contexto simple
-  // Nota: tokensLibro incluye espacios, asi que saltamos de 2 en 2 aprox
-  let start = Math.max(0, idx * 2 - 20);
-  let end = Math.min(tokensLibro.length, idx * 2 + 20);
-  return tokensLibro.slice(start, end).join("");
+  let start = Math.max(0, idx - 10);
+  let end = Math.min(tokens.length, idx + 10);
+  return tokens.slice(start, end).join("");
 }
 
-/* 6. LOGICA CHAT Y RAZONADOR */
-const chatHistory = document.getElementById("chat-history");
-let estado = { palabra: "", opciones: [], ganador: 0 };
-
-function agregarMensaje(html, tipo="bot") {
+function addMsg(html, tipo) {
   const div = document.createElement("div");
   div.className = `mensaje msg-${tipo}`;
   div.innerHTML = html;
-  chatHistory.appendChild(div);
-  // Auto-scroll al final
-  setTimeout(() => {
-    const contenedor = document.getElementById("chat-history"); 
-    contenedor.scrollTop = contenedor.scrollHeight;
-  }, 100);
+  const hist = document.getElementById("chat-history");
+  hist.appendChild(div);
+  hist.scrollTop = hist.scrollHeight;
 }
 
-function enviarMensajeUsuario() {
+function enviarUser() {
   const inp = document.getElementById("chat-input");
-  const txt = inp.value.trim();
+  const txt = inp.value;
   if(!txt) return;
-  agregarMensaje(txt, "user");
+  addMsg(txt, "user");
   inp.value = "";
-  
-  setTimeout(() => {
-    if(txt.includes("por que") || txt.includes("razón")) {
-      agregarMensaje(`Porque matemáticamente la opción <strong>#${estado.ganador + 1}</strong> tenía más coincidencia con las palabras del contexto cercano.`);
-    } else {
-      agregarMensaje("Entendido. ¿Alguna otra palabra que quieras analizar?");
-    }
-  }, 800);
+  setTimeout(() => addMsg("Interesante observación.", "bot"), 600);
 }
+</script>
 
-function handleEnter(e) { if(e.key === "Enter") enviarMensajeUsuario(); }
-
-function scoreDef(textoDef, contexto) {
-  let score = 0;
-  const defNorm = norm(textoDef);
-  const ctxNorm = norm(contexto);
-  
-  // Reglas simples
-  if(defNorm.length > 20) score += 1; // Definición larga = buena
-  if(defNorm.includes("que")) score += 1; // Estructura explicativa
-  
-  // Palabras compartidas
-  const palabrasDef = defNorm.split(" ");
-  for(let w of palabrasDef) {
-    if(w.length > 3 && ctxNorm.includes(w)) score += 3;
-  }
-  return score;
-}
-
-const dormir = (ms) => new Promise(r => setTimeout(r, ms));
-
-async function mostrarDefinicion(rawWord, idx) {
-  // Limpiar resaltados previos
-  document.querySelectorAll(".resaltada").forEach(e => e.classList.remove("resaltada"));
-  // Resaltar clicado (simple)
-  // Nota: en esta version simple no buscamos todos los spans, solo el clicado visualmente
-  
-  const clave = obtenerClaveVerbal(rawWord, idx);
-  const data = diccionario[clave] || diccionarioIdx[norm(clave)];
-  
-  if(!data) {
-    agregarMensaje(`No encontré "<strong>${rawWord}</strong>" en mi base de datos.`, "bot");
-    return;
-  }
-
-  const definiciones = [];
-  if(data.definicion) definiciones.push(data.definicion);
-  if(data.definiciones) definiciones.push(...data.definiciones);
-  
-  const contexto = obtenerContexto(idx);
-  
-  agregarMensaje(`<em>Analizando "${rawWord}"...</em>`, "system");
-  await dormir(400); // Pausa dramática
-
-  // Calcular puntajes
-  let resultados = definiciones.map((d, i) => {
-    return { id: i, text: d, score: scoreDef(d, contexto) };
-  });
-  
-  // Elegir ganador
-  resultados.sort((a,b) => b.score - a.score);
-  const ganador = resultados[0];
-  estado.ganador = ganador.id;
-
-  // Generar HTML de tarjetas
-  let htmlCards = "";
-  // Mostramos en orden original para que coincida con indices 1, 2, 3...
-  definiciones.forEach((def, i) => {
-    const esGanador = (i === ganador.id);
-    const clase = esGanador ? "tarjeta-ganadora" : "tarjeta-descartada";
-    const icono = esGanador ? "✅" : "";
-    htmlCards += `<div class="tarjeta-analisis ${clase}"><strong>Opción ${i+1}</strong> ${icono}<br>${def}</div>`;
-  });
-
-  const frases = ["He analizado el contexto y esta es mi conclusión:", "Según mis cálculos léxicos:"];
-  const frase = frases[Math.floor(Math.random()*frases.length)];
+</body>
+</html>
