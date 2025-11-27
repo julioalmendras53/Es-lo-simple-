@@ -5,6 +5,32 @@
   <title>Libro + Diccionario</title>
 
   <style>
+    /* --- RESPONSIVE DESIGN (PARA CELULARES) --- */
+@media (max-width: 768px) {
+  /* Cambiar de columnas a fila vertical */
+  #contenedor {
+    grid-template-columns: 1fr !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Ajustar alturas para que quepan ambos en la pantalla del celular */
+  #libro {
+    max-height: 40vh; /* El libro ocupa el 40% de la pantalla */
+    border-bottom: 2px solid #007bff;
+    margin-bottom: 10px;
+  }
+
+  #chat-container {
+    height: 45vh; /* El chat ocupa el 45% de la pantalla */
+  }
+  
+  /* Ajustes visuales para el chat en móvil */
+  .mensaje {
+    font-size: 0.85rem; /* Letra un poco más chica */
+  }
+}
+
 
     /* --- ESTILOS DEL CHAT --- */
 #chat-container {
@@ -171,8 +197,8 @@
 30=2×3×5 7085 Con números negativos hace que la factorización no sea única. 17086 Así que por conveniencia, se fijó a los primos como sólo los naturales. 17087 ¿Qué hay del infinito? 17088 No hay una factorización del infinito, por lo que, el infinito se queda solo en un puede ser primo. 17089 El 1 no para de asombrarnos, porque hay más. 17090 El primo 2 y 3 tienen de diferencia 1. 17091 Y para su sorpresa, son los dos únicos primos que tienen una diferencia de 1 en toda la recta de primos. 17092 Más allá la diferencia de 1 se pierde totalmente. 17093 El 1 no es primo cómo sospechamos que infinito sea impar y primo, por razones no del todo honestas. 17094 Si el infinito es impar, habría una conexión de Noes que sería interesante ver. 17095 Con un impar coronando, sería la muerte del par. 17096 El infinito es un número por la transfusión de verdades, desde la propia matemática hacia la gente. 17097 Sin el 1, la matemática estaría inexistente aún en el siglo XXI. 17098 Son innumerables las ocasiones en que 1, ha venido a definir las cosas. 17099 Basta con echar ojo a los números primos y veremos que si se dividen por 1, siguen siendo ellos. 17100 El infinito es un límite al que se encamina este socio.
 
 
-  </pre>  <div id="definicion">
-  <div id="chat-container">
+  </pre>   <div id="libro"></div>  <div id="definicion"> <div id="chat-container">
+
     <div style="background:#eee; padding:10px; border-bottom:1px solid #ccc; font-weight:bold;">
       🧠 El Razonador
     </div>
