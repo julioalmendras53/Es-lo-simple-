@@ -5,6 +5,100 @@
   <title>Libro + Diccionario</title>
 
   <style>
+
+    /* --- ESTILOS DEL CHAT --- */
+#chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  overflow: hidden;
+}
+
+#chat-history {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mensaje {
+  max-width: 80%;
+  padding: 10px 15px;
+  border-radius: 15px;
+  line-height: 1.4;
+  font-size: 0.95rem;
+  animation: fadein 0.3s;
+}
+
+.msg-bot {
+  align-self: flex-start;
+  background-color: #e3f2fd;
+  color: #333;
+  border-bottom-left-radius: 2px;
+}
+
+.msg-user {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: white;
+  border-bottom-right-radius: 2px;
+}
+
+.msg-system {
+  align-self: center;
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+  background: none;
+}
+
+#chat-input-area {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background: white;
+}
+
+#chat-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+}
+
+#chat-send {
+  margin-left: 10px;
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+#chat-send:hover { background-color: #0056b3; }
+
+/* Animación de las tarjetas dentro del chat */
+.tarjeta-analisis {
+  border: 1px solid #ddd;
+  padding: 8px;
+  margin-top: 5px;
+  background: white;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  border-left: 4px solid #ccc;
+}
+.tarjeta-ganadora { border-left-color: #28a745; background-color: #d4edda; }
+.tarjeta-descartada { border-left-color: #dc3545; opacity: 0.7; }
+
+@keyframes fadein { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
     body {
       font-family: Arial, sans-serif;
       margin: 1rem;
@@ -77,17 +171,27 @@
 30=2×3×5 7085 Con números negativos hace que la factorización no sea única. 17086 Así que por conveniencia, se fijó a los primos como sólo los naturales. 17087 ¿Qué hay del infinito? 17088 No hay una factorización del infinito, por lo que, el infinito se queda solo en un puede ser primo. 17089 El 1 no para de asombrarnos, porque hay más. 17090 El primo 2 y 3 tienen de diferencia 1. 17091 Y para su sorpresa, son los dos únicos primos que tienen una diferencia de 1 en toda la recta de primos. 17092 Más allá la diferencia de 1 se pierde totalmente. 17093 El 1 no es primo cómo sospechamos que infinito sea impar y primo, por razones no del todo honestas. 17094 Si el infinito es impar, habría una conexión de Noes que sería interesante ver. 17095 Con un impar coronando, sería la muerte del par. 17096 El infinito es un número por la transfusión de verdades, desde la propia matemática hacia la gente. 17097 Sin el 1, la matemática estaría inexistente aún en el siglo XXI. 17098 Son innumerables las ocasiones en que 1, ha venido a definir las cosas. 17099 Basta con echar ojo a los números primos y veremos que si se dividen por 1, siguen siendo ellos. 17100 El infinito es un límite al que se encamina este socio.
 
 
-  </pre>
+  </pre>  <div id="definicion">
+  <div id="chat-container">
+    <div style="background:#eee; padding:10px; border-bottom:1px solid #ccc; font-weight:bold;">
+      🧠 El Razonador
+    </div>
+    
+    <div id="chat-history">
+      <div class="mensaje msg-bot">
+        Hola. Haz clic en una palabra del libro y te explicaré mi razonamiento.
+      </div>
+    </div>
 
-  <div id="libro"></div>
-
-  <div id="definicion">
-    <h2>Definición</h2>
-    <p>Haz clic en una palabra del libro para ver su definición.</p>
+    <div id="chat-input-area">
+      <input type="text" id="chat-input" placeholder="Discute mi razonamiento..." onkeypress="handleEnter(event)">
+      <button id="chat-send" onclick="enviarMensajeUsuario()">Enviar</button>
+    </div>
   </div>
-
 </div>
-</div>  <!-- cierre del contenedor -->
+
+
+    <!-- cierre del contenedor -->
 
 
 
@@ -875,113 +979,170 @@ function obtenerClaveVerbal(rawWord, idx) {
   return lemma;
 }
 
-  function mostrarDefinicion(rawWord, idx) {
-  const clave = obtenerClaveVerbal(rawWord, idx);
+  /* =========================================
+   ESTADO GLOBAL DEL CHAT
+   ========================================= */
+let estadoChat = {
+  palabraActual: "",
+  contexto: "",
+  opciones: [],     // Array con las definiciones y sus scores
+  ganadorIndex: -1, // Índice de la mejor opción
+  esperandoRespuesta: false
+};
 
-  // Entrada en el diccionario (por clave directa o por índice normalizado)
-  const entrada =
-    diccionario[clave] ||
-    diccionarioIdx[normalizarPalabra(clave)];
+/* =========================================
+   FUNCIONES DE UI CHAT
+   ========================================= */
+const chatHistory = document.getElementById("chat-history");
 
-  const panel = document.getElementById("definicion");
-  const debugBox = document.getElementById("debug-razonador");
+function agregarMensaje(texto, tipo = "bot") {
+  const div = document.createElement("div");
+  div.className = `mensaje msg-${tipo}`;
+  div.innerHTML = texto; // Permitimos HTML para las tarjetas
+  chatHistory.appendChild(div);
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+}
 
-  limpiarResaltado();
-  resaltarCoincidencias(rawWord);
+function handleEnter(e) {
+  if (e.key === "Enter") enviarMensajeUsuario();
+}
 
-  if (!entrada) {
-    panel.innerHTML = `
-      <h2>${rawWord}</h2>
-      <p class="sin-def">
-        Esta palabra no tiene definición aún.
-        <br><small>(clave interna: ${clave})</small>
-      </p>`;
-    if (debugBox) {
-      debugBox.textContent = "Palabra no encontrada en diccionario.";
-    }
+function enviarMensajeUsuario() {
+  const input = document.getElementById("chat-input");
+  const texto = input.value.trim();
+  if (!texto) return;
+
+  agregarMensaje(texto, "user");
+  input.value = "";
+  
+  // Simular tiempo de lectura del bot
+  setTimeout(() => procesarRespuestaBot(texto), 800);
+}
+
+/* =========================================
+   CEREBRO CONVERSACIONAL (SIMULADO)
+   ========================================= */
+function procesarRespuestaBot(textoUsuario) {
+  const txt = textoUsuario.toLowerCase();
+  const { opciones, ganadorIndex } = estadoChat;
+
+  // 1. Si el usuario pregunta "por qué" o duda
+  if (txt.includes("por que") || txt.includes("por qué") || txt.includes("razón") || txt.includes("explica")) {
+    const ganadora = opciones[ganadorIndex];
+    // Traducir las reglas matemáticas a lenguaje humano
+    let explicacion = `Mira, elegí la opción <strong>#${ganadorIndex + 1}</strong> porque obtuve ${ganadora.score} puntos. `;
+    
+    // Interpretación de reglas (basado en tu lógica de score)
+    if (ganadora.def.includes("que")) explicacion += "Me gustó cómo usa el 'que' para conectar ideas. ";
+    if (ganadora.def.length > 50) explicacion += "Además, es una definición detallada y técnica. ";
+    if (estadoChat.contexto.includes(ganadora.def.split(" ")[0])) explicacion += "Y hay palabras en el contexto que coinciden. ";
+    
+    agregarMensaje(explicacion);
     return;
   }
 
-  // Unificamos definiciones en un solo array
+  // 2. Si el usuario dice que se equivocó ("no", "mal", "error")
+  if (txt.includes("no") || txt.includes("mal") || txt.includes("equivoc") || txt.includes("mejor la")) {
+    // Buscar si menciona otra opción (ej: "es la 2")
+    const matchNumero = txt.match(/\d/);
+    if (matchNumero) {
+      const numUsuario = parseInt(matchNumero[0]) - 1;
+      if (opciones[numUsuario]) {
+        agregarMensaje(`¿Prefieres la opción ${numUsuario + 1}? Mmm... entiendo tu punto. Matemáticamente me dio menos puntos (${opciones[numUsuario].score}), pero el contexto humano a veces es sutil. Vale, acepto tu corrección.`);
+        return;
+      }
+    }
+    agregarMensaje("¿Ah sí? ¿Cuál crees que encaja mejor? Mis algoritmos suelen ser precisos, pero estoy aprendiendo.");
+    return;
+  }
+
+  // 3. Respuesta genérica
+  const respuestas = [
+    "Interesante punto de vista.",
+    "Todo depende del contexto que leí antes de la palabra.",
+    "Mis reglas sintácticas favorecen las definiciones más completas.",
+    "¿Seguimos leyendo?"
+  ];
+  agregarMensaje(respuestas[Math.floor(Math.random() * respuestas.length)]);
+}
+
+
+/* =========================================
+   NUEVA FUNCIÓN MOSTRAR (CONECTADA AL CHAT)
+   ========================================= */
+async function mostrarDefinicion(rawWord, idx) {
+  const clave = obtenerClaveVerbal(rawWord, idx);
+  
+  // Limpieza visual
+  limpiarResaltado();
+  resaltarCoincidencias(rawWord);
+  
+  // Obtener datos
+  const entrada = diccionario[clave] || diccionarioIdx[normalizarPalabra(clave)];
+  
+  if (!entrada) {
+    agregarMensaje(`Lo siento, no tengo datos sobre "<strong>${rawWord}</strong>" en mi base de datos.`, "bot");
+    return;
+  }
+
+  // Preparar definiciones
   let definiciones = [];
   if (entrada.definicion) definiciones.push(entrada.definicion);
   if (entrada.definiciones) definiciones.push(...entrada.definiciones);
-
+  
   const contexto = obtenerContexto(idx);
+  const categoriaLema = entrada.categoria || "sustantivo";
 
-  // ---------- INTENTO 1: RAZONADOR NUEVO ----------
-  const resultadoRazonador = razonadorParaLema(clave, contexto);
+  // --- ANIMACIÓN DE PENSAMIENTO ---
+  agregarMensaje(`<em>Analizando "${rawWord}" en el contexto: "...${contexto.substring(0,20)}..."</em>`, "system");
+  await dormir(500);
 
-  let indiceElegido = 0;
-  let htmlExp = "";
+  // --- CÁLCULO INTERNO (NO VISIBLE AÚN) ---
+  let resultados = definiciones.map((def, i) => {
+    // Usamos tu función scoreCalidadDefinicion existente
+    const score = scoreCalidadDefinicion(def, clave, categoriaLema); 
+    return { index: i, def, score };
+  });
 
-  if (resultadoRazonador) {
-    indiceElegido = resultadoRazonador.indiceAcepcion;
+  // Determinar ganador
+  let mejor = resultados.reduce((prev, current) => (prev.score > current.score) ? prev : current);
+  
+  // ACTUALIZAR ESTADO GLOBAL
+  estadoChat.palabraActual = rawWord;
+  estadoChat.contexto = contexto;
+  estadoChat.opciones = resultados;
+  estadoChat.ganadorIndex = mejor.index;
 
-    if (debugBox) {
-      debugBox.textContent = JSON.stringify(resultadoRazonador, null, 2);
-    }
+  // --- RESPUESTA DEL BOT (CON CARDS) ---
+  
+  // Construimos el HTML de las "tarjetas" para mostrarlas dentro del chat
+  let htmlTarjetas = "";
+  resultados.forEach(item => {
+    const esGanadora = item.index === mejor.index;
+    const clase = esGanadora ? "tarjeta-ganadora" : "tarjeta-descartada";
+    const icono = esGanadora ? "✅" : "❌";
+    
+    htmlTarjetas += `
+      <div class="tarjeta-analisis ${clase}">
+        <strong>Opción ${item.index + 1} (${item.score} pts)</strong><br>
+        ${item.def}
+      </div>
+    `;
+  });
 
-    htmlExp = `
-      <hr>
-      <p style="font-size:0.9em; color:green;">
-        <strong>🤖 Elección del razonador:</strong><br>
-        Calidad: ${resultadoRazonador.calidad}<br>
-        Núcleo detectado:
-        <em>"${resultadoRazonador.palabraNucleo ? resultadoRazonador.palabraNucleo.palabra : "ninguno"}"</em>
-      </p>`;
-  } else {
-    // ---------- INTENTO 2: LÓGICA ANTIGUA ----------
-    if (debugBox) {
-      debugBox.textContent =
-        "El razonador devolvió null (sin contexto suficiente). Usando lógica simple.";
-    }
+  const saludo = [
+    `He analizado <strong>${rawWord}</strong>. Aquí está mi veredicto:`,
+    `Para <strong>${rawWord}</strong>, esta es la mejor interpretación lógica:`,
+    `Basado en las reglas gramaticales, <strong>${rawWord}</strong> significa esto:`
+  ];
+  const fraseAleatoria = saludo[Math.floor(Math.random() * saludo.length)];
 
-    const { indice, explicacion } =
-      elegirDefinicionConExplicacion(definiciones, contexto);
-    indiceElegido = indice;
+  agregarMensaje(`${fraseAleatoria}<br>${htmlTarjetas}<br>¿Estás de acuerdo con mi elección?`, "bot");
+}
 
-    const partes = [];
-    if (explicacion.exactas.length) {
-      partes.push("Coincidencias exactas: " + explicacion.exactas.join(", "));
-    }
-    if (explicacion.sinonimos.length) {
-      partes.push(
-        "Sinónimos: " +
-          explicacion.sinonimos
-            .map((s) => s.coincidencia + "→" + s.definicion)
-            .join(", ")
-      );
-    }
+// Helper para dormir (por si no estaba definido)
+const dormir = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    if (partes.length) {
-      htmlExp = `
-        <hr>
-        <p style="font-size:0.9em;">
-          <strong>Lógica simple:</strong> ${partes.join(" | ")}</p>`;
-    }
-  }
-
-  // Pintamos TODAS las acepciones, destacando la elegida
-  const htmlDefs = definiciones
-    .map(
-      (d, i) =>
-        `<p${
-          i === indiceElegido
-            ? ' style="color:blue; font-weight:bold; border-left:3px solid blue; padding-left:5px;"'
-            : ""
-        }>${d}</p>`
-    )
-    .join("");
-
-  panel.innerHTML = `
-    <h2>${rawWord}
-      <small style="font-size:0.5em; color:grey;">(${clave})</small>
-    </h2>
-    ${htmlDefs}
-    ${htmlExp}
-  `;
-  }
 
 /* -------------------------------------
    INICIO
