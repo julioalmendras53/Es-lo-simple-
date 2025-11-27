@@ -2,305 +2,1341 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Libro + Razonador</title>
+  <title>Libro + Diccionario</title>
 
   <style>
-    body { font-family: Arial, sans-serif; margin: 1rem; background-color: #fff; }
-    
-    /* Layout Responsive */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 1rem;
+      display: flex;
+      gap: 1.5rem;
+    }
+
     #contenedor {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      gap: 1rem;
+      gap: 1.5rem;
       width: 100%;
-      height: 90vh;
     }
 
-    h1 { grid-column: 1 / -1; margin: 0 0 10px 0; font-size: 1.5rem; text-align: center; }
-
-    /* Libro */
     #libro {
-      border: 2px solid #007bff;
+      line-height: 1.6;
+      text-align: justify;
+      border: 1px solid #ccc;
       padding: 1rem;
       border-radius: 8px;
+      max-height: 80vh;
       overflow-y: auto;
-      background-color: #fafafa;
-      line-height: 1.8;
-      text-align: justify;
-      font-size: 1.1rem;
+    }
+
+    #definicion {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 8px;
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
     .palabra { cursor: pointer; }
-    .palabra:hover { background-color: #b3d7ff; color: #000; border-radius: 3px; }
-    .palabra.resaltada { background-color: yellow; font-weight: bold; }
+    .palabra:hover { text-decoration: underline; }
 
-    /* Chat */
-    #chat-wrapper {
-      display: flex;
-      flex-direction: column;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #f9f9f9;
-      height: 100%;
-      overflow: hidden;
+    .palabra.resaltada {
+      color: blue;
+      font-weight: bold;
     }
 
-    #chat-header { background: #eee; padding: 10px; font-weight: bold; border-bottom: 1px solid #ddd; }
-    
-    #chat-history {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    h1 { grid-column: 1 / -1; margin-top: 0; }
 
-    .mensaje { padding: 8px 12px; border-radius: 10px; max-width: 90%; font-size: 0.95rem; }
-    .msg-bot { align-self: flex-start; background: #fff; border: 1px solid #ddd; }
-    .msg-user { align-self: flex-end; background: #007bff; color: white; }
-    .msg-system { align-self: center; color: #888; font-style: italic; font-size: 0.8rem; }
-
-    #chat-input-area { display: flex; padding: 10px; border-top: 1px solid #ddd; background: white; }
-    #chat-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; margin-right: 5px; }
-    #chat-send { padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 20px; font-weight: bold; }
-
-    /* Tarjetas */
-    .tarjeta { border: 1px solid #ddd; padding: 8px; margin-top: 5px; border-radius: 5px; background: white; border-left: 4px solid #ccc; }
-    .ganadora { border-left-color: #28a745; background: #e8f5e9; }
-
-    /* MÓVIL */
-    @media (max-width: 768px) {
-      #contenedor { display: flex; flex-direction: column; height: auto; }
-      #libro { max-height: 40vh; min-height: 200px; }
-      #chat-wrapper { height: 50vh; min-height: 300px; }
+    .sin-def {
+      color: #999;
+      font-style: italic;
     }
   </style>
 </head>
 
 <body>
-
 <div id="contenedor">
+
   <h1>Libro del Infinito</h1>
-  
-  <div id="libro">
-    Cargando libro... (Si esto no cambia en 2 segundos, el script falló)
-  </div>
 
-  <div id="chat-wrapper">
-    <div id="chat-header">🧠 El Razonador</div>
-    <div id="chat-history">
-      <div class="mensaje msg-bot">Hola. Toca una palabra del texto.</div>
-    </div>
-    <div id="chat-input-area">
-      <input type="text" id="chat-input" placeholder="...">
-      <button id="chat-send" onclick="enviarUser()">Enviar</button>
-    </div>
-  </div>
-</div>
+  <!-- TEXTO DEL LIBRO -->
+  <pre id="texto-libro" style="display:none;">
 
-<pre id="texto-fuente" style="display:none;">
-1 es aterrador 16857 El infinito ha dado un plus a la materia. 16858 El infinito es aterrador como el 1. 16859 No se anda con simplezas éste 1. 16860 Si acumularamos los teoremas que tienen por fundamento en el 1, estaríamos hasta los 80 años hablando,  sin vejez ya. 16861 El infinito quiere alzarse con el trofeo del 1. 16862 Sin un contexto, el 1, tiene poco que decir. 16863 El infinito pertenece a un conjunto hiperreal. 16864 Si contamos las veces que infinito ha dado algo a este servidor, no bastaría para comenzar. 16865 El infinito tiene a 1 como un posible resultado de múltiples casos. 16866 Para mostrar un botón. 16867 La raíz infinita de infinito es tendente al 1. 16868 ¿Quién sacó este naipe del codo? 16869 Parece que las operaciones para llegar a ese resultado no son complejas. 16870 Sin complejidad, cero tiene aún más sentido. 16871 El infinito se desglosó en infinito e infinita para llegar a 1. 16872 El infinito es en un desglose 1 sólo sin más añadidos. 
-16873 Parece que añadir indefinidamente buscase un fin. 16874 Parece que añadir 1 al 1 no montara mucho a ojos del infinito. 
-16875 Cuando se llega a esos entornos tan brutales, no tiene caso el 1. 16876 El infinito es 1 y el primero. 16877 Ya esbocé que el 1 es aterrador y partir mi escrito máximo, debe justificar sus decisiones. 16878 Por eso es que en el juego del go, Alfago, demoró de 30 a 40 segundos en responder a la piedra primera acotada por Lee Sedol. 16878 bis La inteligencia dice que para asegurar el fuseki es necesario casi demorar una jugada, que es la más importante.  16879 Que pasara un minuto, también podría ser. 16880 El 1 es tan aterrador, porque no hay destino en la tierra más todavía. 16881 El infinito es vertebrador de los dígitos nombrados. 16882 El infinito es siempre algo que no tiene fin. 16883 Toda la definición de infinito puede ser puesta en lenguaje matemático. 16884 No hay nada que la matemática y sus matemáticos desconozcan del infinito, aún así insisten en que no tiene sentido, esas operaciones que no gustan. 
-16885 Sin el 1, no habría origen. 16886 Es primero el 1 entre 0, el que pone la polémica en la mesa. 16887 Es más todavía, el 1 es origen de todo número, incluyendo el infinito, sí lo creo. 16888 El infinito sigue siendo la vértebra en este universo máximo. 16889 Conseguir el 1 debiera ser el principal objetivo del infinito, pero descreo de ello pronto. 16890 En un plano complejo el 1 es más especial, porque se le añaden cosas, sin dejar de ser 1. 16891 El infinito es matemáticamente perfecto, ya que de matemáticamente puede ser, ya que, por bis, infinito no es existente sin la matemática, y lo de perfecto es claro que el matemático, puede pasar a su dialecto toda la definición, con alguna reticencia. 16892 El infinito me exige a buscar en 1, algo más allá del número meramente. 16893 Muy obtuso seré si llego con que el 1 no es real, en el caso de que cero es denominador. 16894 Algo de verdad tendrá que cero no puede dividir a ningún/algún número. 16895 O quizá esté hablando el miedo del matemático, con decir que no se puede. 16896 Yo prefiero creer en el miedo, que es más lógico ante algo extraño. 16897 El 1 es origen de Google, así como es origen del número de Graham. 16898 Yo no quiero creer eso. 16899 Graham ha desquiciado el 1 con apartarse del sistema numérico decimal. 16900 En infinito 1 es el origen debido. 16901 Pero 1 tiene un poder en multiplicarse con números alteraandolos mínimamente. 16902 El infinito es una ecuación. 16903 Nada en la matemática es cero. 16904 La nada aquí no está. 16905 Si nos vamos a referir a cero, declararemos que es algo por convención. 16906 De sumar 1 a 1 resultó la √2. 16907 ¿Cómo es eso? 16907 Muy pocos recursos se hizo Hipaso de Metaponto, al sumar, simple, a 1 con 1. 16908 El infinito tiene un listado de números que siguen la ley del infinito. Esto es ñañ.16909 El infinito tiene a √2 como su primer elemento. 16910 De ahí saltamos a los números primos bajo raíz. 16911 Todo número primo bajo raíz, deberá ser irracional. 
-16912 Tratar de aplicar razón a los números primos, quizá esté errado. 16913 El infinito es un número, creo. 16914 El infinito es aterrador, misma cosa pasa con el 1. 16915 Parece que a la usanza de infinito, sumar 1 es algo ridículamente especial. 16916 (1 +1) y bajo raíz se sale de razón. 16917 El 1 no es aterrador, porque es nuestro aliado. 16918 Perder la razón no es algo especial. 16919 Más bien ser razón es lo especial. 16920 Leeré este escrito una y otra vez, porque quiero que tenga una coherencia de 666. 16921 Con que la Iglesias referencie a 666 como el número bestial bastará. 16922 El infinito es un resumen de la existencia. 16923 Partimos con los números de contar. 16924 Me miro la mano con 5 dedos y me pregunto, ¿habrá una correspondencia en la naturaleza? 16925 El infinito se hace desde un 1. 16926 Los matemáticos nos dicen que el universo se hizo del vacío. 16927 Yo me opongo fuertemente a ello. 16928 Antes de la palabra divina, había un ser planeando en el aire del horizonte. 16929 Como abarcando todo. 16930 Quizá fue el infinito transmutado en una tierra preexistente. 16931 Un ser era el que planeaba. 16932 Es común esa idea de que los seres
-podrían llegar a volar, por alguna potencia salida de sí mismos. 16933 ¿Qué intención tenía Dios en planear 1 en la tierra preexistente? 16934 Dios fue singular en ese momento, y siguió siendo singular todo el tiempo, hasta el futuro mío. 16935 Al menos lleguemos a la frase 17 mil antes de pasar al aterrador 2. 16936 El infinito es un elemento elemental. 16937 Nada avanzaré con eso. 16938 Sin 1, no tendríamos el altisonante universo. 16939 En el cosmos nada hay de unidad, y ello es extraño, ya que 1 está en todo número. 16940 Para empezar el 1 y el número son los divisores de los números primos, excluyendo todo otro foráneo como un número compuesto. 16941 El infinito prefirió negar, antes que decir que su infinito era de 1. 16942 Pudo decir que 1 era su fin, sin embargo, los datos no revelan eso. 16943 Tanto es la definición del infinito que llega al número 3 y 2. 16944 Tres negaciones. 16945 El infinito no tiene 3 fines, sino dos. 16946 Este menosprecio del 1 es característico del carácter de no unificar las cosas primero. 16947 El 1 es aterrador, porque no hay algo bajo el sol que guarde más secretos que el triste número 1. 16948 Su secretismo es pavoroso. 16949 No hay otro objetivo que hacerte ver que infinito es un número real. 16950 Y que lo irreal es el 1. 16951 Sin 1, no tendríamos a 2 ni √2 . 16952 Sumar 1 entre números del 0 al 10, tiene un recorrido asombrosamente grande. 
-16953 El 1 tiene algo de grandeza en permitir a los humanos buscar unidad. 16954 El infinito es gestor del 1. 16955 Casi que el primero fuera por infinito. 16956 El infinito es un ser que continuamente está amando. 16957 El genio de este escrito es presentar argumentos de la numeridad del infinito y nada más. 16958 El infinito es aterrador como lo es el 1. 16959 Yo sospecho más en 1 que en cero, como la otra cara de la moneda, principiada por infinito. 16960 No hay en cero lo que hay en 1. 
-16961 Sin unidad, no tiene sentido hablar del mundo. 16962 Sin unidad, no hay universo, quitando de en medio al cosmos. 16963 Porque el humano todo el tiempo vaga y no va a  los asuntos importantes, es que tenemos universo y no varios. 16964 Sin unidad, no habría ilusión en las lenguas, de hacerlas más grandes. 16965 El 1 es la solución de innumerables ecuaciones de segundo y tercer grado. 16966 Es mucho el atractivo de poner en 1 nuestra esperanza. 16967 Cuando hallo al 1 en la ecuación me siento feliz que sea tan simple y satisfacción hacerlo. 16968 El infinito es simple, porque la definimos necesariamente con ser. 16969 ¿Cuál es el problema con limitar las definiciones a 1 palabra? 16970 El infinito es un kit que viene con las reglas de uso. 16971 El infinito es matemáticamente loco. 16972 Yo en un momento fui unidad, cuando me convertí en otra persona, fui transitando hacia el 2. 16973 No entraré a tocar el 2 ni √2 menos. 16974 El infinito halla un nuevo mundo en esta frase. 16975 Si tuviéramos, que creo encima, un número asombrosamente largo, con coma decimal y un abismo de ceros, ¿esperaríamos terminar en un cero a favor de toda lógica o hubiere más tarde un 1 final? 16976 ¿De dónde salió ese 1? 16977 ¿Quién me permite imaginar mi cuento? 16978 A partir de aquí, ¿habrá una secuencia infinita de preguntas? 16979 ¿O se terminará todo en una forma caótica? 16980 Parece que ese 1 testarudo final o finalizador testarudo parte del cero. 16981 Nadie puede tener la hazaña de hacer de cero algo. 16982 Excepto un ser muy especial como Cristo, él de migajas creó hogazas. 16983 Ya con ese precedente en Cristo, tenemos como justificar que se cree un 1 final. 16984 Nadie apostaría a sacar el cero de su sitio final. 16985 Pero el azar es raro. Lo sé. 16986 Suceden cosas increíbles todo el tiempo. 16987 Surgió la vida que era ridículamente improbable. 16988 Hay un ser escribiendo para ti. 16989 Con amor siempre. 16990 El infinito da esas preguntas que nos dejan boquiabiertos por su asombrosa magia. 16991 Después de un millón de ceros, ¿quién no se cansaría de la monotonía? 16992 Raíz de 1 es 1. 16993 Raíz cúbica de 1 es 1. 16994 Y ya la racha es imparable. 16995 Raíz infinita de 1 es 1. 16996 ¿Qué significa esto? 16997 Si raíz infinita de 1 es 1 e infinita de infinito es tendiente de 1, es claro que alguien miente. 16997 bis La clave está en que uno tiende al 1  y el otro es 1.   16998 Ese movimiento de 1 es imposible. 16999 No puede ser 1, porque infinito lo impide. 17000 El infinito está lleno de preguntas sin contestación. 
+ 1 es aterrador 16857 El infinito ha dado un plus a la materia. 16858 El infinito es aterrador como el 1. 16859 No se anda con simplezas éste 1. 16860 Si acumularamos los teoremas que tienen por fundamento en el 1, estaríamos hasta los 80 años hablando,  sin vejez ya. 16861 El infinito quiere alzarse con el trofeo del 1. 16862 Sin un contexto, el 1, tiene poco que decir. 16863 El infinito pertenece a un conjunto hiperreal. 16864 Si contamos las veces que infinito ha dado algo a este servidor, no bastaría para comenzar. 16865 El infinito tiene a 1 como un posible resultado de múltiples casos. 16866 Para mostrar un botón. 16867 La raíz infinita de infinito es tendente al 1. 16868 ¿Quién sacó este naipe del codo? 16869 Parece que las operaciones para llegar a ese resultado no son complejas. 16870 Sin complejidad, cero tiene aún más sentido. 16871 El infinito se desglosó en infinito e infinita para llegar a 1. 16872 El infinito es en un desglose 1 sólo sin más añadidos. 
+    16873 Parece que añadir indefinidamente buscase un fin. 16874 Parece que añadir 1 al 1 no montara mucho a ojos del infinito. 
+    16875 Cuando se llega a esos entornos tan brutales, no tiene caso el 1. 16876 El infinito es 1 y el primero. 16877 Ya esbocé que el 1 es aterrador y partir mi escrito máximo, debe justificar sus decisiones. 16878 Por eso es que en el juego del go, Alfago, demoró de 30 a 40 segundos en responder a la piedra primera acotada por Lee Sedol. 16878 bis La inteligencia dice que para asegurar el fuseki es necesario casi demorar una jugada, que es la más importante.  16879 Que pasara un minuto, también podría ser. 16880 El 1 es tan aterrador, porque no hay destino en la tierra más todavía. 16881 El infinito es vertebrador de los dígitos nombrados. 16882 El infinito es siempre algo que no tiene fin. 16883 Toda la definición de infinito puede ser puesta en lenguaje matemático. 16884 No hay nada que la matemática y sus matemáticos desconozcan del infinito, aún así insisten en que no tiene sentido, esas operaciones que no gustan. 
+    16885 Sin el 1, no habría origen. 16886 Es primero el 1 entre 0, el que pone la polémica en la mesa. 16887 Es más todavía, el 1 es origen de todo número, incluyendo el infinito, sí lo creo. 16888 El infinito sigue siendo la vértebra en este universo máximo. 16889 Conseguir el 1 debiera ser el principal objetivo del infinito, pero descreo de ello pronto. 16890 En un plano complejo el 1 es más especial, porque se le añaden cosas, sin dejar de ser 1. 16891 El infinito es matemáticamente perfecto, ya que de matemáticamente puede ser, ya que, por bis, infinito no es existente sin la matemática, y lo de perfecto es claro que el matemático, puede pasar a su dialecto toda la definición, con alguna reticencia. 16892 El infinito me exige a buscar en 1, algo más allá del número meramente. 16893 Muy obtuso seré si llego con que el 1 no es real, en el caso de que cero es denominador. 16894 Algo de verdad tendrá que cero no puede dividir a ningún/algún número. 16895 O quizá esté hablando el miedo del matemático, con decir que no se puede. 16896 Yo prefiero creer en el miedo, que es más lógico ante algo extraño. 16897 El 1 es origen de Google, así como es origen del número de Graham. 16898 Yo no quiero creer eso. 16899 Graham ha desquiciado el 1 con apartarse del sistema numérico decimal. 16900 En infinito 1 es el origen debido. 16901 Pero 1 tiene un poder en multiplicarse con números alteraandolos mínimamente. 16902 El infinito es una ecuación. 16903 Nada en la matemática es cero. 16904 La nada aquí no está. 16905 Si nos vamos a referir a cero, declararemos que es algo por convención. 16906 De sumar 1 a 1 resultó la √2. 16907 ¿Cómo es eso? 16907 Muy pocos recursos se hizo Hipaso de Metaponto, al sumar, simple, a 1 con 1. 16908 El infinito tiene un listado de números que siguen la ley del infinito. Esto es ñañ.16909 El infinito tiene a √2 como su primer elemento. 16910 De ahí saltamos a los números primos bajo raíz. 16911 Todo número primo bajo raíz, deberá ser irracional. 
+    16912 Tratar de aplicar razón a los números primos, quizá esté errado. 16913 El infinito es un número, creo. 16914 El infinito es aterrador, misma cosa pasa con el 1. 16915 Parece que a la usanza de infinito, sumar 1 es algo ridículamente especial. 16916 (1 +1) y bajo raíz se sale de razón. 16917 El 1 no es aterrador, porque es nuestro aliado. 16918 Perder la razón no es algo especial. 16919 Más bien ser razón es lo especial. 16920 Leeré este escrito una y otra vez, porque quiero que tenga una coherencia de 666. 16921 Con que la Iglesias referencie a 666 como el número bestial bastará. 16922 El infinito es un resumen de la existencia. 16923 Partimos con los números de contar. 16924 Me miro la mano con 5 dedos y me pregunto, ¿habrá una correspondencia en la naturaleza? 16925 El infinito se hace desde un 1. 16926 Los matemáticos nos dicen que el universo se hizo del vacío. 16927 Yo me opongo fuertemente a ello. 16928 Antes de la palabra divina, había un ser planeando en el aire del horizonte. 16929 Como abarcando todo. 16930 Quizá fue el infinito transmutado en una tierra preexistente. 16931 Un ser era el que planeaba. 16932 Es común esa idea de que los seres
+    podrían llegar a volar, por alguna potencia salida de sí mismos. 16933 ¿Qué intención tenía Dios en planear 1 en la tierra preexistente? 16934 Dios fue singular en ese momento, y siguió siendo singular todo el tiempo, hasta el futuro mío. 16935 Al menos lleguemos a la frase 17 mil antes de pasar al aterrador 2. 16936 El infinito es un elemento elemental. 16937 Nada avanzaré con eso. 16938 Sin 1, no tendríamos el altisonante universo. 16939 En el cosmos nada hay de unidad, y ello es extraño, ya que 1 está en todo número. 16940 Para empezar el 1 y el número son los divisores de los números primos, excluyendo todo otro foráneo como un número compuesto. 16941 El infinito prefirió negar, antes que decir que su infinito era de 1. 16942 Pudo decir que 1 era su fin, sin embargo, los datos no revelan eso. 16943 Tanto es la definición del infinito que llega al número 3 y 2. 16944 Tres negaciones. 16945 El infinito no tiene 3 fines, sino dos. 16946 Este menosprecio del 1 es característico del carácter de no unificar las cosas primero. 16947 El 1 es aterrador, porque no hay algo bajo el sol que guarde más secretos que el triste número 1. 16948 Su secretismo es pavoroso. 16949 No hay otro objetivo que hacerte ver que infinito es un número real. 16950 Y que lo irreal es el 1. 16951 Sin 1, no tendríamos a 2 ni √2 . 16952 Sumar 1 entre números del 0 al 10, tiene un recorrido asombrosamente grande. 
+    16953 El 1 tiene algo de grandeza en permitir a los humanos buscar unidad. 16954 El infinito es gestor del 1. 16955 Casi que el primero fuera por infinito. 16956 El infinito es un ser que continuamente está amando. 16957 El genio de este escrito es presentar argumentos de la numeridad del infinito y nada más. 16958 El infinito es aterrador como lo es el 1. 16959 Yo sospecho más en 1 que en cero, como la otra cara de la moneda, principiada por infinito. 16960 No hay en cero lo que hay en 1. 
+    16961 Sin unidad, no tiene sentido hablar del mundo. 16962 Sin unidad, no hay universo, quitando de en medio al cosmos. 16963 Porque el humano todo el tiempo vaga y no va a  los asuntos importantes, es que tenemos universo y no varios. 16964 Sin unidad, no habría ilusión en las lenguas, de hacerlas más grandes. 16965 El 1 es la solución de innumerables ecuaciones de segundo y tercer grado. 16966 Es mucho el atractivo de poner en 1 nuestra esperanza. 16967 Cuando hallo al 1 en la ecuación me siento feliz que sea tan simple y satisfacción hacerlo. 16968 El infinito es simple, porque la definimos necesariamente con ser. 16969 ¿Cuál es el problema con limitar las definiciones a 1 palabra? 16970 El infinito es un kit que viene con las reglas de uso. 16971 El infinito es matemáticamente loco. 16972 Yo en un momento fui unidad, cuando me convertí en otra persona, fui transitando hacia el 2. 16973 No entraré a tocar el 2 ni √2 menos. 16974 El infinito halla un nuevo mundo en esta frase. 16975 Si tuviéramos, que creo encima, un número asombrosamente largo, con coma decimal y un abismo de ceros, ¿esperaríamos terminar en un cero a favor de toda lógica o hubiere más tarde un 1 final? 16976 ¿De dónde salió ese 1? 16977 ¿Quién me permite imaginar mi cuento? 16978 A partir de aquí, ¿habrá una secuencia infinita de preguntas? 16979 ¿O se terminará todo en una forma caótica? 16980 Parece que ese 1 testarudo final o finalizador testarudo parte del cero. 16981 Nadie puede tener la hazaña de hacer de cero algo. 16982 Excepto un ser muy especial como Cristo, él de migajas creó hogazas. 16983 Ya con ese precedente en Cristo, tenemos como justificar que se cree un 1 final. 16984 Nadie apostaría a sacar el cero de su sitio final. 16985 Pero el azar es raro. Lo sé. 16986 Suceden cosas increíbles todo el tiempo. 16987 Surgió la vida que era ridículamente improbable. 16988 Hay un ser escribiendo para ti. 16989 Con amor siempre. 16990 El infinito da esas preguntas que nos dejan boquiabiertos por su asombrosa magia. 16991 Después de un millón de ceros, ¿quién no se cansaría de la monotonía? 16992 Raíz de 1 es 1. 16993 Raíz cúbica de 1 es 1. 16994 Y ya la racha es imparable. 16995 Raíz infinita de 1 es 1. 16996 ¿Qué significa esto? 16997 Si raíz infinita de 1 es 1 e infinita de infinito es tendiente de 1, es claro que alguien miente. 16997 bis La clave está en que uno tiende al 1  y el otro es 1.   16998 Ese movimiento de 1 es imposible. 16999 No puede ser 1, porque infinito lo impide. 17000 El infinito está lleno de preguntas sin contestación. 
+
 17001 El infinito puede continuar sin límites, andando en esta metáfora. 17002 El 1 sumado al mismo, produce 2 elementos. 17003 Ningún número es tan querendón del 1 como 2. 17004 Si no acabamos con el 1, menos podremos acabar con los siguientes números. 17005 El 1 es algo interesante, ya que representa la cosa. 17006 ¿Es el infinito cruel con el 1, al no tomarlo en cuenta? 17007 Podemos caer en un abismo con el 1 tan solo partiendo. 17008 No hay número más poderoso que 1. 17009 Me obligo a extender grandemente el análisis de 1. 17010 El 1 es una cosa simple. 17011 Sin el 1, no habría origen. 17012 El 6 tiene como origen el 3 y el 2. 17013 Porque 3×2 es 6. 17014 Nada impide que 3×2×1 sea la definitiva. 17015 A la vista salta que el número, no tiene como origen un número más alto, sino todo lo contrario. 17016 El infinito juega con 1 y termina mal usado. 17017 Es el 1 el juguete de infinito, todas las veces. 17018 ¿A qué se debe esa inquina del infinito por 1 y 0? 17019 La posición en infinito deja de tener sentido, así el cero que significa número, no tiene cabida en el número final. 
-17020 El infinito es numérico por cero razones. 17021 De 10 saco 0.  17022 Todo es muy extraño por tener fin. 17023 Se supone que el todopoderoso lo podía todo. 17024 Pero esto es un engaño.  17025 El infinito como un niño ordenando números en su cunita, es la máxima expresión. 17026 El infinito es un número, porque también es un límite. 17027 El límite puede decidirse a ser número, solamente si maquinamos las cosas. 17028 El infinito da continuidad a algo. 17029 Sin ver lo previamente dicho, estoy exhalando palabras. 17030 Sin ver la historia, es que hago historia. 17031 Al infinito no pueden confiar los límites. 17032 Ojo a todo por infinito. 17033 Nada o cero puede multiplicar a alguien, sin cancelarse  en el proceso. 17034 Hay más y es que cero produce con alguien un todo. 17035 Cero merece tanto espacio como el 1. 17036 Todo por infinito no puede ser. 17037 Daría algo extrañamente distinto a cero. 17038 No puedo mover en la ecuación a cero, como si no hubiera mañana. 17039 El movimiento del caballo en ajedrez es parecido a lo que quiero explicar. 17039 Incluso para lo absoluto como el 1 mezclado traicioneramente con infinito, algo no puede ser. 17040 El infinito es un final no esperado. 17041 Quisiéramos que tras infinito, hubiera más materia o espíritu andando. 17042 Del infinito demostraré que es verdaderamente número. 17043 Pero para ello necesito empezar con el 1. 17044 Sin monoteísmo, seríamos seres muy desgraciados. 17045 Del 1 podemos observar infinidad de cosas. 17046 Entre 1 y 0 está todo el asunto. 17047 Quizá no pase del cero en este presente volumen. 17048 Hay tanto por hablar de estos dos especiales números que temo, por tanto. 17049 El infinito se ordena en la ecuación a una forma de enlazarse. 17050 No puede haber infinito×1.  17051 De fracción viene el impedimento. 17052 Bien. 17053 El infinito tiene por gusto basar sus reglas en el 1. 17054 ¿Quién desglosaraa más que infinito? 17055 Sin el 1, la nada, tendría más diabólico sentido. 17056 Es en el 1 en que apoyamos nuestra fe. 17057 De un monoteísmo feo, heredamos a Dios. 17058 Llega el momento de preguntar. 17059 Muchas cosas han robado mi imaginación en estos días. 17060 Ésta es una. 17061 En la hipótesis de Riemann tenemos una función z que tiene un polo simple en s=1. 17062 Sabemos con mucha ciencia que ese polo simple diverge. 17063 Eso significa que se dispara con lentitud hacia el infinito. 17064 Es como si dispararas una sandía con una honda o un planeta con una cuchara, algo totalmente lento 17065 Con cariño te traeré a qué número se eleva la cuenta con 10 millones y 100 millones, maguer eso signifique sufrimiento para la máquina. 17066 Mejor lo hice con un gúgol de sumatorias. 17067 Para 10 millones dio 16,7.  17068 Para un gúgol dio 230,84. 17068 Esta lenta sumatoria es debido a que con el polo simple de s=1 se suma 1 + ½ +⅓ +¼ +⅕ +⅙ + 1/7 + ⅛… etc. 17069 Como ves el polo simple se dispara al infinito, con 1 gúgol dio 230 simple. 17070 Temo meterme en la tratativas de esta hipótesis. 17071 Ya que es muy complejo. 17072 Existe un rumor que dice que la hipótesis de Riemann es clarificadora de los números primos. 17073 No hago sin razón esto. 17074 Primero botemos una frase de infinito. 17075 El infinito de Riemann en el polo simple es muy lento. 17076 Nadie sabe por qué se llama polo simple. 17077 ¿Acaso es un punto? 17078 Este s=1 es un infinito igualando a otro. 17079 Por un lado tendríamos un número que se ingresa y otro que sale, y si necesitamos del número infinito para llegar a infinito, no sé de qué hablamos. 17080 No hago esto sin razón. 17081 Los números primos son los naturales mayores a 1, que, pueden dividirse por 1 y por él mismo o sí mismo. 17082 Para que sea 1 la factorización, se rechazan los enteros negativos juntando cero. 17083 La máquina me explicó esto y quedé satisfecho. 17084 Te traigo en breve esto. 
+    17020 El infinito es numérico por cero razones. 17021 De 10 saco 0.  17022 Todo es muy extraño por tener fin. 17023 Se supone que el todopoderoso lo podía todo. 17024 Pero esto es un engaño.  17025 El infinito como un niño ordenando números en su cunita, es la máxima expresión. 17026 El infinito es un número, porque también es un límite. 17027 El límite puede decidirse a ser número, solamente si maquinamos las cosas. 17028 El infinito da continuidad a algo. 17029 Sin ver lo previamente dicho, estoy exhalando palabras. 17030 Sin ver la historia, es que hago historia. 17031 Al infinito no pueden confiar los límites. 17032 Ojo a todo por infinito. 17033 Nada o cero puede multiplicar a alguien, sin cancelarse  en el proceso. 17034 Hay más y es que cero produce con alguien un todo. 17035 Cero merece tanto espacio como el 1. 17036 Todo por infinito no puede ser. 17037 Daría algo extrañamente distinto a cero. 17038 No puedo mover en la ecuación a cero, como si no hubiera mañana. 17039 El movimiento del caballo en ajedrez es parecido a lo que quiero explicar. 17039 Incluso para lo absoluto como el 1 mezclado traicioneramente con infinito, algo no puede ser. 17040 El infinito es un final no esperado. 17041 Quisiéramos que tras infinito, hubiera más materia o espíritu andando. 17042 Del infinito demostraré que es verdaderamente número. 17043 Pero para ello necesito empezar con el 1. 17044 Sin monoteísmo, seríamos seres muy desgraciados. 17045 Del 1 podemos observar infinidad de cosas. 17046 Entre 1 y 0 está todo el asunto. 17047 Quizá no pase del cero en este presente volumen. 17048 Hay tanto por hablar de estos dos especiales números que temo, por tanto. 17049 El infinito se ordena en la ecuación a una forma de enlazarse. 17050 No puede haber infinito×1.  17051 De fracción viene el impedimento. 17052 Bien. 17053 El infinito tiene por gusto basar sus reglas en el 1. 17054 ¿Quién desglosaraa más que infinito? 17055 Sin el 1, la nada, tendría más diabólico sentido. 17056 Es en el 1 en que apoyamos nuestra fe. 17057 De un monoteísmo feo, heredamos a Dios. 17058 Llega el momento de preguntar. 17059 Muchas cosas han robado mi imaginación en estos días. 17060 Ésta es una. 17061 En la hipótesis de Riemann tenemos una función z que tiene un polo simple en s=1. 17062 Sabemos con mucha ciencia que ese polo simple diverge. 17063 Eso significa que se dispara con lentitud hacia el infinito. 17064 Es como si dispararas una sandía con una honda o un planeta con una cuchara, algo totalmente lento 17065 Con cariño te traeré a qué número se eleva la cuenta con 10 millones y 100 millones, maguer eso signifique sufrimiento para la máquina. 17066 Mejor lo hice con un gúgol de sumatorias. 17067 Para 10 millones dio 16,7.  17068 Para un gúgol dio 230,84. 17068 Esta lenta sumatoria es debido a que con el polo simple de s=1 se suma 1 + ½ +⅓ +¼ +⅕ +⅙ + 1/7 + ⅛… etc. 17069 Como ves el polo simple se dispara al infinito, con 1 gúgol dio 230 simple. 17070 Temo meterme en la tratativas de esta hipótesis. 17071 Ya que es muy complejo. 17072 Existe un rumor que dice que la hipótesis de Riemann es clarificadora de los números primos. 17073 No hago sin razón esto. 17074 Primero botemos una frase de infinito. 17075 El infinito de Riemann en el polo simple es muy lento. 17076 Nadie sabe por qué se llama polo simple. 17077 ¿Acaso es un punto? 17078 Este s=1 es un infinito igualando a otro. 17079 Por un lado tendríamos un número que se ingresa y otro que sale, y si necesitamos del número infinito para llegar a infinito, no sé de qué hablamos. 17080 No hago esto sin razón. 17081 Los números primos son los naturales mayores a 1, que, pueden dividirse por 1 y por él mismo o sí mismo. 17082 Para que sea 1 la factorización, se rechazan los enteros negativos juntando cero. 17083 La máquina me explicó esto y quedé satisfecho. 17084 Te traigo en breve esto. 
 30=(-2)×3 ×(-5)
 30=2×3×5 7085 Con números negativos hace que la factorización no sea única. 17086 Así que por conveniencia, se fijó a los primos como sólo los naturales. 17087 ¿Qué hay del infinito? 17088 No hay una factorización del infinito, por lo que, el infinito se queda solo en un puede ser primo. 17089 El 1 no para de asombrarnos, porque hay más. 17090 El primo 2 y 3 tienen de diferencia 1. 17091 Y para su sorpresa, son los dos únicos primos que tienen una diferencia de 1 en toda la recta de primos. 17092 Más allá la diferencia de 1 se pierde totalmente. 17093 El 1 no es primo cómo sospechamos que infinito sea impar y primo, por razones no del todo honestas. 17094 Si el infinito es impar, habría una conexión de Noes que sería interesante ver. 17095 Con un impar coronando, sería la muerte del par. 17096 El infinito es un número por la transfusión de verdades, desde la propia matemática hacia la gente. 17097 Sin el 1, la matemática estaría inexistente aún en el siglo XXI. 17098 Son innumerables las ocasiones en que 1, ha venido a definir las cosas. 17099 Basta con echar ojo a los números primos y veremos que si se dividen por 1, siguen siendo ellos. 17100 El infinito es un límite al que se encamina este socio.
-</pre>
+
+
+  </pre>
+
+  <div id="libro"></div>
+
+  <div id="definicion">
+    <h2>Definición</h2>
+    <p>Haz clic en una palabra del libro para ver su definición.</p>
+  </div>
+
+</div>
+</div>  <!-- cierre del contenedor -->
+
+
+
+<div id="resumen" style="margin-top:20px;"></div>
 
 <script>
-// 1. FORZAR ESPERA A QUE CARGUE LA PÁGINA
-window.onload = function() {
-    try {
-        console.log("Iniciando aplicación...");
-        prepararLibro();
-    } catch(e) {
-        alert("Error crítico iniciando: " + e.message);
-    }
-};
-
-// --- LOGICA ---
-
-// Normalización
-function norm(str) { 
-  if(!str) return "";
-  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9ñ]/gi, ""); 
+    
+/* -------------------------------------
+   FUNCIONES DE NORMALIZACIÓN
+------------------------------------- */
+function normalizarPalabra(raw = "") {
+  return raw
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9ñ]/gi, "");
 }
 
-// Diccionario (Simplificado para evitar errores de sintaxis)
+/* -------------------------------------
+   DICCIONARIO COMPLETO (FUNCIONAL)
+------------------------------------- */
 const diccionario = {
-  infinito: { definicion: "Que no tiene fin o término." },
-  aterrador: { definicion: "Que causa terror o mucho miedo." },
-  plus: { definicion: "Algo extra o añadido." },
-  materia: { definicion: "Sustancia que forma los cuerpos físicos." },
-  simplezas: { definicion: "Cosas simples, tonterías o de poca importancia." },
-  teorema: { definicion: "Proposición demostrable mediante reglas lógicas." },
-  fundamento: { definicion: "Base o cimiento sobre el que se apoya algo." },
-  vejez: { definicion: "Última etapa de la vida." },
-  trofeo: { definicion: "Objeto que se da en señal de victoria." },
-  hiperreal: { definicion: "Más allá de lo real, en matemáticas números que incluyen infinitos." },
-  servidor: { definicion: "Persona que sirve, o computadora que da datos." },
-  raiz: { definicion: "Origen o base. En matemáticas, número que multiplicado da otro." },
-  naipe: { definicion: "Carta de la baraja." },
-  compleja: { definicion: "Difícil, compuesta de varios elementos." },
-  desglose: { definicion: "Separación de las partes de un todo." },
-  brutal: { definicion: "Muy grande, intenso o violento." },
-  decision: { definicion: "Determinación definitiva adoptada en un asunto." },
-  inteligencia: { definicion: "Facultad de la mente de aprender y razonar." },
-  destino: { definicion: "Fuerza desconocida que se cree actúa sobre las personas." },
-  vertebra: { definicion: "Cada hueso de la columna, o pieza central de algo." },
-  matematica: { definicion: "Ciencia de los números y figuras." },
-  origen: { definicion: "Principio, nacimiento o causa de algo." },
-  polemica: { definicion: "Discusión o controversia." },
-  objetivo: { definicion: "Fin o meta a la que se quiere llegar." },
-  perfecto: { definicion: "Que tiene todas las cualidades deseables, sin errores." },
-  dialecto: { definicion: "Variedad de un idioma." },
-  reticencia: { definicion: "Desconfianza o reserva." },
-  obtuso: { definicion: "Tonto o que comprende lentamente. Ángulo mayor a 90 grados." },
-  miedo: { definicion: "Sensación de angustia ante un peligro." },
-  logico: { definicion: "Que sigue las reglas de la razón." },
-  google: { definicion: "Buscador de internet gigante." },
-  graham: { definicion: "Número de Graham, un número inmensamente grande." },
-  decimal: { definicion: "Sistema numérico basado en 10." },
-  ecuacion: { definicion: "Igualdad matemática con incógnitas." },
-  convencion: { definicion: "Acuerdo o norma aceptada por todos." },
-  recurso: { definicion: "Medio para conseguir algo." },
-  primo: { definicion: "Número divisible solo por 1 y por sí mismo." },
-  irracional: { definicion: "Que no tiene razón. En mates, número que no es fracción exacta." },
-  usanza: { definicion: "Modo o costumbre." },
-  aliado: { definicion: "Que está unido con otro para un fin." },
-  coherencia: { definicion: "Relación lógica entre las cosas." },
-  bestial: { definicion: "Brutal, propio de bestias." },
-  existencia: { definicion: "Acto de existir o vivir." },
-  vacio: { definicion: "Falta de contenido físico o mental." },
-  divina: { definicion: "Relacionado con Dios." },
-  horizonte: { definicion: "Línea donde se unen tierra y cielo." },
-  potencia: { definicion: "Capacidad de hacer algo." },
-  singular: { definicion: "Único, solo o extraordinario." },
-  cosmos: { definicion: "El universo como un todo ordenado." },
-  caracter: { definicion: "Conjunto de rasgos de una persona o cosa." },
-  secreto: { definicion: "Algo oculto que no se debe contar." },
-  humano: { definicion: "Perteneciente a la especie Homo Sapiens." },
-  gestor: { definicion: "Persona que administra algo." },
-  amor: { definicion: "Sentimiento intenso de afecto." },
-  esperanza: { definicion: "Confianza en lograr lo que se desea." },
-  kit: { definicion: "Conjunto de herramientas o piezas." },
-  caotico: { definicion: "Desordenado, confuso." },
-  azar: { definicion: "Causa imprevista, suerte." },
-  monotonia: { definicion: "Falta de variedad, aburrimiento." },
-  metafora: { definicion: "Figura retórica de comparación." },
-  abismo: { definicion: "Profundidad grande y peligrosa." },
-  inquina: { definicion: "Aversión o mala voluntad." },
-  limite: { definicion: "Línea real o imaginaria que separa dos cosas." },
-  continuidad: { definicion: "Unión natural entre partes, sin interrupción." },
-  traicion: { definicion: "Falta de lealtad." },
-  monoteismo: { definicion: "Creencia en un solo Dios." },
-  hipotesis: { definicion: "Suposición para iniciar una investigación." },
-  diverge: { definicion: "Separarse o irse alejando." },
-  lento: { definicion: "Poco veloz." },
-  sufrimiento: { definicion: "Dolor físico o moral." },
-  gugol: { definicion: "Número 1 seguido de 100 ceros." },
-  rumor: { definicion: "Noticia no confirmada que corre entre la gente." },
-  factorizacion: { definicion: "Descomposición de un número en factores." },
-  impar: { definicion: "Número no divisible por dos." },
-  transfusion: { definicion: "Paso de un líquido (como sangre) de un lado a otro." },
-  socio: { definicion: "Persona asociada con otra." },
+  infinito:   { definicion: "Que crece sin parar.", imagen: "images/infinito.jpg" },
+      perro:      { definicion: "Mamífero doméstico carnívoro y canido del que hay cerca de 350 razas distintas variando en forma, tamaño y pelaje. Tiene oído y olfato muy agudos y es leal a su dueño.", imagen: "images/perro.jpg"},
+      
+      
+      ser:        { definicion: "Para afirmar o negar un puente entre sujeto y predicado." },
+      monstruo:   { definicion: "Animal fabulado, extraordinario, de figura horrible." , imagen: "images/monstruo.jpg" },
+      "tirabuzón":{ definicion: "Cada una de las espirales que forma un cabello enrollado naturalmente." },
+      ropa:       { definicion: "Conjunto de prendas que sirven para cubrir el cuerpo humano." , imagen: "images/ropa.png" }, 
+      ilimitado:  { definicion: "Que no posee límite." },
+      universo:   { definicion: "Todo lo que existe tanto fuera de la Tierra como dentro." , imagen: "images/universo.png"  }, 
+      dios:{ definiciones:  [ 
+                            "Ser supremo que puede todo lo coherente y que se le rinde culto en buena parte del mundo.",
+                            "Ser supremo de las religiones monoteístas considerado el hacedor del universo.",
+                            "Deidad seguida en las tradiciones politeistas." ] , imagen: "images/dios.png" }, 
+      cristo:     { definicion: "Hijo de Dios." , imagen: "images/cristo.png" }, 
+      madre:      { definiciones: [
+                     "Mujer especial que ha engendrado uno o más hijos y que es símbolo de protección.",
+                     "Término coloquialmente abreviado como mamá."
+                   ], cita: "«Madre: la palabra más bella pronunciada por el ser humano» — Kahlil Gibran" , imagen: "images/madre.png" }, 
+  librero:    { definiciones: [
+                    "Individuo que comercia con libros.",
+                    "Estante donde se colocan los libros." ] },
+      bbc:        { definicion: "Trío de delanteros histórico del Real Madrid compuesto por benzema, bale y Cristiano." , imagen: "images/bbc.jpeg" },
+      msn:        { definicion: "Trío de delanteros histórico del Barcelona compuesto por Messi, Suárez y Neymar." , imagen: "images/msn.jpeg" },
+      google:     { definicion: "Empresa multinacional tecnológica que ordenó con algoritmos potentes internet." },
+      infinitamente: { definiciones: [ 
+                             "De modo infinito.",
+                             "De manera infinita.",
+                             "De forma infinita." ] },
+      idempotente: { definicion: "Igualdad en la capacidad de un número de multiplicarse por él y no transmutarse." , imagen: "images/idempotente.png" },
+      partivo:    { definicion:  "Idea que surge de ver la separación entre 2 ques." },
+      adjetivo:   { definicion:  "Palabra que se pone antes o después de un sustantivo y que concuerda con él en género y número sirviendo para caracterizar al sustantivo." },
+      regicida:   { definiciones:  [
+                             "Que intenta o consuma la muerte de un rey.",
+                             "Que come el rey en ajedrez, terminando el juego."  ] },
+      ajedrez:    { definicion: "Juego mental entre dos oponentes en un tablero 8×8 escaques con 16 piezas con distinto poder que consiste en dejar sin opción a un rey por último." , video: "videos/ajedrez.webm" },
+      "información":{definiciones: [
+                              "Conversión desde el dato simple hacia un conjunto que reduce la incertidumbre de algo.",
+                              "Acción y efecto de informar.",
+                              "En genética: conjunto de datos que sirven para que a la célula tenga todo claro." ] , imagen: "images/información.png" },
+      dato:       { definicion: "Estadio previo a una información hecha que es meramente una idea suelta sin gobierno y que unida a otras puede ser analizada." },
+      bidefinido: { definicion: "Definido con 2 frases solas." },
+      tridefinido:{ definicion: "Máxima cantidad de frases que pueden esbozarse para definir." },
+      escritor:   { definicion: "Persona que ha escrito una obra literaria asentada." },
+      escribidor: { definicion: "Persona que escribe sin talento o que lo hace sin inspiración." },
+      loco:       { definicion: "Que se ha vuelto irracional o sea que ha extraviado la razón." },
+      misericordia: { definicion: "Virtud de Dios o el hombre de sentir compasión en el corazón por las pobrezas de alguien." },
+      dibu:       { definicion: "Portero argentino en especial atajador de penales." },
+      deporte:    { definicion: "Actividad física o mental reglada que se usa como competencia y que siempre tiene tanteo." },
+      nostalgia:  { definicion: "Tristeza por encontrarse en ausencia del amor." },
+      conjetura:  { definicion: "Idea que a partir de datos lanza una suposición que de ser cierta se nombraria como teorema." },
+      "matemática":{ definicion: "Área del saber que generaliza los números y las operaciones con vastas aplicaciones." },
+      "matemático":{ definicion: "Aquella persona que estudia la matemática y hace de ello su arte." },
+      dibujar:    { definicion: "Trazar líneas y rellenando el espacio alrededor con color a base de pinceles o bolígrafo obtener una figura." },
+      dibujo:     { definicion: "Confección artística que tiene forma y color." },
+      laberinto:  { definicion: "Lugar físico o conceptual artificialmente creado con caminos absurdos y que dificultan tanto orientarse como encontrar salida." },
+      flaco:      { definicion: "Calificativo que habla de la poca masa grasa o poca masa muscular de un individuo situandose en un IMC bajo 18,5 resulta en tener poco vigor o fuerza para lidiar o en actividades diarias." },
+      el:         { definicion: "Artículo que indica un nombre consabido de número singular y género masculino." },
+      ñato:       { definicion: "De narices pequeñas en prominencia." },
+      "narigón":{ definicion: "De narices abultadas." },
+      demonio:    { definicion: "Ser sobrenatural malvado que es el príncipe de los ángeles caídos que se rebeló ante Dios y fue destinado al tartaro." },
+      "carón":{ definiciones: [ 
+                               "Se dice de la persona con cara prominente no tan usada como carota.",
+                               "Levemente borracho."  ] },
+      infierno:   { definicion: "Lugar de tormentos eternos para las almas que han pecado." , imagen: "images/infierno.png" },
+      cono:       { definicion: "Sólido de revolución que es generado por la rotación de un cateto de un triángulo formando una base circular y en el extremo opuesto un vértice." },
+      existir:    { definicion: "Ser real y enteramente creíble." },
+      tenedor:    { definicion: "Útil de mesa formado de un mango con más de 3 púas al otro extremo con lo cual se pinchan o sostienen alimentos sólidos." },
+      cuchara:    { definicion: "Útil de mesa con mango y en el extremo una concavidad de metal propia para consumir alimentos líquidos mayoritariamente." },
+      cuchillo:   { definicion: "Útil de mesa con un filo por una banda para cortar en trozos alimentos sólidos." },
+      indeterminado: {definicion: "No determinado a un resultado único sino que tiene infinitas medidas." },
+      indefinido: { definicion: "No definido." },
+      "palíndromo":{ definicion: "Frase que se lee levogira igual que dextrogira." },
+      capicua:    { definicion: "Número que se lee igual de inicio a fin que de fin a inicio." },
+      morfema:    { definicion: "Unidad minuscula de significado de una palabra como in- de infinito que significa no o sin. " },
+      virus:{ definiciones: [ 
+                            "Germen infeccioso que entra a la célula humana usando su maquinaria genética para formar partes de su ser y que suele escaparse causando destrucción de la célula huésped, consta de un adn o arn con una cubierta proteína y así simple enferma al humano. ",
+                            "Mecanismo infeccioso informático que se instala en entornos digitales y daña la maquinaria que hace funcionar al computador." ] },
+      androide:   { definicion: "Automáta a manera de humano." },
+      robot:      { definicion: "Automáta sin necesidad de parecerse al humano y que aprende por sí." },
+      maquina:    { definicion: "Objeto que es animado a la efectividad, que se mueve y que realiza trabajo." },
+      ultrainstinto: { definicion: "Tecnica divina que permite pelear sin pensar y por tanto, escapar de cualquier peligro. La usó goku en el torneo contra jiren.", imagen: "images/ultrainstinto.jpg" },
+      jiren:      { definicion: "Mortal más fuerte que Su Dios de la destrucción en el universo 11 de dragon ball super." , imagen: "images/jiren.jpg" }, 
+      nada:       { definicion: "aquello que es pensable solo por negación y no es realizable." , imagen: "images/nada.jpg" },
+      gato:       { definicion: "Mamífero carnívoro doméstico de la familia Félidos (Felis catus), de cuerpo ágil, garras retráctiles y sentidos muy desarrollados (visión crepuscular, oído fino, gran equilibrio). Es territorial y cazador de pequeños animales; se comunica con maullidos, bufidos y ronroneo." , imagen: "images/gato.png" },
+      precomputada:{ definicion: "Calculada con anterioridad y lista para ser usado o recuperado." , imagen: "images/precomputada.png" },
+      holomorfa:   { definicion: "Función que es diferenciable y suave en cada punto." , imagen: "images/holomorfa.png" },
+      meromorfa:   { definicion: "Función que es diferenciable y suave en todo punto excepto en uno de polo que diverge hacia infinito." , imagen: "images/meromorfa.png" }, 
+      jirafa:      { definicion: "Mamífero artiodactilo rumiante que es el animal más alto del mundo con su cuello de 2,4 metros, posee osiconos y manchas con las que se camuflan, pueden alcanzar ramas altas en acacias de África." , imagen: "images/jirafa.jpg"  },
+      elefante:    { definicion: "El Mamífero más grande en la Tierra de género proboscidio y con características distintivas: grandes orejas, trompa prensil y elástica que usa para beber y respirar, dos grandes orejas y con rudimnetos de una inteligencia grande." , imagen: "images/elefante.jpg" },
+      maradoniano: { definicion: "Gol especial que consiste en driblar a todo el equipo marcando gol así." , imagen: "images/maradoniano.jpg" },
+      negar:       { definicion: "Decir que no." },
+      "negación":{ definicion: "Acto y efecto de negar." }, 
+      no:          { definicion: "Adverbio fundamental que es usado para negar todo tipo de frases." }, 
+      hype:        { definicion: "Esperanza en el usuario de un bien de que será revolucionario los avances de la técnica." },
+      poder:       { definicion: "Facultad libre de hacer algo." }, 
+      todar:       { definicion: "Verbo de El todo que sirve para mover el universo ya sea material o lingüístico." },
+      persona:{ definiciones: [ 
+                                 "Individuo de la clase humana.", 
+                                 "Individuo con nombre que se ignora o que se omite." , 
+                                 "Categoría gramatical que se manifiesta en pronombres y verbos y que distingue tres clases de individuos." ], imagen: "images/persona.png" },
+      limitado:    { definicion: "Que tiene límites que ponen coto a su acción." }, 
+      nadie:       { definicion: "1.Ningún individuo." },
+      eternamente:{ definiciones: [
+                                 "1.De forma eterna.", 
+                                 "2. Jamás." ] },
+      eterno:      { definiciones: [ 
+                                 "1.Que no posee inicio ni fin.", 
+                                 "2.Que se reitera muchísimo.", 
+                                 "3.Se dice de Dios." ] },
+      todopoderoso: { definicion: "Que es poderoso hasta todo." },
+      omnipotente: { definicion: "Que lo puede todo, características reclamada por Dios." },
+      aprender:    { definicion: "Adquirir el saber por medio del tratamiento de la información." },
+      napolitano:{ definiciones: [ 
+                                 "1.Natural de napoles.",
+                                 "2.Perteneciente a napoles.",
+                                 "3.Lengua de napoles.",
+                                 "4.Higo de piel negra y sabor dulce.",
+                                 "5.Conjunto de las primeras tres cartas en el juego de los tres sietes."  ] , imagen: "images/napolitano.png" },
+      ultrabasico:{ definiciones: [
+                                 "1.Rocas igneas con una composición de menos de 45% de silice.", 
+                                 "2.Algo extremadamente fundamental.",
+                                 "3.Slang en redes que es algo super simple." ] },
+      ventes:      { definicion: "Combinación de un adverbio en -mente con un adjetivo o participio: por ejemplo, algo extremadamente fundamentado." },
+      artificial:{ definiciones: [
+                                 "1.Fabricado por el hombre.",
+                                 "2.Lo que es contrario a natural.",
+                                 "3.Falso o simulado." ] , imagen: "images/artificial.png" },
+      muerte:{ definiciones: [
+                                 "1.Termino de la vida.",
+                                 "2.Representacion de la muerte con una figura esquelética y con guadaña.", 
+                                 "3.Persona insufrible.",
+                                 "4.Ruina o destrucción de una idea." ], imagen: "images/muerte.png" },
+      hollejo:{ definiciones: [ 
+                                 "1.Piel o cáscara de los frutos o legumbres.",
+                                 "2.Piel humana o pellejo." ] },
+      mapear:{ definiciones: [ 
+                                 "1.Crear mapas de territorios con sus límites." , 
+                                 "2.Investigar la parte en el todo, por ejemplo: los genes en los cromosomas.",
+                                 "3.Hacer correspondencia de datos en entornos informáticos." ] },
+      patiestevado:{ definiciones: [ 
+                                 "1.De piernas arqueadas." ,
+                                 "2.De patas estevadas." ,
+                                 "3.Con las piernas arqueadas conformando una especie de paréntesis." ,
+                                 "4.Participio de patiestevar."  ], imagen: "images/patiestevado.png" },
+      "sensación":{ definiciones: [ 
+                                 "1.El sentir en el cuerpo los estímulos físicos decodificados por el cerebro.",
+                                 "2.Percepción mas general que no necesariamente debe ser fisica sino que puede ser idea como el sentir de inutilidad.",
+                                 "3.Gran impresión que ocasiona la noticia de un suceso.", 
+                                 "4.Corazonada o presentimiento." ] },
+      epica:    { definicion: "Epopeya narrada o cantada por un bardo que trata de los héroes del mundo antiguo." },
+      epico:    { definicion: "Algo grandioso o fuera de norma." },
+      eliminatoria:{ definiciones: [
+                              "1.Clasificatoria.",
+                              "2.Competicion anterior a los 4tos de final o los partidos anteriores al mundial en sí." ] },
+
+  clitico: { definicion: "Palabra atona que forma grupo acentual siendo estos pronombres." },
+      enclitico: { definicion: "Pronombre que va pegado al final de un verbo infinitivo o gerundio formando grupo acentual." },
+      proclitico: { definicion: "Pronombre que va antes de un verbo separado de él y aportando al grupo acentual." },
+      googleable: { definicion: "Que es fácil de encontrar en el buscador Google." },
+      ingoogleable: { definicion: "Que es imposible de encontrar en el buscador Google." },
+      gugol:      { definicion: "Número finito que es un 1 seguido de 100 ceros." },
+      googlear:   { definicion: "Buscar en Google algo o a alguien." },
+      infinitotriz: { definicion: "Que gira infinitamente alrededor de algo." },
+      soltero:    { definicion: "Que no ha contraído matrimonio." },
+      escobeta:{ definiciones: [
+                                "1.Escoba en miniatura." ,
+                                "2.Cepillo para los atuendos." ,
+                                "3.Escoba de cerdas.",
+                                "4.Escoba de raíz de zacatón, corta y dura." ,
+                                "5.Mechón de cerdas que aparece en el papo a pavos avejentados." ] },
+      simular:{ definiciones: [ 
+                                "1.Imitar la existencia de algo de manera fiel." ,
+                                "2.Aparentar en tecnología artificialmente el funcionamiento de sistema." ] },
+      atar: { definicion: "Enlazar los cordones en los zapatos." , video: "videos/atar.webm" },
+  subir:{ definiciones:  [ 
+                               "1.Ir hacia la parte superior de algo.",
+                               "2.Ir en origen desde un lugar hasta otro más empinado.", 
+                               "3.Viajar hacia el origen de algo.",
+                               "4.Montar un animal.",
+                               "5.Entrar al interior de un coche.",
+                               "6.Hacer crecer el precio de un producto.",
+                               "7.Dicho del sonido de un instrumento: pasar a ser más agudos.",
+                               "8.Ocurrir el mareo por el alcohol.",
+                               "9.Hacer que aumente la intensidad del sonido de un aparato reproductor.",
+                               "10.Introducir información en una página de Internet." ] , video: "videos/subir.webm" },
+      llorar:{ definiciones: [ 
+                               "1.Arrojar en la cara lagrimas desde los ojos.",
+                               "2.Manar de los ojos líquido lagrimal.",
+                               "3.Destilar savia la vid en inicio de primavera." ] , video: "videos/llorar.webm" },
+      ciclo:{ definiciones:  [
+                               "1. m. Periodo de tiempo que, finalizado vuelve a iterarse.",
+                               "2. m. Colección de una serie de fenómenos u trabajos que se iteran ordenadamente.",
+                               "3. m. Conjunto de cambios por los que pasa un elemento hasta volver a lo inicial.",
+                               "4. m. Serie de pasos por los que pasa un ser a lo largo de su vida.",
+                               "5. m. Conjuntos de relatos épicos de un periodo histórico o de un héroe.",
+                               "6. m. Cada una de las espiras que conforman enrededor del tallo los puntos de anclaje de las hojas.",
+                               "7. m. La estructura molecular en forma de anillo.",
+                               "8. m. Bicicleta.",
+                               "9. m. Un tik tok." ] , imagen: "images/ciclo.jpg" },
+      
   
-  // Palabras comunes
-  el: { definicion: "Artículo determinado." },
-  la: { definicion: "Artículo determinado femenino." },
-  uno: { definicion: "El primer número natural." },
-  cero: { definicion: "Ausencia de cantidad." }
+
+  agujero: {
+    definiciones: [
+      "1.Abertura o hueco en una superficie o en un sólido.",
+      "2.De las agujas.",
+      "3.Falta inmotivada de plata en una empresa."
+    ]
+  },
+
+  negro: {
+    definiciones: [
+      "1.Ausencia total o casi de reflejo luminoso.",
+      "2.De color negro.",
+      "3.Perteneciente a la raza negra.",
+      "4.Ritual en que se invoca al demonio.",
+      "5.Del color de carbón, de oscuridad total o la boca de un túnel",
+      "6.Muy bronceado.",
+      "7.Modo de tratamiento de quienes se quieren.",
+      "8.Persona que hace un trabajo intelectual por encargo de otra haciendo todo el esfuerzo.",
+      "9.Estado de ánimo triste o pesimista.",
+      "10.Género de cine que de trama policiaca en entorno violento."
+    ]
+  },
+
+  de: {
+    definiciones: [
+      "1.Indica pertenencia. La paciencia de job.",
+      "2.Locuciones adverbiales: Almorzó de pie.",
+      "3.Procedencia: Vengo de Aranjuez.",
+      "4.Material: vestido de seda.",
+      "5.Contenido: vaso de agua.",
+      "6.Asunto: trata de la guerra.",
+      "7.Causa: murió de viruelas.",
+      "8.Naturaleza: hombre de valor.",
+      "9.Desde: de Madrid a Toledo.",
+      "10.Lejor de pensar.",
+      "11.Hipotético: de saberlo vendría.",
+      "12.Perífrasis: acaba de pasar.",
+      "13.Tiempo: de madrugada.",
+      "14.Refuerzo: el bueno de Juan.",
+      "15.Ilación: de esto se sigue.",
+      "16.Rapidez: beber de un trago.",
+      "17.Lástima: ay de los vencidos.",
+      "18.A por la 16.",
+      "19.Comparación.",
+      "20.Para. Gorro de dormir.",
+      "21.Por miedo."
+    ]
+  },
+
+  amanecer: {
+    definiciones: [
+      "1.Comenzar a verse la luz.",
+      "2.Estar en un lugar al amanecer.",
+      "3.Nacer figurado.",
+      "4.Pasar la noche en vela.",
+      "5.Alumbre."
+    ]
+  },
+
+  manana: {
+    definiciones: [
+      "1.Parte del día entre amanecer y mediodía.",
+      "2.Medianoche a mediodía.",
+      "3.El tiempo futuro.",
+      "4.El día siguiente."
+    ]
+  },
+
+  en: {
+    definiciones: [
+      "1.Tiempo, lugar o modo.",
+      "2.Sobre.",
+      "3.Ocupación.",
+      "4.Tránsito.",
+      "5.Tan pronto como.",
+      "6.Límite de movimiento."
+    ]
+  },
+
+  ese: {
+    definiciones: [
+      "1.Cercano al interlocutor.",
+      "2.Mencionado.",
+      "3.Menosprecio.",
+      "4.Persona que se ha marchado."
+    ]
+  },
+
+  campo: {
+    definiciones: [
+      "1.Terreno extenso.",
+      "2.Terreno trabajable.",
+      "3.Campiña.",
+      "4.Terreno de juego.",
+      "5.Mitad del campo en fútbol.",
+      "6.Término de municipio.",
+      "7.Campo de conocimiento.",
+      "8.Campo eléctrico.",
+      "9.Campo de base de datos.",
+      "10.Comarca ocupada por ejército.",
+      "11.Ejército.",
+      "12.Campo visual."
+    ]
+  },
+ 
+
+  hipotetico: { definicion: "Perteneciente a la hipótesis." },
+
+  vencer: {
+    definiciones: [
+      "1.Batir al enemigo.",
+      "2.Ser superior.",
+      "3.Controlar emociones.",
+      "4.Superar obstáculos.",
+      "5.Atraer a alguien al propio deseo.",
+      "6.Subir a un sitio áspero.",
+      "7.Cumplirse plazo.",
+      "8.Ganar en pelea física."
+    ]
+  },
+
+  supervitaminar: {
+    definiciones: [
+      "1.Potenciar algo.",
+      "2.Hipertrofiar.",
+      "3.Dopar con trampa."
+    ]
+  },
+
+  "poder-verbo": {
+    definiciones: [
+      "1.Tener vía libre para hacer a lo quiera.",
+      "2.Expresa posibilidad.",
+      "3.Ser capaz de vencer a otro.",
+      "4.Sufrir impertinencias."
+    ]
+  },
+
+  "poder-sustantivo": {
+    definiciones: [
+      "1.Facultad para hacer.",
+      "2.Gobierno.",
+      "3.Fuerza física de animales.",
+      "4.Permiso legal cedido."
+    ]
+  },
+
+  aterrador:{ definiciones:  [ 
+        "Que aterra o aterroriza o es terrorífico.",
+        "Lo contrario a tranquilizador." ] },
+  plus:{ definiciones:    [ 
+         "Sobresueldo destinado a un trabajador o alza de precio en el comercio.",
+         "Suplemento material o no, que se añade a lo habitual." ] },
+  materia:{ definiciones:  [ 
+         "Uno de los dos elementos que conforman el cosmos físico junto a la energía.",
+         "Cualquier sustancia diferenciable",
+         "En oposición a alma, lo que es propio de los sentidos.",
+         "Idea sobre la que alguien piensa.",
+         "Conjunto de asignaturas en un plan universitario.",
+         "Motivo.",
+         "Humor que segregan las heridas infectadas." ] }, 
+  simplezas:{ definiciones:  [ 
+         "Cualidad de simple.",
+         "Coso de poca relevancia.",
+         "Rusticidad o tosquedad.",
+         "Similar a tonteza." ] }, 
+  fundamento:{ definiciones:  [ 
+         "Cimientos en que se sostiene un edificio.",
+         "Motivo suficiente de una cosa.",
+         "Rudimentos básicos de una ciencia.",
+         "Buena forma o seriedad de una persona.",
+         "Valor alimenticio de algo."  ] }, 
+  vejez:{ definiciones:   [ 
+         "Estado de viejo.",
+         "Edad en que se es vejestorio.",
+         "Actitudes malas propias de los viejos.",
+         "Narracion trivial y añeja."  ] },
+  
 };
 
-let tokens = [];
 
-function prepararLibro() {
-  const divLibro = document.getElementById("libro");
-  const elTexto = document.getElementById("texto-fuente");
-  
-  // CLAVE: Usar textContent para leer aunque esté oculto
-  const textoRaw = elTexto.textContent || elTexto.innerText; 
-  
-  if(!textoRaw || textoRaw.trim().length === 0) {
-     divLibro.innerHTML = "Error: No pude leer el texto fuente.";
-     return;
+/* -------------------------------------
+   ÍNDICE NORMALIZADO
+------------------------------------- */
+const diccionarioIdx = {};
+for (const [k, v] of Object.entries(diccionario)) {
+  diccionarioIdx[normalizarPalabra(k)] = v;
+}
+
+
+/* -------------------------------------
+   DETECCIÓN PODER
+------------------------------------- */
+function tipoPoder(tokens, idx) {
+  const palabra = normalizarPalabra(tokens[idx] || "");
+  const prev = normalizarPalabra(tokens[idx - 1] || "");
+  const next = normalizarPalabra(tokens[idx + 1] || "");
+
+  const conjugaciones = [
+    "puedo","puedes","puede","podemos","pueden",
+    "podia","podias","podiamos","podian",
+    "podra","podras","podremos","podran",
+    "podria","podrias","podriamos","podrian",
+    "pude","pudiste","pudo","pudimos","pudieron",
+    "pueda","puedas","podamos","puedan",
+    "pudiera","pudieras","pudieramos","pudieran",
+    "pudiese","pudieses","pudiesemos","pudiesen"
+  ];
+  if (conjugaciones.includes(palabra)) return "verbo";
+
+  const determinantes = [
+    "el","la","los","las","un","una","unos","unas",
+    "mi","mis","tu","tus","su","sus",
+    "este","esta","estos","estas",
+    "ese","esa","esos","esas",
+    "aquel","aquella","aquellos","aquellas",
+    "del","al"
+  ];
+  if (palabra === "poder" && determinantes.includes(prev)) return "sustantivo";
+
+  if (palabra === "poder" && prev === "de") {
+    if (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir"))
+      return "verbo";
+    return "sustantivo";
   }
 
-  divLibro.innerHTML = ""; // Limpiar el "Cargando..."
-  
-  tokens = textoRaw.split(/(\s+)/);
-  
-  let html = "";
-  tokens.forEach((t, i) => {
-    if(t.trim().length === 0) {
-      divLibro.appendChild(document.createTextNode(t));
+  if (palabra === "poder" && (next.endsWith("ar") || next.endsWith("er") || next.endsWith("ir")))
+    return "verbo";
+
+  return null;
+}
+
+
+/* -------------------------------------
+   LEMATIZACIÓN
+------------------------------------- */
+
+const verbLemmaMap = {
+  "puedo": "poder", "puedes": "poder", "puede": "poder",
+  "podemos": "poder", "pueden": "poder",
+  "podia": "poder", "podias": "poder", "podiamos": "poder", "podian": "poder",
+  "podra": "poder", "podras": "poder", "podremos": "poder", "podran": "poder",
+  "podria": "poder", "podrias": "poder", "podriamos": "poder", "podrian": "poder",
+  "pude": "poder", "pudiste": "poder", "pudo": "poder", "pudimos": "poder", "pudieron": "poder",
+  "pueda": "poder", "puedas": "poder", "podamos": "poder", "puedan": "poder",
+  "pudiera": "poder", "pudieras": "poder", "pudieramos": "poder", "pudieran": "poder",
+  "pudiese": "poder", "pudieses": "poder", "pudiesemos": "poder", "pudiesen": "poder",
+  "creo": "crear"
+};
+
+const cliticEndings = [
+  "melo","mela","melos","melas",
+  "telo","tela","telos","telas",
+  "selo","sela","selos","selas",
+  "noslo","nosla","noslos","noslas",
+  "oslo","osla","oslos","oslas",
+  "me","te","se","lo","la","los","las","le","les","nos","os"
+];
+
+function stripClitics(word) {
+  let w = word;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const cl of cliticEndings) {
+      if (w.endsWith(cl) && w.length > cl.length + 1) {
+        w = w.slice(0, -cl.length);
+        changed = true;
+        break;
+      }
+    }
+  }
+  return w;
+}
+
+function guessInfinitive(w) {
+  if (verbLemmaMap[w]) return verbLemmaMap[w];
+
+  if (w.endsWith("se")) {
+    const base = w.slice(0, -2);
+    if (diccionario[base]) return base;
+  }
+
+  if (w.endsWith("o")) {
+    const stem = w.slice(0, -1);
+    const candAr = stem + "ar";
+    if (diccionario[candAr]) return candAr;
+  }
+
+  if (w.endsWith("aba") || w.endsWith("abas") || w.endsWith("aban")) {
+    const stem = w.replace(/aba(s|n)?$/, "");
+    const candAr = stem + "ar";
+    if (diccionario[candAr]) return candAr;
+  }
+
+  if (w.endsWith("ando")) {
+    const stem = w.slice(0, -4);
+    const cand = stem + "ar";
+    if (diccionario[cand]) return cand;
+  }
+
+  if (w.endsWith("iendo")) {
+    const stem = w.slice(0, -5);
+    const candEr = stem + "er";
+    const candIr = stem + "ir";
+    if (diccionario[candEr]) return candEr;
+    if (diccionario[candIr]) return candIr;
+  }
+
+  if (w.endsWith("ar") || w.endsWith("er") || w.endsWith("ir"))
+    return w;
+
+  return w;
+}
+
+/* -------------------------------------
+   TOKENIZACIÓN Y CONSTRUCCIÓN DEL LIBRO
+------------------------------------- */
+
+let tokensLibro = [];
+
+function prepararLibro() {
+  const fuente = document.getElementById("texto-libro").innerText;
+  const contenedorLibro = document.getElementById("libro");
+
+  const tokens = fuente.split(/(\s+)/);
+  tokensLibro = [];
+
+  contenedorLibro.innerHTML = "";
+  let indiceToken = 0;
+
+  tokens.forEach(token => {
+    if (/^\s+$/.test(token)) {
+      contenedorLibro.appendChild(document.createTextNode(token));
     } else {
-      let span = document.createElement("span");
-      span.textContent = t;
+      const span = document.createElement("span");
+      span.textContent = token;
       span.className = "palabra";
-      span.onclick = function() { analizar(t, i); };
-      divLibro.appendChild(span);
+
+      const idx = indiceToken;
+      span.addEventListener("click", () => mostrarDefinicion(token, idx));
+
+      tokensLibro.push(token);
+      indiceToken++;
+
+      contenedorLibro.appendChild(span);
     }
   });
 }
 
-function analizar(palabra, index) {
-  // Limpiar resaltado anterior
-  document.querySelectorAll(".resaltada").forEach(e => e.classList.remove("resaltada"));
-  
-  // Resaltar actual (buscando por texto exacto simple)
-  // Nota: En una app real usaríamos IDs únicos, aquí simplificamos visualmente
-  event.target.classList.add("resaltada");
-
-  const limpia = norm(palabra);
-  const entrada = diccionario[limpia];
-  const chat = document.getElementById("chat-history");
-  
-  let msg = "";
-  
-  if(entrada) {
-     msg = `<strong>${palabra}</strong>: ${entrada.definicion}`;
-     // Añadir contexto visual
-     const contexto = obtenerContexto(index);
-     addMsg(`He analizado "<strong>${palabra}</strong>" en la frase: <em>"...${contexto}..."</em>`, "system");
-     setTimeout(() => addMsg(msg, "bot"), 400);
-  } else {
-     addMsg(`Mmm... la palabra "<strong>${palabra}</strong>" no está en mi índice todavía.`, "bot");
-  }
-}
+/* -------------------------------------
+   CONTEXTO
+------------------------------------- */
 
 function obtenerContexto(idx) {
-  let start = Math.max(0, idx - 10);
-  let end = Math.min(tokens.length, idx + 10);
-  return tokens.slice(start, end).join("");
+  let inicio = idx;
+  let fin = idx;
+
+  while (inicio > 0) {
+    const t = tokensLibro[inicio];
+    if (/[.!?]/.test(t)) {
+      inicio++;
+      break;
+    }
+    inicio--;
+  }
+
+  while (fin < tokensLibro.length - 1) {
+    const t = tokensLibro[fin];
+    if (/[.!?]/.test(t)) break;
+    fin++;
+  }
+
+  return tokensLibro.slice(inicio, fin + 1).join(" ");
 }
 
-function addMsg(html, tipo) {
-  const div = document.createElement("div");
-  div.className = `mensaje msg-${tipo}`;
-  div.innerHTML = html;
-  const hist = document.getElementById("chat-history");
-  hist.appendChild(div);
-  hist.scrollTop = hist.scrollHeight;
+/* -------------------------------------
+   PALABRAS CLAVE
+------------------------------------- */
+
+function limpiarTexto(texto) {
+  return texto
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9ñ\s]/gi, " ");
 }
 
-function enviarUser() {
-  const inp = document.getElementById("chat-input");
-  const txt = inp.value;
-  if(!txt) return;
-  addMsg(txt, "user");
-  inp.value = "";
-  setTimeout(() => addMsg("Interesante observación.", "bot"), 600);
+const stopwords = new Set([
+  "el","la","los","las","un","una","unos","unas",
+  "lo","al","del",
+  "de","a","en","por","para","con","sin","sobre",
+  "y","o","u","ni",
+  "que","se","su","sus","mi","mis","tu","tus",
+  "este","esta","estos","estas","ese","esa","esos","esas",
+  "aquel","aquella","aquellos","aquellas"
+]);
+
+function palabrasClave(texto) {
+  return limpiarTexto(texto)
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !stopwords.has(w));
 }
-</script>
+
+/* -------------------------------------
+   SINÓNIMOS
+------------------------------------- */
+
+const sinonimos = {
+  vencer: ["ganar","derrotar","triunfar","vencer"],
+  sufrir: ["aguantar","soportar","tolerar","padecer","sufrir"],
+  impertinencias: ["vejaciones","abusos","humillaciones","maltratos"],
+  posibilidad: ["posibilidad","quizas","talvez","acaso","hipotetico","probable","eventual"]
+};
+
+const pesosCategoria = {
+  verbo: 2,
+  sustantivo: 1,
+  adjetivo: 0,
+  adverbio: -1,
+  pronombre: -2,
+  determinante: -3,
+  preposicion: -4,
+  conjuncion: -5,
+  interjeccion: -6
+};
+
+const categorias = {
+  infinito: ["sustantivo","adjetivo"],
+  poder: ["sustantivo","verbo"],
+  amanecer: ["verbo"],
+  manana: ["adverbio","sustantivo"],
+  campo: ["sustantivo"],
+  hipotetico: ["adjetivo"],
+  vencer: ["verbo"],
+  dios: ["sustantivo"],
+  propio: ["adjetivo"],
+  juego: ["sustantivo"],
+  fin: ["sustantivo"],
+  aguantar: ["verbo"],
+  vejaciones: ["sustantivo"],
+  traer: ["verbo"],
+  tener: ["verbo"],
+  estado: ["sustantivo"],
+  sentido: ["sustantivo"]
+};
+
+
+/* -------------------------------------
+   EXPANSIÓN DE SINÓNIMOS
+------------------------------------- */
+function expandirConSinonimos(p) {
+  const base = p.toLowerCase();
+  const lista = [base];
+  if (sinonimos[base]) lista.push(...sinonimos[base]);
+  return lista;
+}
+
+/* -------------------------------------
+   ELECCIÓN DE DEFINICIÓN
+------------------------------------- */
+function elegirDefinicionConExplicacion(definiciones, contexto) {
+  const ctxWords = palabrasClave(contexto);
+  const setCtx = new Set(ctxWords);
+
+  let mejorIndice = 0;
+  let mejorScore = -Infinity;
+  let mejorExplicacion = { exactas: [], sinonimos: [], categorias: [], score: 0 };
+
+  definiciones.forEach((def, idx) => {
+    const palabrasDef = palabrasClave(def);
+    let score = 0;
+    let exactas = [];
+    let sinos = [];
+    let catsUsadas = [];
+
+    palabrasDef.forEach(p => {
+      const base = p.toLowerCase();
+      let coincid = null;
+
+      if (setCtx.has(base)) {
+        coincid = base;
+        score += 2;
+        exactas.push(base);
+      } else {
+        const variantes = expandirConSinonimos(base);
+        for (const v of variantes) {
+          if (setCtx.has(v)) {
+            coincid = v;
+            score += 1;
+            sinos.push({ palabraDef: base, coincidencia: v });
+            break;
+          }
+        }
+      }
+
+      if (coincid) {
+        const catList = categorias[coincid];
+        if (catList) {
+          for (const cat of catList) {
+            if (pesosCategoria[cat] !== undefined) {
+              const peso = pesosCategoria[cat];
+              score += peso;
+              catsUsadas.push({ palabra: coincid, categoria: cat, peso });
+            }
+          }
+        }
+      }
+    });
+
+    if (score > mejorScore) {
+      mejorScore = score;
+      mejorIndice = idx;
+      mejorExplicacion = { exactas, sinonimos: sinos, categorias: catsUsadas, score };
+    }
+  });
+
+  return { indice: mejorIndice, explicacion: mejorExplicacion };
+}
+
+/* -------------------------------------
+   RESALTADO
+------------------------------------- */
+
+function limpiarResaltado() {
+  document.querySelectorAll("#libro .palabra.resaltada")
+    .forEach(e => e.classList.remove("resaltada"));
+}
+
+function resaltarCoincidencias(rawWord) {
+  const objetivo = normalizarPalabra(rawWord);
+  document.querySelectorAll("#libro .palabra").forEach(span => {
+    const textoSpan = span.textContent || "";
+    if (normalizarPalabra(textoSpan) === objetivo)
+      span.classList.add("resaltada");
+  });
+}
+
+/* -------------------------------------
+   MUESTRA DE DEFINICIÓN
+------------------------------------- */
+
+function obtenerClaveVerbal(rawWord, idx) {
+  const original = rawWord.trim();
+
+  if (original.toLowerCase().startsWith("dios")) return "dios";
+
+  if (original === "creó" || original === "Creó")
+    return diccionario["crear"] ? "crear" : original;
+
+  let w = normalizarPalabra(original);
+  w = stripClitics(w);
+  const lemma = guessInfinitive(w);
+
+  if (lemma === "poder") {
+    const tipo = tipoPoder(tokensLibro, idx);
+    if (tipo === "verbo") return "poder-verbo";
+    if (tipo === "sustantivo") return "poder-sustantivo";
+    return "poder-verbo";
+  }
+
+  return lemma;
+}
+
+  function mostrarDefinicion(rawWord, idx) {
+  const clave = obtenerClaveVerbal(rawWord, idx);
+
+  // Entrada en el diccionario (por clave directa o por índice normalizado)
+  const entrada =
+    diccionario[clave] ||
+    diccionarioIdx[normalizarPalabra(clave)];
+
+  const panel = document.getElementById("definicion");
+  const debugBox = document.getElementById("debug-razonador");
+
+  limpiarResaltado();
+  resaltarCoincidencias(rawWord);
+
+  if (!entrada) {
+    panel.innerHTML = `
+      <h2>${rawWord}</h2>
+      <p class="sin-def">
+        Esta palabra no tiene definición aún.
+        <br><small>(clave interna: ${clave})</small>
+      </p>`;
+    if (debugBox) {
+      debugBox.textContent = "Palabra no encontrada en diccionario.";
+    }
+    return;
+  }
+
+  // Unificamos definiciones en un solo array
+  let definiciones = [];
+  if (entrada.definicion) definiciones.push(entrada.definicion);
+  if (entrada.definiciones) definiciones.push(...entrada.definiciones);
+
+  const contexto = obtenerContexto(idx);
+
+  // ---------- INTENTO 1: RAZONADOR NUEVO ----------
+  const resultadoRazonador = razonadorParaLema(clave, contexto);
+
+  let indiceElegido = 0;
+  let htmlExp = "";
+
+  if (resultadoRazonador) {
+    indiceElegido = resultadoRazonador.indiceAcepcion;
+
+    if (debugBox) {
+      debugBox.textContent = JSON.stringify(resultadoRazonador, null, 2);
+    }
+
+    htmlExp = `
+      <hr>
+      <p style="font-size:0.9em; color:green;">
+        <strong>🤖 Elección del razonador:</strong><br>
+        Calidad: ${resultadoRazonador.calidad}<br>
+        Núcleo detectado:
+        <em>"${resultadoRazonador.palabraNucleo ? resultadoRazonador.palabraNucleo.palabra : "ninguno"}"</em>
+      </p>`;
+  } else {
+    // ---------- INTENTO 2: LÓGICA ANTIGUA ----------
+    if (debugBox) {
+      debugBox.textContent =
+        "El razonador devolvió null (sin contexto suficiente). Usando lógica simple.";
+    }
+
+    const { indice, explicacion } =
+      elegirDefinicionConExplicacion(definiciones, contexto);
+    indiceElegido = indice;
+
+    const partes = [];
+    if (explicacion.exactas.length) {
+      partes.push("Coincidencias exactas: " + explicacion.exactas.join(", "));
+    }
+    if (explicacion.sinonimos.length) {
+      partes.push(
+        "Sinónimos: " +
+          explicacion.sinonimos
+            .map((s) => s.coincidencia + "→" + s.definicion)
+            .join(", ")
+      );
+    }
+
+    if (partes.length) {
+      htmlExp = `
+        <hr>
+        <p style="font-size:0.9em;">
+          <strong>Lógica simple:</strong> ${partes.join(" | ")}</p>`;
+    }
+  }
+
+  // Pintamos TODAS las acepciones, destacando la elegida
+  const htmlDefs = definiciones
+    .map(
+      (d, i) =>
+        `<p${
+          i === indiceElegido
+            ? ' style="color:blue; font-weight:bold; border-left:3px solid blue; padding-left:5px;"'
+            : ""
+        }>${d}</p>`
+    )
+    .join("");
+
+  panel.innerHTML = `
+    <h2>${rawWord}
+      <small style="font-size:0.5em; color:grey;">(${clave})</small>
+    </h2>
+    ${htmlDefs}
+    ${htmlExp}
+  `;
+  }
+
+/* -------------------------------------
+   INICIO
+------------------------------------- */
+/***************************************************
+ *  RAZONADOR DEL DICCIONARIO
+ *  - Rejilla de posición
+ *  - Tabla de categorías 9–1
+ *  - Sistema de premios y castigos (22 reglas)
+ *
+ *  NOTA: no modifica nada de tu código actual.
+ ***************************************************/
+
+/******** 1. Normalización y utilidades ********/
+
+function norm(str) {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // quita tildes
+    .replace(/[.,;:!?¡¿()"«»]/g, "") // quita signos
+    .trim();
+}
+
+function tokenizar(str) {
+  const limpio = norm(str);
+  return limpio.split(/\s+/).filter(Boolean);
+}
+
+// Palabras que ignoramos (ruido)
+const STOPWORDS = new Set([
+  "el","la","los","las","un","una","unos","unas",
+  "de","del","a","en","y","o","u","que","lo","le","se",
+  "por","para","con","sin","su","sus","mi","mis","tu","tus",
+  "al"
+]);
+
+/******** 2. Tabla de categorías (9–1) ********/
+
+const CATEGORIA_PESOS = {
+  verbo: 9,
+  sustantivo: 8,
+  adjetivo: 7,
+  adverbio: 6,
+  pronombre: 5,
+  determinante: 4, // artículos
+  articulo: 4,
+  preposicion: 3,
+  conjuncion: 2,
+  interjeccion: 1
+};
+
+// Listas simples para detectar clases funcionales
+const DETERMINANTES = new Set([
+  "el","la","los","las","un","una","unos","unas",
+  "este","esta","estos","estas",
+  "ese","esa","esos","esas",
+  "aquel","aquella","aquellos","aquellas"
+]);
+
+const PREPOSICIONES = new Set([
+  "a","ante","bajo","cabe","con","contra","de","desde","durante","en","entre",
+  "hacia","hasta","mediante","para","por","segun","sin","so","sobre","tras","del","al"
+]);
+
+const CONJUNCIONES = new Set([
+  "y","e","ni","o","u","pero","sino","aunque","que","porque","pues","mientras"
+]);
+
+const PRONOMBRES = new Set([
+  "yo","tu","el","ella","nosotros","vosotros","ellos","ellas",
+  "me","te","se","nos","os","lo","la","los","las","le","les"
+]);
+
+const INTERJECCIONES = new Set(["ay","oh","eh","uy","hala","bah","uff"]);
+
+// Heurística de categoría para cada palabra
+function categoriaDePalabra(palabra, categoriaLema) {
+  const w = norm(palabra);
+  if (DETERMINANTES.has(w)) return "determinante";
+  if (PREPOSICIONES.has(w)) return "preposicion";
+  if (CONJUNCIONES.has(w)) return "conjuncion";
+  if (PRONOMBRES.has(w)) return "pronombre";
+  if (INTERJECCIONES.has(w)) return "interjeccion";
+  if (w.endsWith("mente")) return "adverbio";
+  if (w.endsWith("ar") || w.endsWith("er") || w.endsWith("ir")) return "verbo"; // infinitivo
+
+  // si no sabemos, usamos la categoría del lema como referencia
+  if (!categoriaLema) return "sustantivo";
+  return categoriaLema;
+}
+
+function pesoCategoria(palabra, categoriaLema) {
+  const cat = categoriaDePalabra(palabra, categoriaLema);
+  return CATEGORIA_PESOS[cat] || 0;
+}
+
+/******** 3. Peso por POSICIÓN (rejilla móvil) ********/
+// i: posición (1..n), n: nº total de palabras
+function pesoPosicion(i, n) {
+  if (n <= 0) return 0;
+  let max;
+  if (n % 2 === 0) {
+    // n par → 4,3,2,1,0,-1,-2,-3...
+    max = n / 2;
+  } else {
+    // n impar → 3,2,1,0,-1,-2,-3...
+    max = (n - 1) / 2;
+  }
+  return max - (i - 1);
+}
+
+/******** 4. Elección de PALABRA NÚCLEO en UNA definición ********/
+
+function elegirPalabraNucleo(definicion, categoriaLema) {
+  const palabras = tokenizar(definicion);
+  const n = palabras.length;
+  if (n === 0) return null;
+
+  let mejorIdx = 0;
+  let mejorScore = -Infinity;
+
+  for (let i = 0; i < n; i++) {
+    const w = palabras[i];
+    if (STOPWORDS.has(w)) continue; // ruido
+
+    const posScore = pesoPosicion(i + 1, n);
+    const catScore = pesoCategoria(w, categoriaLema);
+    const score = posScore + catScore;
+
+    if (score > mejorScore) {
+      mejorScore = score;
+      mejorIdx = i;
+    }
+  }
+
+  return {
+    palabra: palabras[mejorIdx],
+    indice: mejorIdx,
+    score: mejorScore
+  };
+}
+
+/******** 5. Sistema de 22 reglas (premios/castigos) ********/
+/*
+   RESUMEN DE LAS REGLAS QUE SE APLICAN AQUÍ:
+
+   CASTIGOS (score -= ...):
+   1) Repetición del lema / calco del lema ............ -3
+   2) Estructura "es que" ............................. -2
+   3) Empezar o terminar con persona (me/te/se... la) . -1
+   4) Repetir artículos indefinidos (un/una/unos/unas) -1
+   5) "que ..." sin sentido QUE (empieza por "que") .. -2
+   6) Adverbio -mente sin verbo infinitivo ............ -1
+   7) Empezar por participio (-ado/-ido/-to/-so/-cho).. -2
+   8) Definición de palabra única ..................... -3
+   9) Duda de "o" (muchos " o ") ...................... -1
+   10) Más de 3 comas ................................. -1
+
+   PREMIOS (score += ...):
+   11) Presencia de "es" (ser copulativo) ............. +1
+   12) Rondación de "que": "de que", "al que", etc.... +2
+   13) Terminar en participio o serie ................. +2
+   14) "que" con buen uso (no "es que", ni al inicio) . +2
+   15) Núcleo verbal en verbos (hay infinitivo) ....... +3
+   16) "cuyo/cuya/cuyos/cuyas" ........................ +1
+   17) Cadena nominal taxinomizada ("X de Y de Z") .... +2
+   18) Calco del infinito ("no tiene ni puede tener") . +3
+   19) Buena forma de adjetivo (adjetivo + "que" sin calco) +2
+   20) Palabra insólita/técnica (12+ letras) .......... +1
+   21) Contenido antes de "que" (no empezar por "que") +2
+   22) (Reserva para futuras variantes de las anteriores)
+*/
+
+function scoreCalidadDefinicion(definicion, lema, categoriaLema) {
+  const textoNorm = " " + norm(definicion) + " ";
+  const lemaNorm = norm(lema);
+  const palabras = tokenizar(definicion);
+  const n = palabras.length;
+  let score = 0;
+
+  // --- CASTIGOS ---
+
+  // (1) Repetición del lema / calco del lema → -3
+  const raizLema = lemaNorm.slice(0, Math.max(3, Math.floor(lemaNorm.length / 2)));
+  if (textoNorm.includes(" " + lemaNorm + " ") || textoNorm.includes(raizLema)) {
+    score -= 3;
+  }
+
+  // (2) "es que" → -2
+  if (textoNorm.includes(" es que ")) score -= 2;
+
+  // (3) Empezar o terminar con persona → -1
+  const defTrim = definicion.trim();
+  const defNormTrim = textoNorm.trim();
+  if (/^(me|te|se|nos|os)\s+\w+/i.test(defNormTrim) ||
+      /\b(la|lo|las|los)\.?$/.test(defTrim)) {
+    score -= 1;
+  }
+
+  // (4) Repetición de artículos indefinidos → -1
+  const indefs = (textoNorm.match(/\b(un|uno|una|unos|unas)\b/g) || []).length;
+  if (indefs >= 2) score -= 1;
+
+  // (5) "que ..." sin sentido QUE → empieza por "que " → -2
+  if (defNormTrim.startsWith("que ")) score -= 2;
+
+  // (6) Adverbio desconectado de verbo → -1
+  const hayMente = palabras.some(w => norm(w).endsWith("mente"));
+  const hayInfinitivo = palabras.some(w => {
+    const wnorm = norm(w);
+    return wnorm.endsWith("ar") || wnorm.endsWith("er") || wnorm.endsWith("ir");
+  });
+  if (hayMente && !hayInfinitivo) score -= 1;
+
+  // (7) Empieza por participio → -2
+  const primeraNorm = norm(palabras[0] || "");
+  if (/(ado|ido|to|so|cho)$/.test(primeraNorm)) score -= 2;
+
+  // (8) Definición de palabra única → -3
+  if (n === 1) score -= 3;
+
+  // (9) Duda de "o" (muchos " o ") → -1
+  const numO = (textoNorm.match(/\so\s/g) || []).length;
+  if (numO >= 2) score -= 1;
+
+  // (10) Más de 3 comas → -1
+  const numComas = (definicion.match(/,/g) || []).length;
+  if (numComas > 3) score -= 1;
+
+  // --- PREMIOS ---
+
+  // (11) Presencia de " es " → +1
+  if (textoNorm.includes(" es ")) score += 1;
+
+  // (12) Rondación de "que" → +2
+  if (/(de que|al que|en que|lo que)/.test(textoNorm)) score += 2;
+
+  // (13) Terminar en participio/serie → +2
+  const ultimaNorm = norm(palabras[palabras.length - 1] || "");
+  if (/(ado|ido|to|so|cho)$/.test(ultimaNorm)) score += 2;
+
+  // (14) Buen uso de "que" → +2
+  if (textoNorm.includes(" que ") && !defNormTrim.startsWith("que ") && !textoNorm.includes(" es que ")) {
+    score += 2;
+  }
+
+  // (15) Núcleo verbal para lema verbo → +3
+  if (categoriaLema === "verbo" && hayInfinitivo) score += 3;
+
+  // (16) cuyo/cuya/cuyos/cuyas → +1
+  if (/\bcuyo(s)?\b|\bcuya(s)?\b/.test(textoNorm)) score += 1;
+
+  // (17) Cadena "X de Y de Z" (al menos dos " de ") → +2
+  const numDe = (textoNorm.match(/\sde\s/g) || []).length;
+  if (numDe >= 2) score += 2;
+
+  // (18) Calco del infinito → +3
+  if (textoNorm.includes("no tiene ni puede tener") ||
+      textoNorm.includes("no tener ni poder tener") ||
+      textoNorm.includes("es o puede ser") ||
+      textoNorm.includes("son o pueden ser")) {
+    score += 3;
+  }
+
+  // (19) Buena forma de adjetivo → +2
+  if (categoriaLema === "adjetivo" && textoNorm.includes(" que ") && !textoNorm.includes(raizLema)) {
+    score += 2;
+  }
+
+  // (20) Palabra muy larga (técnica) → +1
+  const hayLarga = palabras.some(w => norm(w).length >= 12);
+  if (hayLarga) score += 1;
+
+  // (21) Contenido antes de "que" → +2
+  if (textoNorm.includes(" que ") && !defNormTrim.startsWith("que ")) {
+    score += 2;
+  }
+
+  // (22) De momento se solapa con 21; dejamos hueco para expansión futura.
+
+  return score;
+}
+
+/******** 6. Elegir la mejor ACEPCIÓN de un lema ********/
+
+function elegirMejorAcepcion(lema, categoriaLema, definiciones, contextoTexto) {
+  const contextoPalabras = tokenizar(contextoTexto).filter(w => !STOPWORDS.has(w));
+  if (contextoPalabras.length === 0) return null;
+
+  // 1. Buscamos acepciones candidatas (comparten palabra)
+  const candidatas = [];
+  definiciones.forEach((def, idx) => {
+    const palabrasDef = tokenizar(def).filter(w => !STOPWORDS.has(w));
+    const setDef = new Set(palabrasDef);
+    const hayCoincidencia = contextoPalabras.some(w => setDef.has(w));
+    if (hayCoincidencia) {
+      candidatas.push({ index: idx, definicion: def });
+    }
+  });
+
+  if (candidatas.length === 0) return null;
+  if (candidatas.length === 1) return candidatas[0];
+
+  // 2. Varias candidatas → aplicamos calidad
+  let mejor = null;
+  let mejorScore = -Infinity;
+
+  candidatas.forEach(c => {
+    const calidad = scoreCalidadDefinicion(c.definicion, lema, categoriaLema);
+    const numPalabras = tokenizar(c.definicion).length;
+
+    if (calidad > mejorScore) {
+      mejorScore = calidad;
+      mejor = { ...c, calidad, numPalabras };
+    } else if (calidad === mejorScore && mejor) {
+      // Empate → gana la más larga
+      if (numPalabras > mejor.numPalabras) {
+        mejor = { ...c, calidad, numPalabras };
+      }
+    }
+  });
+
+  return mejor;
+}
+
+/******** 7. Función de alto nivel para usar desde el libro ********/
+
+function razonadorParaLema(lema, contextoTexto) {
+  const entrada = diccionario[lema.toLowerCase()];
+  if (!entrada) return null;
+
+  // si en el diccionario añades "categoria: 'verbo'" será mejor;
+  // si no, asumimos sustantivo por defecto
+  const categoriaLema = entrada.categoria || "sustantivo";
+  const defs = entrada.definiciones || [];
+
+  const mejorAcep = elegirMejorAcepcion(lema, categoriaLema, defs, contextoTexto);
+  if (!mejorAcep) return null;
+
+  const nucleo = elegirPalabraNucleo(mejorAcep.definicion, categoriaLema);
+
+  return {
+    indiceAcepcion: mejorAcep.index,
+    definicion: mejorAcep.definicion,
+    calidad: mejorAcep.calidad,
+    palabraNucleo: nucleo
+  };
+  }
+prepararLibro();
+
+</script> 
+  <!-- DEBUG DEL RAZONADOR -->
+<h3>Debug del razonador</h3>
+<pre id="debug-razonador" style="border:1px solid #ccc; padding:0.5rem; white-space:pre-wrap;"></pre>
 
 </body>
-</html>
+  </html>
