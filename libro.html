@@ -1937,7 +1937,8 @@ function elegirMejorAcepcion(lema, categoriaLema, definiciones, contextoTexto) {
   const ctxWords = tokenizar(contextoTexto).filter(w => !STOPWORDS.has(w));
   const setCtx = new Set(ctxWords);
   
-  if (ctxWords.length === 0) return null;
+  // Eliminamos el bloqueo: el razonador debe actuar incluso sin contexto
+  // if (ctxWords.length === 0) return null; 
 
   let mejor = null;
   let mejorScoreTotal = -Infinity;
