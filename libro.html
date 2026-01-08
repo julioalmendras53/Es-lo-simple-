@@ -8,8 +8,7 @@
     body {
       font-family: Arial, sans-serif;
       margin: 1rem;
-      display: flex;
-      gap: 1.5rem;
+      display: block;
     }
 
     #contenedor {
@@ -17,6 +16,7 @@
       grid-template-columns: 2fr 1fr;
       gap: 1.5rem;
       width: 100%;
+      margin-bottom: 2rem;
     }
 
     #libro {
@@ -2033,8 +2033,10 @@ prepararLibro();
 
 </script> 
   <!-- DEBUG DEL RAZONADOR -->
-<h3>Debug del razonador</h3>
-<pre id="debug-razonador" style="border:1px solid #ccc; padding:0.5rem; white-space:pre-wrap;"></pre>
+<div style="clear: both; margin-top: 2rem; border-top: 2px solid #eee; padding-top: 1rem;">
+  <h3>Debug del razonador</h3>
+  <pre id="debug-razonador" style="border:1px solid #ccc; padding:0.5rem; white-space:pre-wrap; background: #f9f9f9;"></pre>
+</div>
 
 </body>
   </html>
