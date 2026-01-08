@@ -812,7 +812,7 @@ const diccionario = {
       cuchara:    { definicion: "Útil de mesa con mango y en el extremo una concavidad de metal propia para consumir alimentos líquidos mayoritariamente." },
       cuchillo:   { definicion: "Útil de mesa con un filo por una banda para cortar en trozos alimentos sólidos." },
       indeterminado: {definicion: "No determinado a un resultado único sino que tiene infinitas medidas." },
-      indefinido: { definicion: "No definido." },
+      indefinido: { definicion: "Que carece de límites, precisión o una naturaleza claramente establecida en el tiempo o el espacio." },
       "palíndromo":{ definicion: "Frase que se lee levogira igual que dextrogira." },
       capicua:    { definicion: "Número que se lee igual de inicio a fin que de fin a inicio." },
       morfema:    { definicion: "Unidad minuscula de significado de una palabra como in- de infinito que significa no o sin. " },
@@ -1976,14 +1976,23 @@ function elegirMejorAcepcion(lema, categoriaLema, definiciones, contextoTexto) {
 /******** 7. Función de alto nivel para usar desde el libro ********/
 
 function razonadorParaLema(lema, contextoTexto) {
-  const entrada = diccionario[lema.toLowerCase()];
+  const lemaLower = lema.toLowerCase();
+  const entrada = diccionario[lemaLower];
   if (!entrada) return null;
 
-  // si en el diccionario añades "categoria: 'verbo'" será mejor;
-  // si no, asumimos sustantivo por defecto
   const categoriaLema = entrada.categoria || "sustantivo";
-  const defs = entrada.definiciones || [];
+  
+  // PRIORIDAD: Si hay una definición directa (no en array), la usamos directamente
+  if (entrada.definicion) {
+    return {
+      indiceAcepcion: 0,
+      definicion: entrada.definicion,
+      calidad: 100, // Máxima prioridad
+      palabraNucleo: { palabra: lemaLower, indice: 0, score: 100 }
+    };
+  }
 
+  const defs = entrada.definiciones || [];
   const mejorAcep = elegirMejorAcepcion(lema, categoriaLema, defs, contextoTexto);
   if (!mejorAcep) return null;
 
