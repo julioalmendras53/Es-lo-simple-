@@ -1934,39 +1934,62 @@ function scoreCalidadDefinicion(definicion, lema, categoriaLema) {
 /******** 6. Elegir la mejor ACEPCIÓN de un lema ********/
 
 function elegirMejorAcepcion(lema, categoriaLema, definiciones, contextoTexto) {
-  const contextoPalabras = tokenizar(contextoTexto).filter(w => !STOPWORDS.has(w));
-  if (contextoPalabras.length === 0) return null;
+  const ctxWords = tokenizar(contextoTexto).filter(w => !STOPWORDS.has(w));
+  const setCtx = new Set(ctxWords);
+  
+  if (ctxWords.length === 0) return null;
 
-  // 1. Buscamos acepciones candidatas (comparten palabra)
-  const candidatas = [];
-  definiciones.forEach((def, idx) => {
-    const palabrasDef = tokenizar(def).filter(w => !STOPWORDS.has(w));
-    const setDef = new Set(palabrasDef);
-    const hayCoincidencia = contextoPalabras.some(w => setDef.has(w));
-    if (hayCoincidencia) {
-      candidatas.push({ index: idx, definicion: def });
-    }
-  });
-
-  if (candidatas.length === 0) return null;
-  if (candidatas.length === 1) return candidatas[0];
-
-  // 2. Varias candidatas → aplicamos calidad
   let mejor = null;
-  let mejorScore = -Infinity;
+  let mejorScoreTotal = -Infinity;
 
-  candidatas.forEach(c => {
-    const calidad = scoreCalidadDefinicion(c.definicion, lema, categoriaLema);
-    const numPalabras = tokenizar(c.definicion).length;
+  definiciones.forEach((def, idx) => {
+    const palabrasDef = tokenizar(def);
+    const n = palabrasDef.length;
+    
+    // PARTE 1: REJILLA DE POSICIÓN + PARTE 2: COINCIDENCIAS/SINÓNIMOS
+    let scoreEstimulo = 0;
+    palabrasDef.forEach((p, i) => {
+      const w = norm(p);
+      if (STOPWORDS.has(w)) return;
 
-    if (calidad > mejorScore) {
-      mejorScore = calidad;
-      mejor = { ...c, calidad, numPalabras };
-    } else if (calidad === mejorScore && mejor) {
-      // Empate → gana la más larga
-      if (numPalabras > mejor.numPalabras) {
-        mejor = { ...c, calidad, numPalabras };
+      // Si hay coincidencia (estímulo)
+      let coincidencia = false;
+      if (setCtx.has(w)) {
+        coincidencia = true;
+      } else {
+        // Buscar en sinónimos
+        const variantes = expandirConSinonimos(w);
+        for (const v of variantes) {
+          if (setCtx.has(v)) {
+            coincidencia = true;
+            break;
+          }
+        }
       }
+
+      if (coincidencia) {
+        // La rejilla da más puntos si la coincidencia ocurre al inicio
+        const puntosRejilla = pesoPosicion(i + 1, n);
+        scoreEstimulo += (10 + puntosRejilla); // 10 base + rejilla
+      }
+    });
+
+    // PARTE 3: CALIDAD LEXICOGRÁFICA (22 Reglas)
+    const calidad = scoreCalidadDefinicion(def, lema, categoriaLema);
+    
+    // El score total prioriza el estímulo, y usa la calidad como desempate fino
+    // Multiplicamos el estímulo para que sea el factor principal
+    const scoreTotal = (scoreEstimulo * 100) + calidad;
+
+    if (scoreTotal > mejorScoreTotal) {
+      mejorScoreTotal = scoreTotal;
+      mejor = { 
+        index: idx, 
+        definicion: def, 
+        scoreEstimulo, 
+        calidad, 
+        scoreTotal 
+      };
     }
   });
 
@@ -1982,17 +2005,9 @@ function razonadorParaLema(lema, contextoTexto) {
 
   const categoriaLema = entrada.categoria || "sustantivo";
   
-  // PRIORIDAD: Si hay una definición directa (no en array), la usamos directamente
-  if (entrada.definicion) {
-    return {
-      indiceAcepcion: 0,
-      definicion: entrada.definicion,
-      calidad: 100, // Máxima prioridad
-      palabraNucleo: { palabra: lemaLower, indice: 0, score: 100 }
-    };
-  }
-
-  const defs = entrada.definiciones || [];
+  const defs = [];
+  if (entrada.definicion) defs.push(entrada.definicion);
+  if (entrada.definiciones) defs.push(...entrada.definiciones);
   const mejorAcep = elegirMejorAcepcion(lema, categoriaLema, defs, contextoTexto);
   if (!mejorAcep) return null;
 
