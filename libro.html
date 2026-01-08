@@ -1595,14 +1595,17 @@ function obtenerClaveVerbal(rawWord, idx) {
       debugBox.textContent = JSON.stringify(resultadoRazonador, null, 2);
     }
 
-    htmlExp = `
-      <hr>
-      <p style="font-size:0.9em; color:green;">
-        <strong>🤖 Elección del razonador:</strong><br>
-        Calidad: ${resultadoRazonador.calidad}<br>
-        Núcleo detectado:
-        <em>"${resultadoRazonador.palabraNucleo ? resultadoRazonador.palabraNucleo.palabra : "ninguno"}"</em>
-      </p>`;
+    // Solo mostramos la explicación si hubo una elección real entre varias acepciones
+    if (!resultadoRazonador.soloUna) {
+      htmlExp = `
+        <hr>
+        <p style="font-size:0.9em; color:green;">
+          <strong>🤖 Elección del razonador:</strong><br>
+          Calidad: ${resultadoRazonador.calidad}<br>
+          Núcleo detectado:
+          <em>"${resultadoRazonador.palabraNucleo ? resultadoRazonador.palabraNucleo.palabra : "ninguno"}"</em>
+        </p>`;
+    }
   } else {
     // ---------- INTENTO 2: LÓGICA ANTIGUA ----------
     if (debugBox) {
@@ -2017,6 +2020,16 @@ function razonadorParaLema(lema, contextoTexto) {
   const defs = [];
   if (entrada.definicion) defs.push(entrada.definicion);
   if (entrada.definiciones) defs.push(...entrada.definiciones);
+
+  // Si solo hay una acepción, no aplicamos razonamiento ni calidad
+  if (defs.length === 1) {
+    return {
+      indiceAcepcion: 0,
+      definicion: defs[0],
+      soloUna: true // Bandera para omitir debug de calidad
+    };
+  }
+
   const mejorAcep = elegirMejorAcepcion(lema, categoriaLema, defs, contextoTexto);
   if (!mejorAcep) return null;
 
