@@ -2470,9 +2470,23 @@ function razonadorParaLema(lema, contextoTexto) {
     palabraNucleo: nucleo
   };
   }
+function actualizarContador() {
+  const total = Object.keys(diccionario).length;
+  const el = document.getElementById("contador-definiciones");
+  if (el) {
+    el.textContent = `Total de definiciones en el diccionario: ${total}`;
+  }
+}
+
 prepararLibro();
+actualizarContador();
 
 </script> 
+  <!-- CONTADOR DE DEFINICIONES -->
+<div style="clear: both; margin-top: 2rem; border-top: 2px solid #eee; padding-top: 1rem; text-align: center;">
+  <p id="contador-definiciones" style="font-weight: bold; color: #555;"></p>
+</div>
+
   <!-- DEBUG DEL RAZONADOR -->
 <div style="clear: both; margin-top: 2rem; border-top: 2px solid #eee; padding-top: 1rem;">
   <h3>Debug del razonador</h3>
