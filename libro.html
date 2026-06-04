@@ -2605,6 +2605,80 @@ actualizarContador();
   <h3>Debug del razonador</h3>
   <pre id="debug-razonador" style="border:1px solid #ccc; padding:0.5rem; white-space:pre-wrap; background: #f9f9f9;"></pre>
 </div>
+  // ==================== NUEVAS FUNCIONES DEL MODAL ====================
+
+function mostrarDiccionarioModal(rawWord) {
+  const lema = normalizarPalabra(rawWord);
+  const entry = diccionario[lema] || diccionario[rawWord.toLowerCase()];
+
+  if (!entry) {
+    alert("No existe entrada para: " + rawWord);
+    return;
+  }
+
+  // Palabra y categoría
+  document.getElementById('modal-palabra').textContent = rawWord;
+  document.getElementById('modal-categoria').textContent = entry.categoria || '';
+
+  // Razonador
+  let razonHTML = '';
+  if (entry.razonadorInfo) {
+    razonHTML = `
+      <div style="background:#f8f9fa; padding:18px; border-radius:10px; margin:20px 0; font-size:0.95rem;">
+        <strong>Análisis del razonador</strong><br><br>
+        Calidad: <strong>${entry.razonadorInfo.calidad}</strong><br>
+        Núcleo detectado: <strong>"${entry.razonadorInfo.nucleo}"</strong>
+      </div>
+    `;
+  }
+  document.getElementById('modal-razonador').innerHTML = razonHTML;
+
+  // Definición
+  let defHTML = '';
+  if (entry.definiciones && Array.isArray(entry.definiciones)) {
+    defHTML = entry.definiciones.map(d => `<p style="margin-bottom:12px;">${d}</p>`).join('');
+  } else if (entry.definicion) {
+    defHTML = `<p>${entry.definicion}</p>`;
+  }
+  document.getElementById('modal-definicion').innerHTML = defHTML;
+
+  // Multimedia
+  const multiDiv = document.getElementById('modal-multimedia');
+  multiDiv.innerHTML = '<h3 style="margin-bottom:15px;">Visual</h3>';
+
+  if (entry.imagen) {
+    const imgUrl = entry.imagen.startsWith('http') 
+      ? entry.imagen 
+      : `https://julioalmendras53.github.io/${entry.imagen}`;
+    multiDiv.innerHTML += `
+      <div style="margin:20px 0;">
+        <img src="\( {imgUrl}" alt=" \){lema}" style="max-width:100%; border-radius:12px;">
+      </div>
+    `;
+  }
+
+  if (entry.video) {
+    const vidUrl = entry.video.startsWith('http') 
+      ? entry.video 
+      : `https://julioalmendras53.github.io/${entry.video}`;
+    multiDiv.innerHTML += `
+      <div style="margin:25px 0;">
+        <video controls style="width:100%; max-height:460px; border-radius:12px; background:#000;">
+          <source src="${vidUrl}" type="video/mp4">
+        </video>
+      </div>
+    `;
+  }
+
+  // Mostrar modal
+  document.getElementById('modal-diccionario').style.display = 'flex';
+}
+
+function cerrarModalDiccionario() {
+  document.getElementById('modal-diccionario').style.display = 'none';
+  limpiarResaltado();
+}
+  
 
 </body>
   </html>
