@@ -1002,7 +1002,15 @@ const diccionario = {
                              "De modo infinito.",
                              "De manera infinita.",
                              "De forma infinita." ] },
-    infinito: { categoria: "sustantivo", definicion: "Que crece sin parar.", imagen: "images/infinito.jpg" },
+    infinito: {
+  categoria: "sustantivo",
+  definicion: "Que crece sin parar.",
+  imagen: "images/infinito.jpg",     // ← Agrega esta línea
+  razonadorInfo: {
+    calidad: 8,
+    nucleo: "infinito"
+  }
+},
     infinitotriz: { categoria: "sustantivo", definicion: "Que gira infinitamente alrededor de algo." },
     "información": { categoria: "sustantivo", definiciones: [
                               "Conversión desde el dato simple hacia un conjunto que reduce la incertidumbre de algo.",
