@@ -53,6 +53,33 @@
     }
   </style>
 </head>
+  <!-- ==================== MODAL DICCIONARIO RICO ==================== -->
+<div id="modal-diccionario" class="modal" style="display: none;">
+  <div class="modal-content">
+    <button class="cerrar-modal" onclick="cerrarModalDiccionario()">×</button>
+
+    <div id="modal-header">
+      <h1 id="modal-palabra"></h1>
+      <span id="modal-categoria"></span>
+    </div>
+
+    <div id="modal-razonador"></div>
+    <div id="modal-definicion"></div>
+
+    <div id="modal-multimedia">
+      <h3>Visual</h3>
+      <div id="modal-imagen"></div>
+      <div id="modal-video"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button onclick="cerrarModalDiccionario()" class="btn-volver">
+        ← Volver al libro
+      </button>
+    </div>
+  </div>
+</div>
+<!-- ==================== FIN DEL MODAL ==================== -->
 
 <body>
 <div id="contenedor">
