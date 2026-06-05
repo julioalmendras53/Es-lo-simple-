@@ -2120,7 +2120,20 @@ function obtenerClaveVerbal(rawWord, idx) {
     if (debugBox) {
       debugBox.textContent = "Palabra no encontrada en diccionario.";
     }
-    return;
+    return;// === MOSTRAR IMAGEN (insertar aquí) ===
+if (entrada && entrada.imagen) {
+  const imgUrl = entrada.imagen.startsWith('http') 
+    ? entrada.imagen 
+    : `https://julioalmendras53.github.io/${entrada.imagen}`;
+
+  const img = document.createElement('img');
+  img.src = imgUrl;
+  img.style.maxWidth = '100%';
+  img.style.borderRadius = '12px';
+  img.style.marginTop = '15px';
+
+  panel.appendChild(img);
+  }
   }
 
   // Unificamos definiciones en un solo array
