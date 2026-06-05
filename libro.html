@@ -2213,7 +2213,7 @@ function obtenerClaveVerbal(rawWord, idx) {
 if (entrada && entrada.imagen) {
   const imgUrl = entrada.imagen.startsWith('http') 
     ? entrada.imagen 
-    : `https://julioalmendras53.github.io/${entrada.imagen}`;
+    : entrada.imagen; // Usamos la ruta relativa del repositorio actual
 
   const img = document.createElement('img');
   img.src = imgUrl;
@@ -2608,6 +2608,33 @@ function razonadorParaLema(lema, contextoTexto) {
     palabraNucleo: nucleo
   };
   }
+async function obtenerCommits() {
+  const repo = "julioalmendras53/Es-lo-simple-";
+  const el = document.getElementById("contador-commits");
+  if (!el) return;
+
+  try {
+    // Intentamos obtener el número de commits mediante la API de GitHub
+    // Usamos per_page=1 y revisamos el header 'link' para obtener el total real de forma eficiente
+    const response = await fetch(`https://api.github.com/repos/${repo}/commits?per_page=1`);
+    if (!response.ok) throw new Error("Error en la API");
+    
+    const linkHeader = response.headers.get("link");
+    let totalCommits = 1;
+
+    if (linkHeader) {
+      const match = linkHeader.match(/page=(\d+)>; rel="last"/);
+      if (match) {
+        totalCommits = match[1];
+      }
+    }
+    el.textContent = `Total de commits en el repositorio: ${totalCommits}`;
+  } catch (error) {
+    console.error("No se pudo obtener el conteo de commits:", error);
+    el.textContent = "Contador de commits no disponible.";
+  }
+}
+
 function actualizarContador() {
   const total = Object.keys(diccionario).length;
   const el = document.getElementById("contador-definiciones");
@@ -2618,11 +2645,13 @@ function actualizarContador() {
 
 prepararLibro();
 actualizarContador();
+obtenerCommits();
 
 </script> 
-  <!-- CONTADOR DE DEFINICIONES -->
+  <!-- CONTADORES -->
 <div style="clear: both; margin-top: 2rem; border-top: 2px solid #eee; padding-top: 1rem; text-align: center;">
-  <p id="contador-definiciones" style="font-weight: bold; color: #555;"></p>
+  <p id="contador-definiciones" style="font-weight: bold; color: #555; margin-bottom: 0.5rem;"></p>
+  <p id="contador-commits" style="font-weight: normal; color: #777; font-size: 0.9rem;"></p>
 </div>
 
   <!-- DEBUG DEL RAZONADOR -->
@@ -2674,10 +2703,10 @@ function mostrarDiccionarioModal(rawWord) {
   if (entry.imagen) {
     const imgUrl = entry.imagen.startsWith('http') 
       ? entry.imagen 
-      : `https://julioalmendras53.github.io/${entry.imagen}`;
+      : entry.imagen; // Ruta relativa local
     multiDiv.innerHTML += `
       <div style="margin:20px 0;">
-        <img src="\( {imgUrl}" alt=" \){lema}" style="max-width:100%; border-radius:12px;">
+        <img src="${imgUrl}" alt="${lema}" style="max-width:100%; border-radius:12px;">
       </div>
     `;
   }
@@ -2685,7 +2714,7 @@ function mostrarDiccionarioModal(rawWord) {
   if (entry.video) {
     const vidUrl = entry.video.startsWith('http') 
       ? entry.video 
-      : `https://julioalmendras53.github.io/${entry.video}`;
+      : entry.video; // Ruta relativa local
     multiDiv.innerHTML += `
       <div style="margin:25px 0;">
         <video controls style="width:100%; max-height:460px; border-radius:12px; background:#000;">
